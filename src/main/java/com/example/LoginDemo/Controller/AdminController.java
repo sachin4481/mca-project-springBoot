@@ -5,13 +5,15 @@ import com.example.LoginDemo.Entity.UserEntity;
 import com.example.LoginDemo.Services.UserServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@RestController
+@Controller
 @RequestMapping("/admin")
 public class AdminController {
 
@@ -20,11 +22,17 @@ public class AdminController {
     private UserServices userServices;
 
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/all-user")
-    public List<UserEntity> allUser()
+    @GetMapping("/dashboard")
+    public String adminDashboard(Model model)
     {
-        return userServices.getAll();
-    }
+        List<UserEntity> users = userServices.getAll();
+        model.addAttribute("users",users);
+        return "admin";
+
+
+    }    
+
+
 
 
 
