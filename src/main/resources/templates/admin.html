@@ -29,6 +29,29 @@
     </tbody>
 </table>
 
+<h2>Properties</h2>
+<table>
+    <thead>
+    <tr>
+        <th>Title</th>
+        <th>Price</th>
+        <th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="property : ${properties}">
+        <td th:text="${property.title}"></td>
+        <td th:text="${property.price}"></td>
+        <td>
+            <form th:action="@{/admin/delete-property/{id}(id=${property.id})}" method="post">
+                <button type="submit">Delete</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<a th:href="@{/properties}">Back to Listings</a>
+
 <!-- Logout Button -->
 <form th:action="@{/logout}" method="post">
     <button type="submit">Logout</button>

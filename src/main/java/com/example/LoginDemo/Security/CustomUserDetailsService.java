@@ -89,7 +89,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                 true,  // Account non-expired
                 true,  // Credentials non-expired
                 true,  // Account non-locked
-                authorities  // List of authorities (roles)
+                authorities  // role of user
         );
     }
 }
