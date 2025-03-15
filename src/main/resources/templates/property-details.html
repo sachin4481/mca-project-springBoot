@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Property Details</title>
+  <link rel="stylesheet" href="/css/property-details.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f7f7f7;
+      color: #333;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    header {
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      margin-bottom: 30px;
+    }
+
+    header h1 {
+      font-size: 2.5rem;
+      color: #2c3e50;
+      margin: 0;
+    }
+
+    .meta-info {
+      font-size: 1rem;
+      color: #7f8c8d;
+      margin-top: 10px;
+    }
+
+    .meta-info span {
+      margin-right: 15px;
+    }
+
+    .meta-info .price {
+      color: #27ae60;
+      font-weight: bold;
+    }
+
+    .description {
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      margin-bottom: 30px;
+    }
+
+    .description p {
+      font-size: 1.1rem;
+      color: #555;
+      line-height: 1.6;
+    }
+
+    .gallery {
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      margin-bottom: 30px;
+    }
+
+    .gallery h2 {
+      font-size: 1.5rem;
+      color: #2c3e50;
+      margin-bottom: 20px;
+    }
+
+    .image-gallery {
+      display: flex;
+      gap: 20px;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+
+    .image-gallery img {
+      width: 100%;
+      max-width: 350px;
+      height: auto;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease;
+    }
+
+    .image-gallery img:hover {
+      transform: scale(1.05);
+    }
+
+    .btn {
+      background-color: #3498db;
+      color: white;
+      padding: 10px 20px;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 500;
+      display: inline-block;
+      margin: 20px 0;
+      transition: background-color 0.3s ease;
+    }
+
+    .btn:hover {
+      background-color: #2980b9;
+    }
+
+    .btn-back {
+      background-color: #95a5a6;
+    }
+
+    .btn-back:hover {
+      background-color: #7f8c8d;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 30px;
+    }
+
+    footer a {
+      text-decoration: none;
+      color: #2c3e50;
+      font-weight: 500;
+      font-size: 1rem;
+    }
+
+    footer a:hover {
+      color: #3498db;
+    }
+
+    @media (max-width: 768px) {
+      header h1 {
+        font-size: 2rem;
+      }
+
+      .meta-info {
+        font-size: 0.9rem;
+      }
+
+      .image-gallery {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .image-gallery img {
+        max-width: 90%;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .meta-info {
+        font-size: 0.8rem;
+      }
+
+      .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1 th:text="${property.title}"></h1>
+    <p class="meta-info">
+      <span class="location" th:text="${property.location}"></span> |
+      <span class="price">$<span th:text="${property.price}"></span></span> |
+      <span class="area" th:text="${property.area + ' sq ft'}"></span>
+    </p>
+  </header>
+
+  <section class="description">
+    <p th:text="${property.description}"></p>
+  </section>
+
+  <section class="gallery">
+    <h2>Property Images</h2>
+    <div class="image-gallery">
+      <img th:if="${property.image1}" th:src="@{${property.image1}}" alt="Image 1" />
+      <img th:if="${property.image2}" th:src="@{${property.image2}}" alt="Image 2" />
+      <img th:if="${property.image3}" th:src="@{${property.image3}}" alt="Image 3" />
+    </div>
+  </section>
+
+<!--  <div th:if="${#authorization.expression('hasRole(''SELLER'') and authentication.principal.id == property.seller.id') or #authorization.expression('hasRole(''ADMIN'')')}">-->
+<!--    <a th:href="@{/properties/edit/{id}(id=${property.id})}" class="btn">Edit Property</a>-->
+<!--  </div>-->
+
+  <div th:if="${property.user != null and #authentication.principal.username == property.user.username}">
+    <a th:href="@{/properties/edit/{id}(id=${property.id})}" class="btn">Edit Property</a>
+  </div>
+
+
+  <footer>
+    <a class="btn-back" th:href="@{/properties}">Back to Listings</a>
+  </footer>
+</div>
+</body>
+</html>

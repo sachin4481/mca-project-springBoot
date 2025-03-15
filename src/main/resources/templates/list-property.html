@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>List a Property</title>
+  <link rel="stylesheet" href="/css/styles_property.css" />
+</head>
+<body>
+<h1>List a New Property</h1>
+<form th:action="@{/properties/list}" th:object="${property}" method="post" enctype="multipart/form-data">
+  <label>Title:
+    <input type="text" th:field="*{title}" required /></label><br />
+
+  <label>Description: <textarea th:field="*{description}" required></textarea>
+  </label><br />
+
+  <label>Location: <input type="text" th:field="*{location}" required />
+  </label><br />
+
+  <label>Price: <input type="number" th:field="*{price}" step="0.01" required /></label><br />
+
+
+  <label>Area (sq ft): <input type="number" th:field="*{area}" step="0.01" required /></label><br />
+
+  <!-- Image Upload Fields -->
+  <label>Image 1: <input type="file" name="images" accept="image/*" /></label><br />
+  <label>Image 2: <input type="file" name="images" accept="image/*" /></label><br />
+  <label>Image 3: <input type="file" name="images" accept="image/*" /></label><br />
+
+  <button type="submit">List Property</button>
+</form>
+<a th:href="@{/properties}">Back to Listings</a>
+</body>
+</html>

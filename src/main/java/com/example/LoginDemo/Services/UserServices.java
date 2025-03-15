@@ -52,6 +52,22 @@ public class UserServices {
     }
 
 
+    public UserEntity updateUser(UserEntity updatedUser) {
+        UserEntity existingUser = findByUsername(updatedUser.getUsername());
+        // Update fields
+        existingUser.setFirstName(updatedUser.getFirstName());
+        existingUser.setLastName(updatedUser.getLastName());
+        existingUser.setEmail(updatedUser.getEmail());
+        existingUser.setPhone(updatedUser.getPhone());
+        existingUser.setGender(updatedUser.getGender());
+        existingUser.setAddress(updatedUser.getAddress());
+//        // Password update could be optional; add logic if needed
+//        if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
+//            existingUser.setPassword(updatedUser.getPassword()); // Encode if using BCrypt
+//        }
+        return userRepository.save(existingUser);
+    }
+
 
 
 

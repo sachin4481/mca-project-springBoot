@@ -4,57 +4,104 @@
 <head>
     <title>Admin Dashboard</title>
     <link rel="stylesheet" href="/css/admin_style.css">
+    <style>
+        .dashboard-box {
+            display: inline-block;
+            width: 200px;
+            padding: 20px;
+            margin: 10px;
+            border: 1px solid #ccc;
+            text-align: center;
+            cursor: pointer;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
 </head>
 <body>
 <h1>Welcome to the Admin Dashboard</h1>
 <p>You are logged in as: <span sec:authentication="name"></span></p>
 <p>Your role is: <span sec:authentication="principal.authorities"></span></p>
 
-<!-- Display a list of users (if applicable) -->
-<h2>User List</h2>
-<table>
-    <thead>
-    <tr>
-        <th>Username</th>
-        <th>Email</th>
-        <th>Role</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="user : ${users}">
-        <td th:text="${user.username}"></td>
-        <td th:text="${user.email}"></td>
-        <td th:text="${user.role}"></td>
-    </tr>
-    </tbody>
-</table>
+<!-- Dashboard Summary Boxes -->
+<div class="dashboard-box" onclick="toggleSection('userList')">
+    <h3>Total Users</h3>
+    <p th:text="${#lists.size(users)}">0</p>
+</div>
+<div class="dashboard-box" onclick="toggleSection('propertyList')">
+    <h3>Total Properties</h3>
+    <p th:text="${#lists.size(properties)}">0</p>
+</div>
 
-<h2>Properties</h2>
-<table>
-    <thead>
-    <tr>
-        <th>Title</th>
-        <th>Price</th>
-        <th>Action</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="property : ${properties}">
-        <td th:text="${property.title}"></td>
-        <td th:text="${property.price}"></td>
-        <td>
-            <form th:action="@{/admin/delete-property/{id}(id=${property.id})}" method="post">
-                <button type="submit">Delete</button>
-            </form>
-        </td>
-    </tr>
-    </tbody>
-</table>
+<!-- Display a list of users (if applicable) -->
+<div id="userList" class="hidden">
+    <h2>User List</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="user : ${users}">
+            <td th:text="${user.username}"></td>
+            <td th:text="${user.email}"></td>
+            <td th:text="${user.role}"></td>
+            <td>
+                <form th:action="@{/admin/delete-user/{id}(id=${user.id})}" method="post">
+                    <button type="submit">Delete</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Properties List -->
+<div id="propertyList" class="hidden">
+    <h2>Properties</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>Title</th>
+            <th>Price</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="property : ${properties}">
+            <td th:text="${property.title}"></td>
+            <td th:text="${property.price}"></td>
+            <td>
+                <form th:action="@{/admin/delete-property/{id}(id=${property.id})}" method="post">
+                    <button type="submit">Delete</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
 <a th:href="@{/properties}">Back to Listings</a>
 
 <!-- Logout Button -->
 <form th:action="@{/logout}" method="post">
     <button type="submit">Logout</button>
 </form>
+
+<script>
+    function toggleSection(sectionId) {
+        const section = document.getElementById(sectionId);
+        if (section.classList.contains('hidden')) {
+            section.classList.remove('hidden');
+        } else {
+            section.classList.add('hidden');
+        }
+    }
+</script>
 </body>
 </html>

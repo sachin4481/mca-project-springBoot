@@ -97,9 +97,8 @@ public class HomeController {
     @PreAuthorize("hasRole('ADMIN')")
     public String deleteProperty(@PathVariable Long id) {
         propertyServices.deleteById(id);
-        return "redirect:/admin";
+        return "redirect:/admin/dashboard";
     }
-
 
 
 
@@ -144,5 +143,27 @@ public class HomeController {
         UserEntity currentUser = userServices.findByUsername(username); // Fetch from service
         propertyServices.updateProperty(id, property, images, currentUser);
         return "redirect:/properties/{id}";
+    }
+
+
+    //updating user and user profile
+
+    //show profile
+    @GetMapping("/user/profile")
+    public String showProfile(Model model, @AuthenticationPrincipal UserDetails userDetails) {
+        String username = userDetails.getUsername();
+        UserEntity currentUser = userServices.findByUsername(username);
+        model.addAttribute("user", currentUser);
+        return "user-profile";
+    }
+
+    //update the profile
+    @PostMapping("/user/profile")
+    public String updateProfile(@ModelAttribute UserEntity user,
+                                @AuthenticationPrincipal UserDetails userDetails) {
+        String username = userDetails.getUsername();
+        user.setUsername(username); // Ensure username isn’t changed
+        userServices.updateUser(user);
+        return "redirect:/user/profile?updated=true";
     }
 }

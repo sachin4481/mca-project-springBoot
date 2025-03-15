@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Edit Property</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body>
+<h1>Edit Property</h1>
+<form th:action="@{/properties/edit/{id}(id=${property.id})}" th:object="${property}" method="post" enctype="multipart/form-data">
+  <label>Title: <input type="text" th:field="*{title}" required /></label><br />
+  <label>Description: <textarea th:field="*{description}" required></textarea></label><br />
+  <label>Location: <input type="text" th:field="*{location}" required /></label><br />
+  <label>Price: <input type="number" th:field="*{price}" step="0.01" required /></label><br />
+
+  <label>Area (sq ft): <input type="number" th:field="*{area}" step="0.01" required /></label><br />
+
+  <!-- Image Upload Fields -->
+  <label>Image 1: <input type="file" name="images" accept="image/*" /></label>
+  <span th:if="${property.image1}" th:text="'Current: ' + ${property.image1}"></span><br />
+  <label>Image 2: <input type="file" name="images" accept="image/*" /></label>
+  <span th:if="${property.image2}" th:text="'Current: ' + ${property.image2}"></span><br />
+  <label>Image 3: <input type="file" name="images" accept="image/*" /></label>
+  <span th:if="${property.image3}" th:text="'Current: ' + ${property.image3}"></span><br />
+
+  <button type="submit">Update Property</button>
+</form>
+<a th:href="@{/properties/{id}(id=${property.id})}">Back to Property Details</a>
+</body>
+</html>

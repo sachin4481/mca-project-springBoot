@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>User Profile</title>
+    <link rel="stylesheet" href="/css/styles.css" />
+    <style>
+        .profile-container { max-width: 600px; margin: 20px auto; padding: 20px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-weight: bold; }
+        input, select, textarea { width: 100%; padding: 8px; }
+        .btn { padding: 10px 20px; background-color: #007bff; color: white; border: none; cursor: pointer; }
+        .btn:hover { background-color: #0056b3; }
+        .success { color: green; }
+    </style>
+</head>
+<body>
+<div class="profile-container">
+    <h1>User Profile</h1>
+
+    <!-- Success Message -->
+    <p class="success" th:if="${param.updated}">Profile updated successfully!</p>
+
+    <!-- Profile Display and Edit Form -->
+    <form th:action="@{/user/profile}" th:object="${user}" method="post">
+        <div class="form-group">
+            <label>Username:</label>
+            <input type="text" th:value="*{username}" disabled />
+        </div>
+        <div class="form-group">
+            <label>First Name:</label>
+            <input type="text" th:field="*{firstName}" required />
+        </div>
+        <div class="form-group">
+            <label>Last Name:</label>
+            <input type="text" th:field="*{lastName}" required />
+        </div>
+        <div class="form-group">
+            <label>Email:</label>
+            <input type="email" th:field="*{email}" required />
+        </div>
+        <div class="form-group">
+            <label>Phone:</label>
+            <input type="text" th:field="*{phone}" required />
+        </div>
+        <div class="form-group">
+            <label>Gender:</label>
+            <select th:field="*{gender}" required>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Address:</label>
+            <textarea th:field="*{address}" required></textarea>
+        </div>
+
+        <button type="submit" class="btn">Update Profile</button>
+    </form>
+
+    <a th:href="@{/properties}">Back to Properties</a>
+</div>
+</body>
+</html>
