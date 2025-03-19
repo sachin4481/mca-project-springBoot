@@ -19,6 +19,8 @@ public class PropertyEntity {
     private String location;
     private double price;
 
+    @Column(name = "pincode") // New field for pincode
+    private String pincode;
     private double area; //size
     private String status; // "AVAILABLE", "SOLD"
 

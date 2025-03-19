@@ -1,14 +1,14 @@
 package com.example.LoginDemo.Entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 
 @Entity
 @Table(name = "user")
-@Getter
-@Setter
+@Data
 public class UserEntity {
 
     @Id
@@ -43,6 +43,9 @@ public class UserEntity {
 
     @Column(nullable = false)
     private String address;
+
+    @Column(name = "profile_photo")
+    private String profilePhoto;
 
 
 

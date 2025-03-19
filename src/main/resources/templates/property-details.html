@@ -173,8 +173,10 @@
     <h1 th:text="${property.title}"></h1>
     <p class="meta-info">
       <span class="location" th:text="${property.location}"></span> |
-      <span class="price">$<span th:text="${property.price}"></span></span> |
-      <span class="area" th:text="${property.area + ' sq ft'}"></span>
+      <span class="price">₹<span th:text="${property.price}"></span></span> |
+      <span class="area" th:text="${property.area + ' sq ft'}"></span> |
+      <span class="pincode" th:text="${property.pincode + ' pin code' }"></span>
+
     </p>
   </header>
 

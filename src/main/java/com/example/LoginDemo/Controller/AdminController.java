@@ -1,8 +1,10 @@
 package com.example.LoginDemo.Controller;
 
 
+import com.example.LoginDemo.Entity.ComplaintEntity;
 import com.example.LoginDemo.Entity.PropertyEntity;
 import com.example.LoginDemo.Entity.UserEntity;
+import com.example.LoginDemo.Services.ComplaintServices;
 import com.example.LoginDemo.Services.PropertyServices;
 import com.example.LoginDemo.Services.UserServices;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,9 @@ public class AdminController {
     private UserServices userServices;
 
     @Autowired
+    private ComplaintServices complaintServices;
+
+    @Autowired
     private PropertyServices propertyServices;
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -30,8 +35,10 @@ public class AdminController {
     {
         List<UserEntity> users = userServices.getAllUser();
         List<PropertyEntity> properties = propertyServices.getAllProperty();
+        List<ComplaintEntity> complaints= complaintServices.getAllComplaints();
         model.addAttribute("users",users);
         model.addAttribute("properties",properties);
+        model.addAttribute("complaints",complaints);
         return "admin";
 
 
@@ -45,6 +52,20 @@ public class AdminController {
     }
 
 
+    // complaints
+    @GetMapping("/complaints")
+    public String showAdminComplaints(Model model) {
+        List<ComplaintEntity> complaints = complaintServices.getAllComplaints();
+        model.addAttribute("complaints", complaints);
+        return "admin-complaints";
+    }
+
+    @PostMapping("/complaints/resolve")
+    public String resolveComplaint(@RequestParam("complaintId") Long complaintId,
+                                   @RequestParam("adminResponse") String adminResponse) {
+        complaintServices.resolveComplaint(complaintId, adminResponse);
+        return "redirect:/admin/complaints";
+    }
 
 
 

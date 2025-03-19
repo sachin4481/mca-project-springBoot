@@ -34,6 +34,13 @@
     <p th:text="${#lists.size(properties)}">0</p>
 </div>
 
+<div class="dashboard-box" onclick="window.location.href='/admin/complaints'">
+    <h3>Total Complaints</h3>
+    <p th:text="${#lists.size(complaints)}">0</p>
+</div>
+
+
+
 <!-- Display a list of users (if applicable) -->
 <div id="userList" class="hidden">
     <h2>User List</h2>

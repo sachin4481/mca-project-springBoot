@@ -1,8 +1,10 @@
 package com.example.LoginDemo.Controller;
 
+import com.example.LoginDemo.Entity.ComplaintEntity;
 import com.example.LoginDemo.Entity.PropertyEntity;
 import com.example.LoginDemo.Entity.UserEntity;
 import com.example.LoginDemo.Security.CustomUserDetailsService;
+import com.example.LoginDemo.Services.ComplaintServices;
 import com.example.LoginDemo.Services.PropertyServices;
 import com.example.LoginDemo.Services.UserServices;
 import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
@@ -27,6 +29,10 @@ public class HomeController {
 
     @Autowired
     private PropertyServices propertyServices;
+
+
+    @Autowired
+    private ComplaintServices complaintServices;
 
     @GetMapping("/login")
     public String login() {
@@ -157,13 +163,39 @@ public class HomeController {
         return "user-profile";
     }
 
+
     //update the profile
     @PostMapping("/user/profile")
     public String updateProfile(@ModelAttribute UserEntity user,
-                                @AuthenticationPrincipal UserDetails userDetails) {
+
+                                @AuthenticationPrincipal UserDetails userDetails) throws IOException {
         String username = userDetails.getUsername();
         user.setUsername(username); // Ensure username isn’t changed
         userServices.updateUser(user);
         return "redirect:/user/profile?updated=true";
+    }
+
+
+
+    // Complaint Form
+    @GetMapping("/user/complaint")
+    public String showComplaintForm(Model model, @AuthenticationPrincipal UserDetails userDetails) {
+        if (userDetails == null) {
+            return "redirect:/login";
+        }
+        model.addAttribute("complaint", new ComplaintEntity());
+        model.addAttribute("properties", propertyServices.getAllProperty()); // For property selection
+        return "complaint";
+    }
+
+    @PostMapping("/user/complaint")
+    public String submitComplaint(@ModelAttribute("complaint") ComplaintEntity complaint,
+                                  @AuthenticationPrincipal UserDetails userDetails) {
+        if (userDetails == null) {
+            return "redirect:/login";
+        }
+        complaint.setUsername(userDetails.getUsername());
+        complaintServices.submitComplaint(complaint);
+        return "redirect:/user/complaint?submitted=true";
     }
 }

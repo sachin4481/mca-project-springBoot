@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -32,5 +33,29 @@ public class PropertyController {
         model.addAttribute("properties", properties);
         model.addAttribute("currentUser", currentUser);
         return "user-properties";
+    }
+
+    // Properties listing with search
+    // Search results page
+//    @GetMapping("/search")
+//    public String searchProperties(@RequestParam(value = "location", required = false) String location, Model model) {
+//        List<PropertyEntity> properties = propertyServices.searchPropertiesByArea(location);
+//        model.addAttribute("properties", properties);
+//        model.addAttribute("searchArea", location); // Pre-fill search input
+//        return "searchproperty";
+//    }
+
+    @GetMapping("/search")
+    public String searchProperties(
+            @RequestParam(value = "area", required = false) String area,
+            @RequestParam(value = "price", required = false) Double price,
+            @RequestParam(value = "pincode", required = false) String pincode,
+            Model model) {
+        List<PropertyEntity> properties = propertyServices.searchProperties(area, price, pincode);
+        model.addAttribute("properties", properties);
+        model.addAttribute("searchArea", area);
+        model.addAttribute("searchPrice", price);
+        model.addAttribute("searchPincode", pincode);
+        return "searchproperty";
     }
 }

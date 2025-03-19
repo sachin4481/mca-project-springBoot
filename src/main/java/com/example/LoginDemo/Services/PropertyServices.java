@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class PropertyServices {
@@ -80,6 +81,8 @@ public class PropertyServices {
         existingProperty.setDescription(updatedProperty.getDescription());
         existingProperty.setLocation(updatedProperty.getLocation());
         existingProperty.setPrice(updatedProperty.getPrice());
+        existingProperty.setPincode(updatedProperty.getPincode());
+
 
         existingProperty.setArea(updatedProperty.getArea());
 
@@ -136,6 +139,38 @@ public class PropertyServices {
 
     public List<PropertyEntity> getPropertiesByUser(UserEntity user) {
         return propertyRepository.findByUser(user);
+    }
+
+    //find by Area
+//    public List<PropertyEntity> searchPropertiesByArea(String location) {
+//        if (location == null || location.trim().isEmpty()) {
+//            return propertyRepository.findAll(); // Return all if no search term
+//        }
+//        return propertyRepository.findByLocationContainingIgnoreCase(location);
+//    }
+
+    public List<PropertyEntity> searchProperties(String location, Double price, String pincode) {
+        List<PropertyEntity> properties = propertyRepository.findAll();
+
+        if (location != null && !location.trim().isEmpty()) {
+            properties = properties.stream()
+                    .filter(p -> p.getLocation().toLowerCase().contains(location.toLowerCase()))
+                    .collect(Collectors.toList());
+        }
+
+        if (price != null) {
+            properties = properties.stream()
+                    .filter(p -> p.getPrice() <= price)
+                    .collect(Collectors.toList());
+        }
+
+        if (pincode != null && !pincode.trim().isEmpty()) {
+            properties = properties.stream()
+                    .filter(p -> p.getPincode() != null && p.getPincode().equals(pincode))
+                    .collect(Collectors.toList());
+        }
+
+        return properties;
     }
 
 
