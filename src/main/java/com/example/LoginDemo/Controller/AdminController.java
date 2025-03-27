@@ -4,6 +4,8 @@ package com.example.LoginDemo.Controller;
 import com.example.LoginDemo.Entity.ComplaintEntity;
 import com.example.LoginDemo.Entity.PropertyEntity;
 import com.example.LoginDemo.Entity.UserEntity;
+import com.example.LoginDemo.Entity.VerificationToken;
+import com.example.LoginDemo.Repository.VerificationTokenRepository;
 import com.example.LoginDemo.Services.ComplaintServices;
 import com.example.LoginDemo.Services.PropertyServices;
 import com.example.LoginDemo.Services.UserServices;
@@ -22,6 +24,9 @@ public class AdminController {
 
     @Autowired
     private UserServices userServices;
+
+    @Autowired
+    VerificationTokenRepository verificationTokenRepository;
 
     @Autowired
     private ComplaintServices complaintServices;
@@ -46,7 +51,7 @@ public class AdminController {
 
     @PostMapping("/delete-user/{id}")
     public String deleteUser(@PathVariable Long id) {
-        // Your user deletion logic here
+        verificationTokenRepository.deleteByUserId(id);
         userServices.deleteUserById(id);
         return "redirect:/admin/dashboard";
     }

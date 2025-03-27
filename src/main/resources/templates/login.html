@@ -68,6 +68,9 @@
         <button type="submit" class="btn btn-primary">Login</button>
     </form>
     <p th:if="${param.error}" class="error-message">Invalid username or password!</p>
+    <p th:if="${param.verificationError}" class="error-message">Please verify your email before logging in.</p>
+    <p th:if="${param.registered}" class="text-success text-center">Registration successful! Please check your email for verification.</p>
+
     <p class="register-link">Don't have an account? <a href="/Registration">Register here</a>.</p>
 </div>
 

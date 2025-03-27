@@ -80,6 +80,9 @@
     <!-- Error Message -->
     <p th:if="${error}" class="error-message" th:text="${error}"></p>
 
+    <p th:if="${message}" class="text-success text-center" th:text="${message}"></p>
+
+
     <form action="/register" method="post">
         <!-- First Name and Last Name in One Row -->
         <div class="row">

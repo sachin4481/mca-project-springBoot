@@ -3,12 +3,17 @@ package com.example.LoginDemo.Controller;
 import com.example.LoginDemo.Entity.ComplaintEntity;
 import com.example.LoginDemo.Entity.PropertyEntity;
 import com.example.LoginDemo.Entity.UserEntity;
+import com.example.LoginDemo.Entity.VerificationToken;
+import com.example.LoginDemo.Repository.VerificationTokenRepository;
 import com.example.LoginDemo.Security.CustomUserDetailsService;
 import com.example.LoginDemo.Services.ComplaintServices;
 import com.example.LoginDemo.Services.PropertyServices;
 import com.example.LoginDemo.Services.UserServices;
 import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,11 +29,14 @@ import java.util.List;
 @Controller
 public class HomeController {
 
+    private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
+
     @Autowired
     private UserServices userServices;
 
     @Autowired
     private PropertyServices propertyServices;
+
 
 
     @Autowired
@@ -41,6 +49,7 @@ public class HomeController {
 
     @GetMapping("/Registration")
     public String registration() {
+
         return "Registration";
     }
 
@@ -58,6 +67,39 @@ public class HomeController {
     }
 
 
+
+@GetMapping("/auth/verify")
+public String verifyUser(@RequestParam("token") String token) {
+    logger.info("Received verification request for token: {}", token);
+    if (userServices.verifyUser(token)) {
+        return "redirect:/home";
+    }
+    logger.warn("Verification failed for token: {}", token);
+    return "redirect:/login?error";
+
+}
+
+    @GetMapping("/home")
+    public String home(@AuthenticationPrincipal UserDetails userDetails) {
+        if (userDetails == null) {
+            logger.warn("No authenticated user found, redirecting to login");
+            return "redirect:/login";
+        }
+
+        String username = userDetails.getUsername();
+        String role = userServices.getUserRole(username);
+
+        logger.info("User {} authenticated with role {}", username, role);
+
+        if ("ADMIN".equalsIgnoreCase(role)) {
+            return "redirect:/admin/dashboard";
+        } else if ("USER".equalsIgnoreCase(role)) {
+            return "redirect:/properties";
+        } else {
+            logger.warn("Unknown role {} for user {}, redirecting to login", role, username);
+            return "redirect:/login";
+        }
+    }
 
 
 
@@ -88,10 +130,13 @@ public class HomeController {
             userServices.registerUser(user);
             return "redirect:/login"; // Redirect to the login page after registration
         } catch (RuntimeException e) {
-            model.addAttribute("error", e.getMessage()); // Add error message to the model
+            model.addAttribute("error", e.getMessage());// Add error message to the model
+            model.addAttribute("message", "A verification email has been sent. Please check your inbox.");
             return "Registration"; // Return to the registration page with an error message
         }
     }
+
+
 
 
     @GetMapping("/welcome")
