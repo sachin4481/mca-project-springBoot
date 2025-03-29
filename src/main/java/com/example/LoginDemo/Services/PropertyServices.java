@@ -149,8 +149,20 @@ public class PropertyServices {
 //        return propertyRepository.findByLocationContainingIgnoreCase(location);
 //    }
 
-    public List<PropertyEntity> searchProperties(String location, Double price, String pincode) {
+    public List<PropertyEntity> searchProperties(String area, Double price, String location) {
         List<PropertyEntity> properties = propertyRepository.findAll();
+
+        if (area != null && !area.trim().isEmpty()) {
+            int areaValue = Integer.parseInt(area);
+            properties = properties.stream()
+                    .filter(p -> p.getArea() != null && p.getArea() <= areaValue)
+                    .collect(Collectors.toList());
+        }
+        if (price != null) {
+            properties = properties.stream()
+                    .filter(p -> p.getPrice() <= price)
+                    .collect(Collectors.toList());
+        }
 
         if (location != null && !location.trim().isEmpty()) {
             properties = properties.stream()
@@ -158,17 +170,9 @@ public class PropertyServices {
                     .collect(Collectors.toList());
         }
 
-        if (price != null) {
-            properties = properties.stream()
-                    .filter(p -> p.getPrice() <= price)
-                    .collect(Collectors.toList());
-        }
 
-        if (pincode != null && !pincode.trim().isEmpty()) {
-            properties = properties.stream()
-                    .filter(p -> p.getPincode() != null && p.getPincode().equals(pincode))
-                    .collect(Collectors.toList());
-        }
+
+
 
         return properties;
     }

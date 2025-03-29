@@ -4,11 +4,13 @@ import com.example.LoginDemo.Entity.ComplaintEntity;
 import com.example.LoginDemo.Entity.PropertyEntity;
 import com.example.LoginDemo.Entity.UserEntity;
 import com.example.LoginDemo.Entity.VerificationToken;
+import com.example.LoginDemo.Repository.PropertyRepository;
 import com.example.LoginDemo.Repository.VerificationTokenRepository;
 import com.example.LoginDemo.Security.CustomUserDetailsService;
 import com.example.LoginDemo.Services.ComplaintServices;
 import com.example.LoginDemo.Services.PropertyServices;
 import com.example.LoginDemo.Services.UserServices;
+import jakarta.servlet.http.HttpSession;
 import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,9 +24,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 public class HomeController {
@@ -36,6 +40,11 @@ public class HomeController {
 
     @Autowired
     private PropertyServices propertyServices;
+
+
+
+    @Autowired
+    private PropertyRepository propertyRepository;
 
 
 
@@ -53,11 +62,10 @@ public class HomeController {
         return "Registration";
     }
 
-    @GetMapping("/properties")
-    public String getProperties(Model model)
-    {
-        model.addAttribute("properties",propertyServices.getAllProperty());
-        return "properties";
+
+    @GetMapping("/")
+    public String redirectToHome() {
+        return "redirect:/home";
     }
 
     @GetMapping("/properties/list")
@@ -80,26 +88,45 @@ public String verifyUser(@RequestParam("token") String token) {
 }
 
     @GetMapping("/home")
-    public String home(@AuthenticationPrincipal UserDetails userDetails) {
-        if (userDetails == null) {
-            logger.warn("No authenticated user found, redirecting to login");
-            return "redirect:/login";
+    public String home(@AuthenticationPrincipal UserDetails userDetails, HttpSession session) {
+        if (userDetails != null) {
+            String username = userDetails.getUsername();
+            session.setAttribute("username", username); // Store in session
+
+            String role = userServices.getUserRole(username);
+            logger.info("User {} authenticated with role {}", username, role);
+
+            if ("ADMIN".equalsIgnoreCase(role)) {
+                return "redirect:/admin/dashboard";
+            } else if ("USER".equalsIgnoreCase(role)) {
+                return "redirect:/properties";
+            }else {
+                logger.warn("Unknown role {} for user {}, redirecting to login", role, username);
+                return "redirect:/login";
+            }
         }
 
-        String username = userDetails.getUsername();
-        String role = userServices.getUserRole(username);
+        // Show home page for unauthenticated users
+        return "home";
 
-        logger.info("User {} authenticated with role {}", username, role);
-
-        if ("ADMIN".equalsIgnoreCase(role)) {
-            return "redirect:/admin/dashboard";
-        } else if ("USER".equalsIgnoreCase(role)) {
-            return "redirect:/properties";
-        } else {
-            logger.warn("Unknown role {} for user {}, redirecting to login", role, username);
-            return "redirect:/login";
-        }
+//        String username = userDetails.getUsername();
+//        session.setAttribute("username", username); // Store in session
+//
+//        String role = userServices.getUserRole(username);
+//        logger.info("User {} authenticated with role {}", username, role);
+//
+//        if ("ADMIN".equalsIgnoreCase(role)) {
+//            return "redirect:/admin/dashboard";
+//        } else if ("USER".equalsIgnoreCase(role)) {
+//            return "redirect:/properties";
+//        } else {
+//            logger.warn("Unknown role {} for user {}, redirecting to login", role, username);
+//            return "redirect:/login";
+//        }
     }
+
+
+
 
 
 

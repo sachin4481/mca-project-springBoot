@@ -44,7 +44,7 @@ public class UserServices {
     @Value("${file.upload-dir:src/main/resources/static/uploads}")
     private String uploadDir;
 
-    @Value("${app.base-url:http://localhost:8080}")
+    @Value("${app.base-url:http://localhost:9999}")
     private String baseUrl;
 
     public void registerUser(UserEntity user) {
