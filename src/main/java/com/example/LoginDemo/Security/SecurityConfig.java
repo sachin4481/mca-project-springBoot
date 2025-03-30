@@ -18,7 +18,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/Registration", "/register", "/css/**", "/js/**","/static/**").permitAll() // Allow access to registration and static resources
+                        .requestMatchers("/Registration", "/register", "/css/**", "/js/**","/static/**","/forgot-password", "/reset-password").permitAll() // Allow access to registration and static resources
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated() // Require authentication for all other requests
                 )

@@ -101,6 +101,7 @@ public class UserServices {
         try {
             userRepository.save(user);
             tokenRepository.save(verificationToken);
+            tokenRepository.delete(verificationToken);
         } catch (Exception e) {
             logger.error("Failed to save verification data", e);
             throw e; // Rollback transaction

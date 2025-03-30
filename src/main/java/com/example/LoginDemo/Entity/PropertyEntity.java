@@ -20,7 +20,7 @@ public class PropertyEntity {
 
 
     private String description;
-    @Column(length = 20)
+    @Column(length = 30)
     private String location;
     @Column(length = 10)
     private double price;
