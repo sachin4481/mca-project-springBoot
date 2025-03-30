@@ -1,173 +1,180 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
-    <title>Registration Page</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- FontAwesome for Icons -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <!-- Custom CSS -->
-    <style>
-        body {
-            background-color: #f8f9fa;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .registration-container {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 500px;
-
-
-        }
-        .registration-container h1 {
-            text-align: center;
-            margin-bottom: 1rem;
-            color: #333;
-            font-size: 1.75rem;
-            margin-top:3rem;
-        }
-        .form-label {
-            font-weight: 500;
-            font-size: 0.9rem;
-        }
-        .btn-primary {
-            width: 100%;
-            padding: 0.5rem;
-            font-size: 1rem;
-        }
-        .login-link {
-            text-align: center;
-            margin-top: 1rem;
-            font-size: 0.9rem;
-        }
-        .login-link a {
-            color: #007bff;
-            text-decoration: none;
-        }
-        .login-link a:hover {
-            text-decoration: underline;
-        }
-        .error-message {
-            color: red;
-            text-align: center;
-            margin-bottom: 1rem;
-            font-size: 0.9rem;
-        }
-        .input-group-text {
-            background-color: #e9ecef;
-            border: 1px solid #ced4da;
-            padding: 0.375rem 0.75rem;
-        }
-        .form-control {
-            font-size: 0.9rem;
-        }
-        .row {
-            margin-bottom: 0.75rem;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - PropertyNest</title>
+    <link rel="stylesheet" href="/css_main/style.css">
+    <link rel="stylesheet" href="/css_main/auth.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
+
 <body>
-<div class="registration-container" >
-    <h1>Registration</h1>
-
-    <!-- Error Message -->
-    <p th:if="${error}" class="error-message" th:text="${error}"></p>
-
-    <p th:if="${message}" class="text-success text-center" th:text="${message}"></p>
-
-
-    <form action="/register" method="post">
-        <!-- First Name and Last Name in One Row -->
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <label for="firstName" class="form-label">First Name:</label>
-                <div class="input-group">
-                    <span class="input-group-text"><i class="fas fa-user"></i></span>
-                    <input type="text" class="form-control" id="firstName" name="firstName" required>
-                </div>
+<div class="min-h-screen bg-gray-50">
+    <!-- Header -->
+    <header class="fixed-header">
+        <div class="container">
+            <div class="logo">
+                <a href="/Home" style="all: unset; cursor: pointer; display: flex;">
+                    Property<span class="logo-nest">Nest
+            <i data-lucide="home" class="logo-icon"></i>
+          </span>
+                </a>
             </div>
-            <div class="col-md-6 mb-3">
-                <label for="lastName" class="form-label">Last Name:</label>
-                <div class="input-group">
-                    <span class="input-group-text"><i class="fas fa-user"></i></span>
-                    <input type="text" class="form-control" id="lastName" name="lastName" required>
+            <nav class="nav-menu">
+                <a href="/Home" class="nav-link">Home</a>
+                <a href="/properties/list" class="nav-link">List Property</a>
+
+                <span th:if="${username}" class="user-menu">
+                    <a th:href="@{/user/profile}" th:text="${username}" class="nav-link username"></a>
+                    <form th:action="@{/logout}" method="post" class="logout-form">
+                        <button type="submit" class="btn btn-danger">Logout</button>
+                    </form>
+                </span>
+
+                <span th:if="${username == null}">
+                    <a href="/login"><button class="btn-primary">Login</button></a>
+                </span>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Registration Form -->
+    <div class="auth-container">
+        <div class="auth-card">
+            <h1>Create Account</h1>
+
+            <form id="registerForm" action="/register" class="auth-form" method="post">
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="firstName"><i data-lucide="user"></i> First Name</label>
+                        <input type="text" id="firstName" name="firstName" required placeholder="Enter first name">
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName"><i data-lucide="user"></i> Last Name</label>
+                        <input type="text" id="lastName" name="lastName" required placeholder="Enter last name">
+                    </div>
                 </div>
+
+                <div class="form-group">
+                    <label for="email"><i data-lucide="mail"></i> Email Address</label>
+                    <input type="email" id="email" name="email" required placeholder="Enter your email">
+                </div>
+
+                <div class="form-group">
+                    <label for="phone"><i data-lucide="phone"></i> Contact Number</label>
+                    <input type="tel" id="phone" name="phone" required placeholder="Enter contact number" pattern="[0-9]{10}">
+                </div>
+
+                <div class="form-group">
+                    <label class="gender-label"><i data-lucide="users"></i> Gender</label>
+                    <div class="gender-options">
+                        <label class="radio-label">
+                            <input type="radio" name="gender" value="male" required>
+                            <span>Male</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="gender" value="female">
+                            <span>Female</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="gender" value="other">
+                            <span>Other</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="username"><i data-lucide="user"></i> Username</label>
+                    <input type="text" id="username" name="username" required placeholder="Enter Username">
+                </div>
+
+                <div class="form-group">
+                    <label for="password"><i data-lucide="lock"></i> Password</label>
+                    <div class="password-input">
+                        <input type="password" id="password" name="password" required placeholder="Create password" minlength="8">
+                        <button type="button" class="toggle-password" id="togglePassword"><i data-lucide="eye"></i></button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword"><i data-lucide="lock"></i> Confirm Password</label>
+                    <div class="password-input">
+                        <input type="password" id="confirmPassword" name="confirmPassword" required placeholder="Confirm password" minlength="8">
+                        <button type="button" class="toggle-password" id="toggleConfirmPassword"><i data-lucide="eye"></i></button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="address"><i data-lucide="map-pin"></i> Address</label>
+                    <textarea id="address" name="address" required placeholder="Enter your address" rows="3"></textarea>
+                </div>
+
+                <button type="submit" class="auth-submit"><i data-lucide="user-plus"></i> Create Account</button>
+            </form>
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <span th:text="${error}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" style="border: 0px; background-color: white;" aria-label="Close"></button>
+            </div>
+
+
+            <div class="auth-alternate">
+                <p>Already have an account? <a href="/login">Login</a></p>
             </div>
         </div>
-
-        <!-- Email and Phone Number in One Row -->
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <label for="email" class="form-label">Email:</label>
-                <div class="input-group">
-                    <span class="input-group-text"><i class="fas fa-envelope"></i></span>
-                    <input type="email" class="form-control" id="email" name="email" required>
-                </div>
-            </div>
-            <div class="col-md-6 mb-3">
-                <label for="phone" class="form-label">Phone Number:</label>
-                <div class="input-group">
-                    <span class="input-group-text"><i class="fas fa-phone"></i></span>
-                    <input type="tel" class="form-control" id="phone" name="phone" required>
-                </div>
-            </div>
-        </div>
-
-        <!-- Gender and Username in One Row -->
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <label class="form-label">Gender:</label>
-                <div class="input-group">
-                    <span class="input-group-text"><i class="fas fa-venus-mars"></i></span>
-                    <select class="form-control" id="gender" name="gender" required>
-                        <option value="">Select Gender</option>
-                        <option value="male">Male</option>
-                        <option value="female">Female</option>
-                        <option value="other">Other</option>
-                    </select>
-                </div>
-            </div>
-            <div class="col-md-6 mb-3">
-                <label for="username" class="form-label">Username:</label>
-                <div class="input-group">
-                    <span class="input-group-text"><i class="fas fa-user"></i></span>
-                    <input type="text" class="form-control" id="username" name="username" required>
-                </div>
-            </div>
-        </div>
-
-        <!-- Address -->
-        <div class="mb-3">
-            <label for="address" class="form-label">Address:</label>
-            <div class="input-group">
-                <span class="input-group-text"><i class="fas fa-home"></i></span>
-                <textarea class="form-control" id="address" name="address" rows="2"></textarea>
-            </div>
-        </div>
-
-        <!-- Password -->
-        <div class="mb-3">
-            <label for="password" class="form-label">Password:</label>
-            <div class="input-group">
-                <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                <input type="password" class="form-control" id="password" name="password" required>
-            </div>
-        </div>
-
-        <!-- Register Button -->
-        <button type="submit" class="btn btn-primary">Register</button>
-    </form>
-    <p class="login-link">Already have an account? <a href="/login">Login here</a>.</p>
+    </div>
 </div>
 
-<!-- Bootstrap JS (optional, for interactive components) -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById("registerForm");
+        const password = document.getElementById("password");
+        const confirmPassword = document.getElementById("confirmPassword");
+        const togglePassword = document.getElementById("togglePassword");
+        const toggleConfirmPassword = document.getElementById("toggleConfirmPassword");
+
+        lucide.createIcons();
+
+        function toggleVisibility(inputField, toggleButton) {
+            if (inputField.type === "password") {
+                inputField.type = "text";
+                toggleButton.innerHTML = '<i data-lucide="eye-off"></i>';
+            } else {
+                inputField.type = "password";
+                toggleButton.innerHTML = '<i data-lucide="eye"></i>';
+            }
+            lucide.createIcons();
+        }
+
+        togglePassword.addEventListener("click", function () {
+            toggleVisibility(password, togglePassword);
+        });
+
+        toggleConfirmPassword.addEventListener("click", function () {
+            toggleVisibility(confirmPassword, toggleConfirmPassword);
+        });
+
+        form.addEventListener("submit", function (event) {
+            if (password.value !== confirmPassword.value) {
+                event.preventDefault();
+                alert("Passwords do not match!");
+                confirmPassword.classList.add("error");
+            }
+        });
+
+        confirmPassword.addEventListener("input", function () {
+            if (password.value === confirmPassword.value) {
+                confirmPassword.classList.remove("error");
+                confirmPassword.classList.add("success");
+            } else {
+                confirmPassword.classList.remove("success");
+                confirmPassword.classList.add("error");
+            }
+        });
+    });
+</script>
 </body>
+
 </html>

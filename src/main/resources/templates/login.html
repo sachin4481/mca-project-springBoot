@@ -1,81 +1,123 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
-    <title>Login Page</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Custom CSS -->
-    <style>
-        body {
-            background-color: #f8f9fa;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .login-container {
-            background: white;
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 400px;
-        }
-        .login-container h1 {
-            text-align: center;
-            margin-bottom: 1.5rem;
-            color: #333;
-        }
-        .form-label {
-            font-weight: 500;
-        }
-        .btn-primary {
-            width: 100%;
-            padding: 0.5rem;
-            font-size: 1.1rem;
-        }
-        .error-message {
-            color: red;
-            text-align: center;
-            margin-top: 1rem;
-        }
-        .register-link {
-            text-align: center;
-            margin-top: 1rem;
-        }
-        .register-link a {
-            color: #007bff;
-            text-decoration: none;
-        }
-        .register-link a:hover {
-            text-decoration: underline;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - PropertyNest</title>
+    <link rel="stylesheet" href="/css_main/auth.css">
+    <link rel="stylesheet" href="/css_main/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
-<div class="login-container">
-    <h1>Login</h1>
-    <form action="/login" method="post">
-        <div class="mb-3">
-            <label for="username" class="form-label">Username:</label>
-            <input type="text" class="form-control" id="username" name="username" required>
-        </div>
-        <div class="mb-3">
-            <label for="password" class="form-label">Password:</label>
-            <input type="password" class="form-control" id="password" name="password" required>
-        </div>
-        <button type="submit" class="btn btn-primary">Login</button>
-    </form>
-    <p th:if="${param.error}" class="error-message">Invalid username or password!</p>
-    <p th:if="${param.verificationError}" class="error-message">Please verify your email before logging in.</p>
-    <p th:if="${param.registered}" class="text-success text-center">Registration successful! Please check your email for verification.</p>
+<div class="min-h-screen bg-gray-50">
+    <!-- Header -->
+    <header class="fixed-header">
+        <div class="container">
+            <div class="logo">
+                <a href="/Home" style="all: unset; cursor: pointer; display: flex;">
+                    Property<span class="logo-nest">Nest
+                        <i data-lucide="home" class="logo-icon"></i>
+                    </span>
+                </a>
+            </div>
+            <nav class="nav-menu">
+                <a th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}"class="nav-link" href="/admin/dashboard">Admin Panel</a>
+                <a href="/properties" class="nav-link">Home</a>
+                <a href="/properties/list" class="nav-link">List Property</a>
+                <a href="/user/properties" class="nav-link">My Properties</a>
+                <a href="/user/complaint" class="nav-link">Submit Complaint</a>
 
-    <p class="register-link">Don't have an account? <a href="/Registration">Register here</a>.</p>
-    <p class="register-link"><a href="/forgot-password">Forgot Password?</a></p>
+                <!-- Show Username & Logout Button if Logged In -->
+                <span th:if="${username}" style="display: contents">
+                    <a th:href="@{/user/profile}" th:text="${username}" class="nav-link username-link" style="color: gold; font-weight: bold;"></a>
+                    <span>
+                        <form th:action="@{/logout}" method="post" style="display: inline;">
+                            <button type="submit" class="btn btn-danger">Logout</button>
+                        </form>
+                    </span>
+                </span>
+
+                <!-- Show Login/Register if Not Logged In -->
+                <span th:if="${username == null}">
+                    <a href="/Registration"><button class="btn-primary">Register</button></a>
+                </span>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Login Form -->
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h1>Welcome</h1>
+                <p>Login to access your PropertyNest account</p>
+            </div>
+            <p th:if="${param.error}" class="error-message">Invalid username or password!</p>
+            <p th:if="${param.verificationError}" class="error-message">Please verify your email before logging in.</p>
+            <p th:if="${param.registered}" class="text-success text-center">Registration successful! Please check your email for verification.</p>
+
+            <form id="loginForm" action="/login" method="post" class="auth-form">
+                <div th:if="${param.error}" class="alert alert-danger">
+                    Invalid username or password!
+                </div>
+                <div class="form-group">
+                    <label for="username">
+                        <i data-lucide="mail"></i>
+                        Username
+                    </label>
+                    <input type="text" id="username" name="username" required placeholder="Enter your username">
+                </div>
+
+                <div class="form-group">
+                    <label for="password">
+                        <i data-lucide="lock"></i>
+                        Password
+                    </label>
+                    <div class="password-input">
+                        <input type="password" id="password" name="password" style="width: 451px;" required placeholder="Enter your password">
+                        <button type="button" class="toggle-password" id="togglePassword">
+                            <i data-lucide="eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" class="auth-submit">
+                    <i data-lucide="log-in"></i>
+                    Login
+                </button>
+            </form>
+
+            <div class="auth-alternate">
+                <p>Don't have an account? <a href="/Registration">Register Now</a></p>
+            </div>
+        </div>
+    </div>
 </div>
+<script>
+    // Initialize Lucide icons
+    lucide.createIcons();
 
-<!-- Bootstrap JS (optional, for interactive components) -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    // Handle password visibility toggle
+    document.getElementById("togglePassword").addEventListener("click", function () {
+        const passwordInput = document.getElementById("password");
+        const icon = this.querySelector("i");
+
+        // Toggle password visibility
+        if (passwordInput.type === "password") {
+            passwordInput.type = "text";
+            icon.setAttribute("data-lucide", "eye-off");
+        } else {
+            passwordInput.type = "password";
+            icon.setAttribute("data-lucide", "eye");
+        }
+
+        // Re-initialize icons
+        lucide.createIcons();
+    });
+</script>
+<!--<script src="/script_main/script.js"></script>-->
 </body>
 </html>

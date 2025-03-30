@@ -44,7 +44,7 @@ public class UserServices {
     @Value("${file.upload-dir:src/main/resources/static/uploads}")
     private String uploadDir;
 
-    @Value("${app.base-url:http://localhost:8080}")
+    @Value("${app.base-url:http://localhost:9999}")
     private String baseUrl;
 
     public void registerUser(UserEntity user) {
@@ -101,7 +101,6 @@ public class UserServices {
         try {
             userRepository.save(user);
             tokenRepository.save(verificationToken);
-            tokenRepository.delete(verificationToken);
         } catch (Exception e) {
             logger.error("Failed to save verification data", e);
             throw e; // Rollback transaction

@@ -20,7 +20,7 @@ public class PropertyEntity {
 
 
     private String description;
-    @Column(length = 30)
+    @Column(length = 20)
     private String location;
     @Column(length = 10)
     private double price;
@@ -28,7 +28,7 @@ public class PropertyEntity {
     @Column(name = "pincode" ,length = 6) // New field for pincode
     private String pincode;
     @Column(length = 15)
-    private double area;//size
+    private Double area;//size
     @Column(length = 15)
     private String status; // "AVAILABLE", "SOLD"
 
