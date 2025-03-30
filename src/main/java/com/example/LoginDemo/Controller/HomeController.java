@@ -3,33 +3,24 @@ package com.example.LoginDemo.Controller;
 import com.example.LoginDemo.Entity.ComplaintEntity;
 import com.example.LoginDemo.Entity.PropertyEntity;
 import com.example.LoginDemo.Entity.UserEntity;
-import com.example.LoginDemo.Entity.VerificationToken;
 import com.example.LoginDemo.Repository.PropertyRepository;
-import com.example.LoginDemo.Repository.VerificationTokenRepository;
-import com.example.LoginDemo.Security.CustomUserDetailsService;
 import com.example.LoginDemo.Services.ComplaintServices;
 import com.example.LoginDemo.Services.PropertyServices;
 import com.example.LoginDemo.Services.UserServices;
 import jakarta.servlet.http.HttpSession;
-import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Controller
 public class HomeController {
@@ -77,16 +68,66 @@ public class HomeController {
 
 
 
-@GetMapping("/auth/verify")
-public String verifyUser(@RequestParam("token") String token) {
-    logger.info("Received verification request for token: {}", token);
-    if (userServices.verifyUser(token)) {
-        return "redirect:/home";
-    }
-    logger.warn("Verification failed for token: {}", token);
-    return "redirect:/login?error";
+//@GetMapping("/auth/verify")
+//public String verifyUser(@RequestParam("token") String token) {
+//    logger.info("Received verification request for token: {}", token);
+//    if (userServices.verifyUser(token)) {
+//        return "redirect:/home";
+//    }
+//    logger.warn("Verification failed for token: {}", token);
+//    return "redirect:/login?error";
+//
+//}
 
-}
+
+    @PostMapping("/register")
+    public String registerUser(
+            @RequestParam String firstName,
+            @RequestParam String lastName,
+            @RequestParam String email,
+            @RequestParam String phone,
+            @RequestParam String gender,
+            @RequestParam String address,
+            @RequestParam String username,
+            @RequestParam String password,
+            Model model) {
+
+        try {
+            UserEntity user = new UserEntity();
+            user.setFirstName(firstName);
+            user.setLastName(lastName);
+            user.setEmail(email);
+            user.setPhone(phone);
+            user.setGender(gender);
+            user.setAddress(address);
+            user.setUsername(username);
+            user.setPassword(password);
+
+            userServices.registerUser(user);
+            return "redirect:/verify-otp-email?email=" + email; // Redirect to OTP verification page
+        } catch (RuntimeException e) {
+            model.addAttribute("error", e.getMessage());
+            return "registration";
+        }
+    }
+
+    // Show OTP verification page
+    @GetMapping("/verify-otp-email")
+    public String showOtpVerificationPage(@RequestParam String email, Model model) {
+        model.addAttribute("email", email);
+        return "verify-otp-email";
+    }
+
+    // Handle OTP verification
+    @PostMapping("/auth/verify-otp-email")
+    public String verifyOtp(@RequestParam String email, @RequestParam String otp, RedirectAttributes redirectAttributes) {
+        if (userServices.verifyOtp(email, otp)) {
+            return "redirect:/login?verified=true";
+        } else {
+            redirectAttributes.addFlashAttribute("error", "Invalid or expired OTP. Please try again.");
+            return "redirect:/verify-otp-email?email=" + email;
+        }
+    }
 
     @GetMapping("/home")
     public String home(@AuthenticationPrincipal UserDetails userDetails, HttpSession session) {
@@ -117,37 +158,37 @@ public String verifyUser(@RequestParam("token") String token) {
 
 
 
-    @PostMapping("/register")
-    public String registerUser(
-            @RequestParam String firstName,
-            @RequestParam String lastName,
-            @RequestParam String email,
-            @RequestParam String phone,
-            @RequestParam String gender,
-            @RequestParam String address,
-            @RequestParam String username,
-            @RequestParam String password,
-            Model model) {
-
-        try {
-            UserEntity user = new UserEntity();
-            user.setFirstName(firstName);
-            user.setLastName(lastName);
-            user.setEmail(email);
-            user.setPhone(phone);
-            user.setGender(gender);
-            user.setAddress(address);
-            user.setUsername(username);
-            user.setPassword(password);
-
-            userServices.registerUser(user);
-            return "redirect:/login"; // Redirect to the login page after registration
-        } catch (RuntimeException e) {
-            model.addAttribute("error", e.getMessage());// Add error message to the model
-            model.addAttribute("message", "A verification email has been sent. Please check your inbox.");
-            return "Registration"; // Return to the registration page with an error message
-        }
-    }
+//    @PostMapping("/register")
+//    public String registerUser(
+//            @RequestParam String firstName,
+//            @RequestParam String lastName,
+//            @RequestParam String email,
+//            @RequestParam String phone,
+//            @RequestParam String gender,
+//            @RequestParam String address,
+//            @RequestParam String username,
+//            @RequestParam String password,
+//            Model model) {
+//
+//        try {
+//            UserEntity user = new UserEntity();
+//            user.setFirstName(firstName);
+//            user.setLastName(lastName);
+//            user.setEmail(email);
+//            user.setPhone(phone);
+//            user.setGender(gender);
+//            user.setAddress(address);
+//            user.setUsername(username);
+//            user.setPassword(password);
+//
+//            userServices.registerUser(user);
+//            return "redirect:/login"; // Redirect to the login page after registration
+//        } catch (RuntimeException e) {
+//            model.addAttribute("error", e.getMessage());// Add error message to the model
+//            model.addAttribute("message", "A verification email has been sent. Please check your inbox.");
+//            return "Registration"; // Return to the registration page with an error message
+//        }
+//    }
 
 
 

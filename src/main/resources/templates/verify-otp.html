@@ -1,16 +1,17 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <title>Forgot Password</title>
+  <title>Verify OTP</title>
 </head>
 <body>
-<h2>Forgot Password</h2>
-<form action="/forgot-password" method="post">
-  <label>Email:</label>
-  <input type="email" name="email" required>
-  <button type="submit">Send OTP</button>
+<h2>Verify OTP</h2>
+<form action="/verify-otp" method="post">
+  <label>Enter OTP:</label>
+  <input type="text" name="otp" required>
+  <button type="submit">Verify</button>
 </form>
 <p th:if="${message}" style="color: green;">[[${message}]]</p>
 <p th:if="${error}" style="color: red;">[[${error}]]</p>
 </body>
 </html>
+

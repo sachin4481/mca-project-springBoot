@@ -113,7 +113,7 @@ public String searchProperties(@RequestParam(required = false) String area,
     // Retrieve all properties
     List<PropertyEntity> properties = propertyRepository.findAll();
 
-    // 🔥 Filter by Area (Fix Applied)
+    //  Filter by Area (Fix Applied)
     if (area != null && !area.trim().isEmpty()) {
         try {
             int areaValue = Integer.parseInt(area);
