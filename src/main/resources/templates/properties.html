@@ -62,20 +62,24 @@
       <div class="search-grid">
 
 
-        <!-- Area Dropdown -->
+        <!-- Area Field -->
         <div class="dropdown">
-          <input type="number" name="area" placeholder="Area (e.g., Downtown)" th:value="${searchArea}">
+          <input type="number" name="area" class="dropdown-btn" placeholder="Area (in Sq. Ft.)" th:value="${searchArea}">
         </div>
 
         <!-- Location Dropdown -->
         <div class="dropdown">
-          <label for="location">Select Location:</label>
-          <select id="location" name="location">
+          <select id="location" class="dropdown-btn" name="location">
+            <i data-lucide="map-pin"></i>
             <option value="">-- Select Location --</option>
-            <option th:each="loc : ${locations}"
+            <i data-lucide="chevron-down"></i>
+            <div class="dropdown-content" id="locationDropdown">
+            <option class="dropdown-item"
+                    th:each="loc : ${locations}"
                     th:value="${loc}"
                     th:text="${loc}"
                     th:selected="${loc == selectedLocation}"></option>
+            </div>
           </select>
         </div>
         <script>
@@ -131,35 +135,41 @@
 
 
 
-
     <!-- Recent Listings -->
-  <section class="listings-section">
-    <div class="container mt-4">
-      <h2 class="text-center">Listings</h2>
-      <div class="row">
-        <div class="col-md-3" th:each="property : ${properties}">
-          <div class="card">
-            <img th:src="@{${property.image1}}" class="card-img-top" alt="Property Image">
-            <div class="card-body">
-              <h5 class="card-title" th:text="${property.title}">Property Title</h5>
-              <p class="card-text" th:text="${property.area} + ' sq ft'">Area:</p>
-              <p class="card-text" th:text="${property.pincode}">Pincode:</p>
-              <p class="clamped-text" th:text="${#strings.abbreviate(property.description, 300)}"></p>
-              <p class="card-text"><strong>₹</strong> <span th:text="${property.price}"></span></p>
-              <a th:href="@{/properties/{id}(id=${property.id})}" class="btn btn-primary">View Details</a>
+    <section class="listings-section py-5 bg-light">
+      <div class="container">
+        <h2 class="text-center">Properties</h2>
+        <div class="row g-4">
+          <div class="col-lg-3 col-md-4 col-sm-6" th:each="property : ${properties}">
+            <div class="card border-0 shadow-sm rounded-4">
+              <img th:src="@{${property.image1}}" class="card-img-top rounded-top-4" alt="Property Image">
+              <div class="card-body">
+                <h5 class="card-title fw-bold text-dark" th:text="${property.title}">Property Title</h5>
+                <p class="card-text mb-1"><i class="bi bi-rulers"></i> <span th:text="${property.area} + ' sq ft'"></span></p>
+                <p class="card-text mb-1"><i class="bi bi-geo-alt"></i> <span th:text="${property.pincode}"></span></p>
+                <p class="clamped-text text-muted mb-3" th:text="${#strings.abbreviate(property.description, 120)}"></p>
+                <p class="card-text h5 text-black"><strong>₹</strong> <span th:text="${property.price}"></span></p>
+                <a th:href="@{/properties/{id}(id=${property.id})}" class="btn btn-warning text-dark fw-semibold w-100">View Details</a>
+              </div>
             </div>
           </div>
         </div>
+        <div th:if="${#lists.isEmpty(properties)}" class="no-results text-center mt-5">
+          <p class="text-muted fs-4">No properties found.</p>
+        </div>
       </div>
-    </div>
-<!--    <div th:if="${#lists.isEmpty(properties)}" class="no-results">-->
-<!--      <p>No properties found for "<span th:text="${searchArea}"></span>".</p>-->
-<!--    </div>-->
-    <div th:if="${#lists.isEmpty(properties)}" class="no-results">
-      <p>No properties found.</p>
-    </div>
-  </section>
-  <script>
+    </section>
+
+    <style>
+      .clamped-text {
+          display: -webkit-box;
+          -webkit-line-clamp: 3;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+      }
+    </style>
+
+    <script>
     lucide.createIcons();
 
   </script>

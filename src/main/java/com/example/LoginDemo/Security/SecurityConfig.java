@@ -12,29 +12,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
-//    @Bean
-//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//
-//        http
-//                .csrf(csrf -> csrf.disable())
-//                .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers("/","/home", "/Registration", "/register", "/css/**", "/css_main/**", "/js/**", "/static/**").permitAll() // Allow access to root and other resources
-//                        .requestMatchers("/admin/**").hasRole("ADMIN")
-//                        .anyRequest().authenticated() // Require authentication for all other requests
-//                )
-//                .formLogin(form -> form
-//                        .loginPage("/login") // Custom login page
-//                        .defaultSuccessUrl("/home", true) // Redirect to /home after successful login
-//                        .permitAll()
-//                )
-//                .logout(logout -> logout
-//                        .logoutSuccessUrl("/login?logout") // Redirect to login page after logout
-//                        .permitAll()
-//                );
-//
-//        return http.build();
-//
-//    }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http

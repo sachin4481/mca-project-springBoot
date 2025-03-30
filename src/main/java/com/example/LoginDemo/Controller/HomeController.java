@@ -22,6 +22,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -108,21 +109,6 @@ public String verifyUser(@RequestParam("token") String token) {
 
         // Show home page for unauthenticated users
         return "home";
-
-//        String username = userDetails.getUsername();
-//        session.setAttribute("username", username); // Store in session
-//
-//        String role = userServices.getUserRole(username);
-//        logger.info("User {} authenticated with role {}", username, role);
-//
-//        if ("ADMIN".equalsIgnoreCase(role)) {
-//            return "redirect:/admin/dashboard";
-//        } else if ("USER".equalsIgnoreCase(role)) {
-//            return "redirect:/properties";
-//        } else {
-//            logger.warn("Unknown role {} for user {}, redirecting to login", role, username);
-//            return "redirect:/login";
-//        }
     }
 
 
@@ -239,7 +225,6 @@ public String verifyUser(@RequestParam("token") String token) {
     //update the profile
     @PostMapping("/user/profile")
     public String updateProfile(@ModelAttribute UserEntity user,
-
                                 @AuthenticationPrincipal UserDetails userDetails) throws IOException {
         String username = userDetails.getUsername();
         user.setUsername(username); // Ensure username isn’t changed
