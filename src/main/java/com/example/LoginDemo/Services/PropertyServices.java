@@ -7,6 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -170,12 +172,13 @@ public class PropertyServices {
                     .collect(Collectors.toList());
         }
 
-
-
-
-
         return properties;
     }
 
-
+    public List<PropertyEntity> getRecentListings(Pageable pageable) {
+        return propertyRepository.findTop4RecentProperties(pageable);
+    }
 }
+
+
+
