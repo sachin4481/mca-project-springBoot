@@ -18,7 +18,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/home", "/Registration", "/register", "/css/**", "/css_main/**", "/js/**", "/static/**").permitAll() // Allow public access
+                        .requestMatchers("/", "/home", "/Registration", "/register", "/css/**", "/css_main/**", "/js/**", "/static/**","/forgot-password", "/verify-otp", "/reset-password","/verify-otp-email").permitAll() // Allow public access
                         .requestMatchers("/admin/**").hasRole("ADMIN") // Restrict admin pages
                         .anyRequest().authenticated() // Protect all other pages
                 )

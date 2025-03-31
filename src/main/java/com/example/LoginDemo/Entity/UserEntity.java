@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 
 @Entity
 @Table(name = "user")
@@ -50,6 +52,15 @@ public class UserEntity {
 
     @Column(nullable = false)
     private boolean verified=false;
+
+
+    private String otp; // Stores the OTP
+    private LocalDateTime otpExpiry; // Expiry time for OTP
+
+    // Method to check if OTP is still valid
+    public boolean isOtpValid() {
+        return otpExpiry != null && otpExpiry.isAfter(LocalDateTime.now());
+    }
 
 
 
