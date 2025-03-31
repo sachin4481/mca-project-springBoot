@@ -1,4 +1,48 @@
 /* List property specific styles */
+.property-type-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  max-width: 64rem;
+  margin: 0 auto;
+}
+
+.property-type-card {
+  background: white;
+  border-radius: 1rem;
+  padding: 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  text-decoration: none;
+  display: block;
+}
+
+.property-type-card:hover {
+  transform: translateY(-0.25rem);
+  border-color: #eab308;
+}
+
+.property-type-card i {
+  width: 3rem;
+  height: 3rem;
+  color: #eab308;
+  margin-bottom: 1rem;
+}
+
+.property-type-card h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 0.5rem;
+}
+
+.property-type-card p {
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
 .property-form-card {
   max-width: 48rem;
 }
@@ -22,6 +66,13 @@
   margin-bottom: 1rem;
 }
 
+.amenities-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
 select {
   padding: 0.625rem 1rem;
   border: 1px solid #e5e7eb;
@@ -41,13 +92,6 @@ select {
 select:focus {
   outline: none;
   border-color: #eab308;
-}
-
-.amenities-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 1rem;
-  margin-top: 0.5rem;
 }
 
 .image-upload-container {
@@ -139,5 +183,9 @@ select:focus {
 @media (max-width: 640px) {
   .amenities-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  .property-type-grid {
+    grid-template-columns: 1fr;
   }
 }

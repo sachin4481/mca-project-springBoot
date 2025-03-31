@@ -1,0 +1,120 @@
+
+    /* Add Property specific styles */
+    .section-desc {
+      color: #666;
+      font-size: 0.875rem;
+      margin-bottom: 1rem;
+    }
+
+    .image-upload-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .image-upload-box {
+      position: relative;
+      aspect-ratio: 1;
+      border: 2px dashed #e5e7eb;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      overflow: hidden;
+    }
+
+    .image-upload-box:hover {
+      border-color: #eab308;
+      background-color: #fef3c7;
+    }
+
+    .image-upload-box.primary {
+      grid-column: span 2;
+      grid-row: span 2;
+    }
+
+    .hidden-input {
+      display: none;
+    }
+
+    .upload-content {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      width: 100%;
+      padding: 1rem;
+    }
+
+    .upload-content i {
+      width: 2.5rem;
+      height: 2.5rem;
+      color: #9ca3af;
+      margin-bottom: 0.5rem;
+    }
+
+    .upload-content span {
+      display: block;
+      color: #4b5563;
+      margin-bottom: 0.25rem;
+    }
+
+    .upload-content small {
+      color: #6b7280;
+    }
+
+    .image-preview {
+      display: none;
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    .auth-submit,
+    .auth-cancel {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.75rem;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+
+    .auth-cancel {
+      background: #f3f4f6;
+      color: #666;
+      text-decoration: none;
+    }
+
+    .auth-cancel:hover {
+      background: #e5e7eb;
+      color: #1a1a1a;
+    }
+
+    @media (max-width: 640px) {
+      .image-upload-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .image-upload-box.primary {
+        grid-column: auto;
+        grid-row: auto;
+      }
+
+      .form-actions {
+        flex-direction: column;
+      }
+    }

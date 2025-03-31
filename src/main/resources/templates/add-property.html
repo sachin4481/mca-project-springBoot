@@ -1,69 +1,331 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
-  <title>Add Property</title>
-  <link rel="stylesheet" href="/css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PropertyNest - Add Property</title>
+  <link rel="stylesheet" th:href=@{/css_main/style.css}>
+  <link rel="stylesheet" th:href=@{/css_main/auth.css}>
+  <link rel="stylesheet" th:href=@{/css_main/add-property.css}>
+  <link rel="stylesheet" th:href=@{/css_main/list-property.css}>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
-<h2>Add Property</h2>
+<div class="min-h-screen bg-white">
+  <!-- Header -->
+  <header class="fixed-header">
+    <div class="container">
+      <div class="logo">
+        <a href="/properties" style="all: unset; cursor: pointer; display: flex;">
+          Property<span class="logo-nest">Nest
+            <i data-lucide="home" class="logo-icon"></i>
+          </span>
+        </a>
+      </div>
+      <nav class="nav-menu">
+        <a th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}"class="nav-link" href="/admin/dashboard">Admin Panel</a>
+        <a href="/properties" class="nav-link">Home</a>
+        <a href="/properties/list" class="nav-link">List Property</a>
+        <!--        <a href="/user/add" class="nav-link">Add Property</a>-->
+        <a href="/user/properties" class="nav-link">My Properties</a>
+        <a href="/user/complaint" class="nav-link">Submit Complaint</a>
 
-<form th:action="@{/user/add}" method="post" enctype="multipart/form-data">
-  <input type="hidden" name="userId" th:value="${#authentication.principal.username}" />
 
 
-  <!-- Property Title -->
-  <label for="propTitle">Property Title:</label>
-  <input type="text" id="propTitle" name="propTitle" required>
+        <!-- Show Username & Logout Button if Logged In -->
+        <span th:if="${session.username}" style="display: contents">
 
-  <!-- Category Dropdown -->
-  <label for="propCatId">Property Category:</label>
-  <select id="propCatId" name="propCatId" required>
-    <option value="">Select Category</option>
-    <option th:each="category : ${categories}"
-            th:value="${category.id}"
-            th:text="${category.name}">
-    </option>
-  </select>
+            <a th:href="@{/user/profile}" th:text="${session.username}" class="nav-link username-link" style="color: gold; font-weight: bold;"></a>
+            <span>
+                <form th:action="@{/logout}" method="post" style="display: inline;">
+                  <button type="submit" class="btn btn-danger">Logout</button>
+                </form>
+              </span>
+          </span>
 
-  <!-- Location -->
-  <label for="location">Location:</label>
-  <input type="text" id="location" name="location" required>
+        <!-- Show Login/Register if Not Logged In -->
+        <span th:if="${session.username == null}">
+            <a href="/login"><button class="btn-primary">Login</button></a>
+          </span>
+      </nav>
+    </div>
+  </header>
 
-  <!-- Pincode -->
-  <label for="pinCode">Pin Code:</label>
-  <input type="text" id="pinCode" name="pinCode" required>
+  <!-- Add Property Form -->
+  <div class="auth-container">
+    <div class="auth-card property-form-card">
+      <div class="auth-header">
+        <h1>Add New Property</h1>
+        <p>Fill in the details to list your property on PropertyNest</p>
+      </div>
 
-  <!-- Area -->
-  <label for="area">Area (sq. ft.):</label>
-  <input type="text" id="area" name="area" required>
+      <form id="addPropertyForm" th:action="@{/user/add}" method="post" enctype="multipart/form-data" class="auth-form">
+        <input type="hidden" name="userId" th:value="${#authentication.principal.username}" />
 
-  <!-- Facing -->
-  <label for="facing">Facing:</label>
-  <input type="text" id="facing" name="facing">
+        <!-- Basic Details -->
+        <div class="form-section">
+          <h2>Basic Details</h2>
 
-  <!-- Price -->
-  <label for="price">Price (INR):</label>
-  <input type="number" id="price" name="price" required>
+          <div class="form-group">
+            <label for="propTitle">
+              <i data-lucide="text"></i>
+              Property Title
+            </label>
+            <input
+                    type="text"
+                    id="propTitle"
+                    name="propTitle"
+                    required
+                    placeholder="Enter a descriptive title"
+            >
+          </div>
 
-  <!-- Image Uploads -->
-  <label for="img1">Upload Image 1 (Required):</label>
-  <input type="file" id="img1" name="img1" accept="image/*" required>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="propCatId">
+                <i data-lucide="list"></i>
+                Property Category
+              </label>
+              <select id="propCatId" name="propCatId" required>
+                <option th:each="category : ${categories}"
+                        th:value="${category.id}"
+                        th:text="${category.name}">
+                </option>
+              </select>
+            </div>
 
-  <label for="img2">Upload Image 2 (Optional):</label>
-  <input type="file" id="img2" name="img2" accept="image/*">
+            <div class="form-group">
+              <label for="facing">
+                <i data-lucide="compass"></i>
+                Facing
+              </label>
+              <select id="facing" name="facing" required>
+                <option value="">Select Facing</option>
+                <option value="north">North</option>
+                <option value="south">South</option>
+                <option value="east">East</option>
+                <option value="west">West</option>
+              </select>
+            </div>
+          </div>
 
-  <label for="img3">Upload Image 3 (Optional):</label>
-  <input type="file" id="img3" name="img3" accept="image/*">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="location">
+                <i data-lucide="map-pin"></i>
+                Location
+              </label>
+              <input
+                      type="text"
+                      id="location"
+                      name="location"
+                      required
+                      placeholder="Enter property location"
+              >
+            </div>
 
-  <label for="img4">Upload Image 4 (Optional):</label>
-  <input type="file" id="img4" name="img4" accept="image/*">
+            <div class="form-group">
+              <label for="pinCode">
+                <i data-lucide="hash"></i>
+                Pin Code
+              </label>
+              <input
+                      type="text"
+                      id="pinCode"
+                      name="pinCode"
+                      required
+                      pattern="[0-9]{6}"
+                      placeholder="Enter 6-digit PIN code"
+              >
+            </div>
+          </div>
 
-  <label for="img5">Upload Image 5 (Optional):</label>
-  <input type="file" id="img5" name="img5" accept="image/*">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="area">
+                <i data-lucide="square"></i>
+                Area (sq. ft.)
+              </label>
+              <input
+                      type="text"
+                      id="area"
+                      name="area"
+                      required
+                      placeholder="Enter total area"
+              >
+            </div>
 
-  <button type="submit">Submit Property</button>
-</form>
+            <div class="form-group">
+              <label for="price">
+                <i data-lucide="indian-rupee"></i>
+                Price (INR)
+              </label>
+              <input
+                      type="number"
+                      id="price"
+                      name="price"
+                      required
+                      min="1"
+                      placeholder="Enter property price"
+              >
+            </div>
+          </div>
+        </div>
 
-<a th:href="@{/properties}">Back to home</a>
+        <!-- Property Images -->
+        <div class="form-section">
+          <h2>Property Images</h2>
+          <p class="section-desc">Upload up to 5 high-quality images of your property</p>
+
+          <div class="image-upload-grid">
+            <div class="image-upload-box primary">
+              <input
+                      type="file"
+                      id="img1"
+                      name="img1"
+                      accept="image/*"
+                      required
+                      class="hidden-input"
+              >
+
+                  <div class="upload-content">
+                  <i data-lucide="image-plus"></i>
+                  <span>Upload Main Image</span>
+                  <small>Required</small>
+                </div>
+
+                <div class="image-preview"></div>
+              <!--
+             -->
+            </div>
+            <div class="image-upload-box">
+              <input
+                      type="file"
+                      id="img2"
+                      name="img2"
+                      accept="image/*"
+                      class="hidden-input"
+              >
+
+
+                <div class="upload-content">
+                  <i data-lucide="image"></i>
+                  <span>Additional Image</span>
+                  <small>Optional</small>
+                </div>
+
+             <div class="image-preview"></div>
+              <!--
+          -->
+            </div>
+
+            <div class="image-upload-box">
+              <input
+                      type="file"
+                      id="img3"
+                      name="img3"
+                      accept="image/*"
+                      class="hidden-input"
+              >
+
+
+                <div class="upload-content">
+                  <i data-lucide="image"></i>
+                  <span>Additional Image</span>
+                  <small>Optional</small>
+                </div>
+
+               <div class="image-preview"></div>
+              <!--
+             -->
+            </div>
+
+            <div class="image-upload-box">
+              <input
+                      type="file"
+                      id="img4"
+                      name="img4"
+                      accept="image/*"
+                      class="hidden-input"
+              >
+
+
+                <div class="upload-content">
+                  <i data-lucide="image"></i>
+                  <span>Additional Image</span>
+                  <small>Optional</small>
+                </div>
+
+              <div class="image-preview"></div>
+              <!--
+           -->
+            </div>
+
+            <div class="image-upload-box">
+              <input
+                      type="file"
+                      id="img5"
+                      name="img5"
+                      accept="image/*"
+                      class="hidden-input"
+              >
+
+
+                <div class="upload-content">
+                  <i data-lucide="image"></i>
+                  <span>Additional Image</span>
+                  <small>Optional</small>
+                </div>
+
+                <div class="image-preview"></div>
+              <!--
+              -->
+            </div>
+
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="auth-submit">
+            <i data-lucide="plus"></i>
+            Add Property
+          </button>
+          <a th:href="@{/properties}" class="auth-cancel">
+            <i data-lucide="x"></i>
+            Cancel
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+<script>
+  lucide.createIcons();
+
+  // Handle image uploads
+    document.querySelectorAll('.image-upload-box').forEach(box => {
+      const input = box.querySelector('input[type="file"]');
+      const preview = box.querySelector('.image-preview');
+      const content = box.querySelector('.upload-content');
+
+      box.addEventListener('click', () => input.click());
+
+      input.addEventListener('change', () => {
+        const file = input.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            preview.style.backgroundImage = `url(${e.target.result})`;
+            content.style.display = 'none';
+            preview.style.display = 'block';
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+    });
+</script>
+</div>
+
 </body>
 </html>
