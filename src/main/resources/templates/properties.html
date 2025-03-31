@@ -25,6 +25,7 @@
         <a th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}"class="nav-link" href="/admin/dashboard">Admin Panel</a>
         <a href="/properties" class="nav-link">Home</a>
         <a href="/properties/list" class="nav-link">List Property</a>
+<!--        <a href="/user/add" class="nav-link">Add Property</a>-->
         <a href="/user/properties" class="nav-link">My Properties</a>
         <a href="/user/complaint" class="nav-link">Submit Complaint</a>
 
@@ -193,9 +194,8 @@
       </div>
     </section>
     <script>
-    lucide.createIcons();
-
-  </script>
+      lucide.createIcons();
+    </script>
 
 </body>
 </html>

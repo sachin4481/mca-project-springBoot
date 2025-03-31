@@ -190,26 +190,8 @@
         // Initialize Lucide icons
         lucide.createIcons();
 
-        // Handle form submission
-        document.getElementById('profileForm').addEventListener('submit', (e) => {
-          e.preventDefault();
-
-          // Show success message
-          const successMessage = document.getElementById('successMessage');
-          successMessage.style.display = 'block';
-
-          // Hide success message after 3 seconds
-          setTimeout(() => {
-            successMessage.style.display = 'none';
-          }, 3000);
-        });
-
-    document.getElementById("profileForm").addEventListener("submit", function(event) {
-        alert("Profile updated succesfully!"); // Check if form is being submitted
-    });
     </script>
 
-    </script>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>

@@ -1,19 +1,23 @@
 package com.example.LoginDemo.Services;
 
+import com.example.LoginDemo.Entity.PropertyCat;
 import com.example.LoginDemo.Entity.PropertyEntity;
+import com.example.LoginDemo.Entity.PropertyInfo;
 import com.example.LoginDemo.Entity.UserEntity;
-import com.example.LoginDemo.Repository.PropertyRepository;
+import com.example.LoginDemo.Repository.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,6 +32,16 @@ public class PropertyServices {
     @Value("${file.upload-dir:src/main/resources/static/uploads}")
     private String uploadDir;
 
+
+    @Autowired
+    private PropertyCatRepository propertyCatRepository;
+
+
+    @Autowired
+    private PropertyInfoRepository propertyInfoRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
 
 
@@ -178,7 +192,13 @@ public class PropertyServices {
     public List<PropertyEntity> getRecentListings(Pageable pageable) {
         return propertyRepository.findTop4RecentProperties(pageable);
     }
+
+
+
 }
+
+
+
 
 
 

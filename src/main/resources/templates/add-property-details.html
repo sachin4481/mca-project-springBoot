@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Add Property Details</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<h2>Property Details</h2>
+
+<!-- Display Submitted Property Data -->
+<div>
+    <p><strong>Title:</strong> <span th:text="${property.propTitle}"></span></p>
+    <p><strong>Location:</strong> <span th:text="${property.location}"></span></p>
+    <p><strong>Category:</strong> <span th:text="${property.propertyCategory.name}"></span></p>
+    <p><strong>Price:</strong> ₹<span th:text="${property.price}"></span></p>
+</div>
+
+<!-- Property Details Form -->
+<form th:action="@{/user/add-property-details}" method="post">
+<!--    <p>Debug Prop ID: <span th:text="${property.propId}"></span></p>-->
+    <input type="hidden" name="propId" th:value="${property.propId}" />
+
+    <!-- Conditional Fields Based on Category -->
+    <div th:switch="${property.propertyCategory.name}">
+
+        <!-- Villa -->
+        <div th:case="'Villa'">
+            <label>BHK:</label> <input type="number" name="bhk"><br>
+            <label>Floors:</label> <input type="number" name="floors"><br>
+            <label>Furnished:</label> <input type="checkbox" name="furnished" value="true">
+            <input type="hidden" name="furnished" value="false"><br>
+            <label>Parking:</label> <input type="checkbox" name="parking" value="true">
+            <input type="hidden" name="parking" value="false"><br>
+            <label>Property Details:</label> <textarea name="propDetails"></textarea><br>
+        </div>
+
+        <!-- Tenement -->
+        <div th:case="'Tenement'">
+            <label>BHK:</label> <input type="number" name="bhk"><br>
+            <label>Floors:</label> <input type="number" name="floors"><br>
+            <label>Corner:</label> <input type="checkbox" name="corner"><br>
+            <label>Furnished:</label> <input type="checkbox" name="furnished"><br>
+            <label>Parking:</label> <input type="checkbox" name="parking"><br>
+            <label>Scheme Name:</label> <input type="text" name="schemeName"><br>
+            <label>Property Details:</label> <textarea name="propDetails"></textarea><br>
+        </div>
+
+        <!-- Plot -->
+        <div th:case="'Plot'">
+            <label>Corner:</label> <input type="checkbox" name="corner"><br>
+            <label>Scheme Name:</label> <input type="text" name="schemeName"><br>
+            <label>Property Details:</label> <textarea name="propDetails"></textarea><br>
+        </div>
+
+        <!-- Apartment -->
+        <div th:case="'Apartment'">
+            <label>BHK:</label> <input type="number" name="bhk"><br>
+            <label>Floor:</label> <input type="number" name="floor"><br>
+            <label>Furnished:</label> <input type="checkbox" name="furnished"><br>
+            <label>Parking:</label> <input type="checkbox" name="parking"><br>
+            <label>Scheme Name:</label> <input type="text" name="schemeName"><br>
+            <label>Property Details:</label> <textarea name="propDetails"></textarea><br>
+        </div>
+
+        <!-- Shop -->
+        <div th:case="'Shop'">
+            <label>Corner:</label> <input type="checkbox" name="corner"><br>
+            <label>Floor:</label> <input type="number" name="floor"><br>
+            <label>Washroom:</label> <input type="number" name="washroom"><br>
+            <label>Parking:</label> <input type="checkbox" name="parking"><br>
+            <label>Scheme Name:</label> <input type="text" name="schemeName"><br>
+            <label>Property Details:</label> <textarea name="propDetails"></textarea><br>
+        </div>
+
+    </div>
+
+    <button type="submit">Submit Details</button>
+</form>
+
+<a th:href="@{/properties}">Back to Home</a>
+
+</body>
+</html>

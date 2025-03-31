@@ -92,6 +92,43 @@
         </tbody>
     </table>
 </div>
+<!-- Add this inside your admin dashboard -->
+<div class="dashboard-box" onclick="toggleSection('categoryList')">
+    <h3>Property Categories</h3>
+    <p th:text="${#lists.size(categories)}">0</p>
+</div>
+
+<!-- Category Management Section -->
+<div id="categoryList" class="hidden">
+    <h2>Manage Property Categories</h2>
+
+    <!-- Add New Category Form -->
+    <form th:action="@{/admin/add-category}" method="post">
+        <input type="text" name="name" placeholder="Enter Category Name" required>
+        <button type="submit">Add Category</button>
+    </form>
+
+    <!-- Categories List -->
+    <table>
+        <thead>
+        <tr>
+            <th>Category Name</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="category : ${categories}">
+            <td th:text="${category.name}"></td>
+            <td>
+                <form th:action="@{/admin/delete-category/{id}(id=${category.id})}" method="post">
+                    <button type="submit">Delete</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
 
 <a th:href="@{/properties}">Back to Listings</a>
 

@@ -1,10 +1,8 @@
 package com.example.LoginDemo.Controller;
 
 
-import com.example.LoginDemo.Entity.ComplaintEntity;
-import com.example.LoginDemo.Entity.PropertyEntity;
-import com.example.LoginDemo.Entity.UserEntity;
-import com.example.LoginDemo.Entity.VerificationToken;
+import com.example.LoginDemo.Entity.*;
+import com.example.LoginDemo.Repository.PropertyCatRepository;
 import com.example.LoginDemo.Repository.VerificationTokenRepository;
 import com.example.LoginDemo.Services.ComplaintServices;
 import com.example.LoginDemo.Services.PropertyServices;
@@ -29,6 +27,9 @@ public class AdminController {
     VerificationTokenRepository verificationTokenRepository;
 
     @Autowired
+    private PropertyCatRepository propertyCatRepository;
+
+    @Autowired
     private ComplaintServices complaintServices;
 
     @Autowired
@@ -41,6 +42,8 @@ public class AdminController {
         List<UserEntity> users = userServices.getAllUser();
         List<PropertyEntity> properties = propertyServices.getAllProperty();
         List<ComplaintEntity> complaints= complaintServices.getAllComplaints();
+        List<PropertyCat> categories = propertyCatRepository.findAll();
+        model.addAttribute("categories", categories);
         model.addAttribute("users",users);
         model.addAttribute("properties",properties);
         model.addAttribute("complaints",complaints);
@@ -48,7 +51,19 @@ public class AdminController {
 
 
     }
+    @PostMapping("/add-category")
+    public String addCategory(@RequestParam String name) {
+        PropertyCat category = new PropertyCat();
+        category.setName(name);
+        propertyCatRepository.save(category);
+        return "redirect:/admin/dashboard?success";
+    }
 
+    @PostMapping("/delete-category/{id}")
+    public String deleteCategory(@PathVariable Long id) {
+        propertyCatRepository.deleteById(id);
+        return "redirect:/admin/dashboard?deleted";
+    }
     @PostMapping("/delete-user/{id}")
     public String deleteUser(@PathVariable Long id) {
         verificationTokenRepository.deleteByUserId(id);
