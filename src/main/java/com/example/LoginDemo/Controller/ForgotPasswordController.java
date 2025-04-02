@@ -1,6 +1,7 @@
 package com.example.LoginDemo.Controller;
 
 import com.example.LoginDemo.Entity.UserEntity;
+import com.example.LoginDemo.Repository.UserRepository;
 import com.example.LoginDemo.Services.UserServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
@@ -11,12 +12,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.Optional;
+
 @Controller
 public class ForgotPasswordController {
 
     @Autowired
     private UserServices userService;
 
+    @Autowired
+    private UserRepository userRepository;
     @Autowired
     private JavaMailSender mailSender;
 
@@ -25,20 +30,22 @@ public class ForgotPasswordController {
         return "forgot-password"; // Thymeleaf template
     }
 
-    @PostMapping("/forgot-password")
-    public String processForgotPassword(@RequestParam("email") String email, Model model) {
-        UserEntity user = userService.findByEmail(email);
-        if (user == null) {
-            model.addAttribute("error", "Email not found!");
-            return "forgot-password";
-        }
 
-        userService.generateOtp(user);
-        sendOtpEmail(user.getEmail(), user.getOtp());
-
-        model.addAttribute("message", "OTP sent to your email!");
-        return "verify-otp";
+@PostMapping("/forgot-password")
+public String processForgotPassword(@RequestParam("email") String email, Model model) {
+    Optional<UserEntity> userOptional = userRepository.findByEmail(email);
+    if (userOptional.isEmpty()) {
+        model.addAttribute("error", "Email not found!");
+        return "forgot-password";
     }
+
+    UserEntity user = userOptional.get();
+    userService.generateOtp(user);
+    sendOtpEmail(user.getEmail(), user.getOtp());
+
+    model.addAttribute("message", "OTP sent to your email!");
+    return "verify-otp";
+}
 
     private void sendOtpEmail(String to, String otp) {
         SimpleMailMessage email = new SimpleMailMessage();

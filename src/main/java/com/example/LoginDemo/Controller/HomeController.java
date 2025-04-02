@@ -90,9 +90,12 @@ public class HomeController {
             @RequestParam String address,
             @RequestParam String username,
             @RequestParam String password,
+
             Model model) {
 
         try {
+           
+
             UserEntity user = new UserEntity();
             user.setFirstName(firstName);
             user.setLastName(lastName);
@@ -122,12 +125,16 @@ public class HomeController {
     @PostMapping("/auth/verify-otp-email")
     public String verifyOtp(@RequestParam String email, @RequestParam String otp, RedirectAttributes redirectAttributes) {
         if (userServices.verifyOtp(email, otp)) {
+            System.out.println("OTP verified successfully for: " + email);
             return "redirect:/login?verified=true";
         } else {
+            System.out.println("Invalid or expired OTP for: " + email);
             redirectAttributes.addFlashAttribute("error", "Invalid or expired OTP. Please try again.");
             return "redirect:/verify-otp-email?email=" + email;
         }
     }
+
+
 
     @GetMapping("/home")
     public String home(@AuthenticationPrincipal UserDetails userDetails, HttpSession session) {
@@ -220,9 +227,16 @@ public class HomeController {
     }
 
 
+    //property detail page
     @GetMapping("/properties/{id}")
-    public String getPropertyDetails(@PathVariable Long id, Model model) {
-        model.addAttribute("property", propertyServices.getPropertyById(id));
+    public String getPropertyDetails(@PathVariable Long id, Model model, @AuthenticationPrincipal UserDetails userDetails) {
+       PropertyEntity property=propertyServices.getPropertyById(id);
+       String currentUsername=userDetails.getUsername();//get log in user name
+        UserEntity currentUser=userServices.findByUsername(currentUsername);
+        model.addAttribute("property", property);
+        model.addAttribute("currentUserId",currentUser.getId());
+        model.addAttribute("listedBy",property.getUser());
+
         return "property-details";
     }
 

@@ -42,6 +42,8 @@ package com.example.LoginDemo.Security;
 import com.example.LoginDemo.Entity.UserEntity;
 import com.example.LoginDemo.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -53,6 +55,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -65,11 +68,20 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         System.out.println("Loading user: " + username);
 
-        // Fetch the user from the database
-        UserEntity user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
+        Optional<UserEntity> userOpt=userRepository.findByUsername(username);
+        if (userOpt.isEmpty()) {
+            throw new UsernameNotFoundException("Username not found!");
+        }
+        UserEntity user = userOpt.get();
+//        if (!user.isVerified()) {
+//            throw new UsernameNotFoundException("User not verified! Please verify your email.");
+//        }
+
 
         System.out.println("User roles: " + user.getRole());
+
+
+
 
 //        // Convert the role to a GrantedAuthority
         List<GrantedAuthority> authorities = new ArrayList<>();

@@ -193,13 +193,37 @@
     </div>
   </section>
 
-<!--  <div th:if="${#authorization.expression('hasRole(''SELLER'') and authentication.principal.id == property.seller.id') or #authorization.expression('hasRole(''ADMIN'')')}">-->
-<!--    <a th:href="@{/properties/edit/{id}(id=${property.id})}" class="btn">Edit Property</a>-->
-<!--  </div>-->
+
 
   <div th:if="${property.user != null and #authentication.principal.username == property.user.username}">
     <a th:href="@{/properties/edit/{id}(id=${property.id})}" class="btn">Edit Property</a>
   </div>
+
+<!--  property owner details-->
+  <div th:if="${listedBy != null}">
+    <h3>Listed by</h3>
+    <p><strong>Owner Name:</strong> <span th:text="${property.user.username != null ? property.user.username : 'N/A'}"></span></p>
+
+    <p><strong>Email :</strong> <span th:text="${property.user.email != null ? property.user.email : 'N/A'}"></span></p>
+
+    <p><strong>Phone No:</strong> <span th:text="${property.user.phone != null ? property.user.phone : 'N/A'}"></span></p>
+
+  </div>
+
+<!--  //inquery button-->
+  <th:block th:if="${currentUserId != property.user.id}">
+  <form th:action="@{/inquiries/create/{id}(id=${property.id})}" method="post">
+    <button type="submit" class="btn btn-primary">Inquire</button>
+  </form>
+
+  <div th:if="${successMessage}" class="alert alert-success">
+    <p th:text="${successMessage}"></p>
+  </div>
+  </th:block>
+
+
+<!--  &lt;!&ndash; Show a success message if inquiry is made &ndash;&gt;-->
+<!--  <p th:if="${param.inquirySuccess}" style="color: green;">Inquiry sent successfully!</p>-->
 
 
   <footer>

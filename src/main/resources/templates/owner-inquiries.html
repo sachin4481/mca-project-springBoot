@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Property Inquiries | PropertyNest</title>
+  <link rel="stylesheet" th:href="@{/css_main/style.css}">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    /* Custom styles */
+    body {
+      background-color: #f8f9fa;
+      padding-top: 80px;
+    }
+    .inquiries-container {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+      margin: 20px auto;
+      max-width: 1200px;
+    }
+    .btn-delete {
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      transition: all 0.3s;
+    }
+    .btn-delete:hover {
+      background-color: #c82333;
+      transform: translateY(-1px);
+    }
+    .btn-delete i {
+      margin-right: 5px;
+    }
+  </style>
+</head>
+<body>
+<div class="min-h-screen bg-white">
+  <!-- Fixed Header -->
+  <header class="fixed-header">
+    <div class="container">
+      <div class="logo">
+        <a href="/properties" style="all: unset; cursor: pointer; display: flex;">
+          Property<span class="logo-nest">Nest
+            <i data-lucide="home" class="logo-icon"></i>
+          </span>
+        </a>
+      </div>
+      <nav class="nav-menu">
+        <a th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}"class="nav-link" href="/admin/dashboard">Admin Panel</a>
+        <a href="/properties" class="nav-link">Home</a>
+        <a href="/properties/list" class="nav-link">List Property</a>
+        <a href="/user/properties" class="nav-link">My Properties</a>
+        <a href="/owner/inquiries" class="nav-link">My Inquiries</a>
+
+
+
+        <a href="/user/complaint" class="nav-link">Submit Complaint</a>
+
+
+
+        <!-- Show Username & Logout Button if Logged In -->
+        <span th:if="${session.username}" style="display: contents">
+
+            <a th:href="@{/user/profile}" th:text="${session.username}" class="nav-link username-link" style="color: gold; font-weight: bold;"></a>
+            <span>
+                <form th:action="@{/logout}" method="post" style="display: inline;">
+                  <button type="submit" class="btn btn-danger">Logout</button>
+                </form>
+              </span>
+          </span>
+
+        <!-- Show Login/Register if Not Logged In -->
+        <span th:if="${session.username == null}">
+            <a href="/login"><button class="btn-primary">Login</button></a>
+          </span>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Inquiries Table Section -->
+  <div class="inquiries-container">
+    <h2>Inquiries for Your Properties</h2>
+
+    <table class="table">
+      <thead>
+      <tr>
+        <th>Property</th>
+        <th>Inquired By</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>Inquiry Date</th>
+        <th>Action</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="inquiry : ${inquiries}">
+        <td th:text="${inquiry.property.title}"></td>
+        <td th:text="${inquiry.user.username}"></td>
+        <td>
+          <a th:href="'mailto:' + ${inquiry.user.email}" th:text="${inquiry.user.email}"></a>
+        </td>
+        <td th:text="${inquiry.user.phone} ?: 'N/A'"></td>
+        <td th:text="${#temporals.format(inquiry.inqDate, 'yyyy-MM-dd HH:mm')}"></td>
+        <td>
+          <form th:action="@{/owner/inquiries/delete/{id}(id=${inquiry.inqId})}" method="post">
+            <button type="submit" class="btn-delete">
+              <i data-lucide="trash-2"></i> Delete
+            </button>
+          </form>
+        </td>
+      </tr>
+      <tr th:if="${inquiries.isEmpty()}">
+        <td colspan="6" class="text-center py-4 text-muted">No inquiries yet.</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  lucide.createIcons();
+
+  // Confirm before deletion
+  document.querySelectorAll('.btn-delete').forEach(button => {
+    button.addEventListener('click', (e) => {
+      if (!confirm('Are you sure you want to delete this inquiry?')) {
+        e.preventDefault();
+      }
+    });
+  });
+</script>
+</body>
+</html>

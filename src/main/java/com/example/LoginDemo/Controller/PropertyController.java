@@ -56,10 +56,7 @@ public class PropertyController {
 
 @GetMapping("/properties")
 public String showProperties(Model model) {
-    // The model will automatically contain the attributes added via RedirectAttributes
-    // No need to add them again here
 
-    // Ensure distinct locations are always added to the model
     List<String> locations = propertyRepository.findDistinctLocations();
     model.addAttribute("locations", locations);
 
