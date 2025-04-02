@@ -56,6 +56,7 @@
                 <p>Login to access your PropertyNest account</p>
             </div>
             <p th:if="${param.error}" class="error-message">Invalid username or password!</p>
+            <p th:if="${param.verified}" class="error-message">Your account is not verified. Check your email for OTP</p>
             <p th:if="${param.verificationError}" class="error-message">Please verify your email before logging in.</p>
             <p th:if="${param.registered}" class="text-success text-center">Registration successful! Please check your email for verification.</p>
 
