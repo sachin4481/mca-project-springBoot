@@ -43,5 +43,5 @@ public class PropertyInfo {
     private Date listingDate;
 
     @Column(nullable = false)
-    private String status = "unsold";
+    private String status = "AVAILABLE";
 }

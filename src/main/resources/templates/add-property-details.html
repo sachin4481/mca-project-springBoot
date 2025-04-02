@@ -11,44 +11,53 @@
     <link rel="stylesheet" th:href=@{/css_main/list-property.css}>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
+ <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        function showWarning(event) {
+            event.preventDefault();
+            alert("!!!Please Fill this form first its essential for property listing!!!");
+        }
+    </script>
+
 </head>
+
+
 <body>
 <div class="min-h-screen bg-white">
     <!-- Header -->
     <header class="fixed-header">
         <div class="container">
             <div class="logo">
-                <a href="/properties" style="all: unset; cursor: pointer; display: flex;">
+                <a onclick="showWarning(event)" href="/properties" style="all: unset; cursor: pointer; display: flex;">
                     Property<span class="logo-nest">Nest
             <i data-lucide="home" class="logo-icon"></i>
           </span>
                 </a>
             </div>
             <nav class="nav-menu">
-                <a th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}"class="nav-link" href="/admin/dashboard">Admin Panel</a>
-                <a href="/properties" class="nav-link">Home</a>
-                <a href="/properties/list" class="nav-link">List Property</a>
+                <a th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}" onclick="showWarning(event)" class="nav-link" href="/admin/dashboard">Admin Panel</a>
+                <a href="/properties" class="nav-link" onclick="showWarning(event)">Home</a>
+<!--                <a href="/properties/list" onclick="showWarning(event)" class="nav-link">List Property</a>-->
                 <!--        <a href="/user/add" class="nav-link">Add Property</a>-->
-                <a href="/user/properties" class="nav-link">My Properties</a>
-                <a href="/user/complaint" class="nav-link">Submit Complaint</a>
+                <a href="/user/properties" onclick="showWarning(event)" class="nav-link">My Properties</a>
+                <a href="/user/complaint" onclick="showWarning(event)" class="nav-link">Submit Complaint</a>
 
 
 
                 <!-- Show Username & Logout Button if Logged In -->
                 <span th:if="${session.username}" style="display: contents">
 
-            <a th:href="@{/user/profile}" th:text="${session.username}" class="nav-link username-link" style="color: gold; font-weight: bold;"></a>
+            <a th:href="@{/user/profile}" th:text="${session.username}" onclick="showWarning(event)" class="nav-link username-link" style="color: gold; font-weight: bold;"></a>
             <span>
                 <form th:action="@{/logout}" method="post" style="display: inline;">
-                  <button type="submit" class="btn btn-danger">Logout</button>
+                  <button type="submit" class="btn btn-danger" onclick="showWarning(event)">Logout</button>
                 </form>
               </span>
           </span>
 
                 <!-- Show Login/Register if Not Logged In -->
                 <span th:if="${session.username == null}">
-            <a href="/login"><button class="btn-primary">Login</button></a>
+            <a href="/login"><button class="btn-primary" onclick="showWarning(event)">Login</button></a>
           </span>
             </nav>
         </div>
@@ -107,15 +116,15 @@
                             </div>
                         </div>
                         <div class="amenities-grid">
-                            <label class="toggle-label">
-                                <input type="checkbox" name="furnished" value="true">
-                                <input type="hidden" name="furnished" value="false">
+                            <label class="toggle-label" >
+<!--                                <input type="hidden" name="furnished" value="false">-->
+                                <input type="checkbox" name="furnished"  >
                                 <span class="toggle-button"></span>
                                 <span class="toggle-text">Furnished</span>
                             </label>
-                            <label class="toggle-label">
-                                <input type="checkbox" name="parking" value="true">
-                                <input type="hidden" name="parking" value="false">
+                            <label class="toggle-label" >
+<!--                                <input type="hidden" name="parking" value="false">-->
+                                <input type="checkbox" name="parking">
                                 <span class="toggle-button"></span>
                                 <span class="toggle-text">Parking</span>
                             </label>
@@ -296,9 +305,18 @@
 <script>
     // Initialize Lucide icons
     lucide.createIcons();
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const form = document.getElementById("propertyDetailsForm");
 
-
-
+        form.addEventListener("submit", function(event) {
+            const isConfirmed = confirm("Are you sure you want to submit the property details?");
+            if (!isConfirmed) {
+                event.preventDefault(); // Prevent form submission if user cancels
+            }
+        });
+    });
 </script>
 
 </body>

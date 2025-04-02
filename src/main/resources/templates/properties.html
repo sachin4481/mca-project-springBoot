@@ -32,8 +32,8 @@
       <nav class="nav-menu">
         <a th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}"class="nav-link" href="/admin/dashboard">Admin Panel</a>
         <a href="/properties" class="nav-link">Home</a>
-        <a href="/properties/list" class="nav-link">List Property</a>
-<!--        <a href="/user/add" class="nav-link">Add Property</a>-->
+<!--        <a href="/properties/list" class="nav-link">List Property</a>-->
+        <a href="/user/add" class="nav-link">Add Property</a>
         <a href="/user/properties" class="nav-link">My Properties</a>
         <a href="/owner/inquiries" class="nav-link">My Inquiries</a>
 
@@ -193,7 +193,7 @@
           </div>
         </div>
         <div th:if="${#lists.isEmpty(recentListings)}" class="no-results text-center mt-5">
-          <p class="text-muted fs-4">No recent properties found.</p>
+          <p class="text-muted fs-4">No recent properties found... Search again.</p>
         </div>
       </div>
     </section>

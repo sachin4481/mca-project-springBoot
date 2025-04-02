@@ -43,43 +43,34 @@ public class HomeController {
     @Autowired
     private ComplaintServices complaintServices;
 
+    //login page mapping
     @GetMapping("/login")
     public String login() {
         return "login";
     }
 
+
+    //registration page mapping
     @GetMapping("/Registration")
     public String registration() {
 
         return "Registration";
     }
 
-
+// "/" home page maping
     @GetMapping("/")
     public String redirectToHome() {
         return "redirect:/home";
     }
 
+    //property list page maping
     @GetMapping("/properties/list")
     public String showListPropertyForm(Model model) {
         model.addAttribute("property", new PropertyEntity());
         return "list-property";
     }
 
-
-
-//@GetMapping("/auth/verify")
-//public String verifyUser(@RequestParam("token") String token) {
-//    logger.info("Received verification request for token: {}", token);
-//    if (userServices.verifyUser(token)) {
-//        return "redirect:/home";
-//    }
-//    logger.warn("Verification failed for token: {}", token);
-//    return "redirect:/login?error";
-//
-//}
-
-
+//registration logic
     @PostMapping("/register")
     public String registerUser(
             @RequestParam String firstName,
@@ -114,14 +105,14 @@ public class HomeController {
         }
     }
 
-    // Show OTP verification page
+    // verification page after otp sent maping
     @GetMapping("/verify-otp-email")
     public String showOtpVerificationPage(@RequestParam String email, Model model) {
         model.addAttribute("email", email);
         return "verify-otp-email";
     }
 
-    // Handle OTP verification
+    // OTP verification logic
     @PostMapping("/auth/verify-otp-email")
     public String verifyOtp(@RequestParam String email, @RequestParam String otp, RedirectAttributes redirectAttributes) {
         if (userServices.verifyOtp(email, otp)) {
@@ -136,6 +127,7 @@ public class HomeController {
 
 
 
+    // home page mapping for "/home"
     @GetMapping("/home")
     public String home(@AuthenticationPrincipal UserDetails userDetails, HttpSession session) {
         if (userDetails != null) {
@@ -159,52 +151,13 @@ public class HomeController {
         return "home";
     }
 
-
-
-
-
-
-
-//    @PostMapping("/register")
-//    public String registerUser(
-//            @RequestParam String firstName,
-//            @RequestParam String lastName,
-//            @RequestParam String email,
-//            @RequestParam String phone,
-//            @RequestParam String gender,
-//            @RequestParam String address,
-//            @RequestParam String username,
-//            @RequestParam String password,
-//            Model model) {
-//
-//        try {
-//            UserEntity user = new UserEntity();
-//            user.setFirstName(firstName);
-//            user.setLastName(lastName);
-//            user.setEmail(email);
-//            user.setPhone(phone);
-//            user.setGender(gender);
-//            user.setAddress(address);
-//            user.setUsername(username);
-//            user.setPassword(password);
-//
-//            userServices.registerUser(user);
-//            return "redirect:/login"; // Redirect to the login page after registration
-//        } catch (RuntimeException e) {
-//            model.addAttribute("error", e.getMessage());// Add error message to the model
-//            model.addAttribute("message", "A verification email has been sent. Please check your inbox.");
-//            return "Registration"; // Return to the registration page with an error message
-//        }
-//    }
-
-
-
-
+    //welcome page after login mapping
     @GetMapping("/welcome")
     public String welcome() {
         return "welcome";
     }
 
+    //delete property in admin side logic
     @PostMapping("/admin/delete-property/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public String deleteProperty(@PathVariable Long id) {
@@ -213,8 +166,7 @@ public class HomeController {
     }
 
 
-
-
+    //new property list form logic
     @PostMapping("/properties/list")
     public String listProperty(@ModelAttribute PropertyEntity property,
                                @RequestParam("images") MultipartFile[] images,
@@ -265,9 +217,6 @@ public class HomeController {
     }
 
 
-    //updating user and user profile
-
-    //show profile
     @GetMapping("/user/profile")
     public String showProfile(Model model, @AuthenticationPrincipal UserDetails userDetails) {
         String username = userDetails.getUsername();
@@ -277,7 +226,6 @@ public class HomeController {
     }
 
 
-    //update the profile
     @PostMapping("/user/profile")
     public String updateProfile(@ModelAttribute UserEntity user,
                                 @AuthenticationPrincipal UserDetails userDetails) throws IOException {
@@ -288,8 +236,6 @@ public class HomeController {
     }
 
 
-
-    // Complaint Form
     @GetMapping("/user/complaint")
     public String showComplaintForm(Model model, @AuthenticationPrincipal UserDetails userDetails) {
         if (userDetails == null) {

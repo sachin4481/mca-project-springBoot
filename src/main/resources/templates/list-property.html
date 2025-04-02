@@ -136,7 +136,7 @@
 <!-- Form Content -->
 <div class="form-container">
   <h1>List a New Property</h1>
-  <form th:action="@{/properties/list}" th:object="${property}" method="post" enctype="multipart/form-data">
+  <form th:action="@{/properties/list}" th:object="${property}" id="listPropertyForm" method="post" enctype="multipart/form-data">
     <div class="row">
       <div class="col-md-6 mb-3">
         <label for="title" class="form-label">Title</label>
@@ -184,5 +184,17 @@
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+      const form = document.getElementById("listPropertyForm");
+
+      form.addEventListener("submit", function(event) {
+          const isConfirmed = confirm("Make sure The details are correct!\nDo you want to continue?");
+          if (!isConfirmed) {
+              event.preventDefault(); // Prevent form submission if user cancels
+          }
+      });
+  });
+</script>
 </body>
 </html>

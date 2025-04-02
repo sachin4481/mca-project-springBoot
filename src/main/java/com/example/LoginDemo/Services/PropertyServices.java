@@ -53,7 +53,6 @@ public class PropertyServices {
             property.setStatus("AVAILABLE");
         }
 
-        // Handle image uploads (store in a folder and save paths)
         String uploadDir = "src/main/resources/static/uploads/";
         File uploadDirectory = new File(uploadDir);
         if (!uploadDirectory.exists()) {
@@ -67,7 +66,7 @@ public class PropertyServices {
             if (!images[i].isEmpty()) {
                 String fileName = System.currentTimeMillis() + "-" + images[i].getOriginalFilename();
                 File dest = new File(uploadDirectory.getAbsolutePath() + File.separator + fileName);
-                images[i].transferTo(dest); // Write the file to the destination
+                images[i].transferTo(dest);
                 switch (i) {
                     case 0: property.setImage1("/uploads/" + fileName); break;
                     case 1: property.setImage2("/uploads/" + fileName); break;
@@ -84,7 +83,6 @@ public class PropertyServices {
         PropertyEntity existingProperty = getPropertyById(id);
 
 
-// Check if the current user is the one who listed the property
         if (!existingProperty.getUser().getId().equals(currentUser.getId())) {
             logger.warn("User {} attempted to edit property {} but is not authorized", currentUser.getId(), id);
             throw new SecurityException("You are not authorized to update this property.");
@@ -92,7 +90,6 @@ public class PropertyServices {
 
         logger.info("Updating property ID: {}", id);
 
-        // Update fields
         existingProperty.setTitle(updatedProperty.getTitle());
         existingProperty.setDescription(updatedProperty.getDescription());
         existingProperty.setLocation(updatedProperty.getLocation());
@@ -102,7 +99,6 @@ public class PropertyServices {
 
         existingProperty.setArea(updatedProperty.getArea());
 
-        // Handle image updates if new images are uploaded
         File uploadDirectory = new File(uploadDir);
         if (!uploadDirectory.exists()) {
             uploadDirectory.mkdirs();
@@ -157,13 +153,6 @@ public class PropertyServices {
         return propertyRepository.findByUser(user);
     }
 
-    //find by Area
-//    public List<PropertyEntity> searchPropertiesByArea(String location) {
-//        if (location == null || location.trim().isEmpty()) {
-//            return propertyRepository.findAll(); // Return all if no search term
-//        }
-//        return propertyRepository.findByLocationContainingIgnoreCase(location);
-//    }
 
     public List<PropertyEntity> searchProperties(String area, Double price, String location) {
         List<PropertyEntity> properties = propertyRepository.findAll();

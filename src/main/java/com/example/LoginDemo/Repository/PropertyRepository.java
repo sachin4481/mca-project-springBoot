@@ -22,6 +22,7 @@ public interface PropertyRepository extends JpaRepository<PropertyEntity,Long> {
     @Query("SELECT DISTINCT p.location FROM PropertyEntity p")
     List<String> findDistinctLocations();
 
+
     @Query("SELECT p FROM PropertyEntity p ORDER BY p.id DESC")
     List<PropertyEntity> findTop4RecentProperties(Pageable pageable);
 

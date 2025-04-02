@@ -28,18 +28,18 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/home", "/Registration", "/register", "/css/**", "/css_main/**", "/js/**", "/static/**","/forgot-password", "/verify-otp", "/reset-password","/verify-otp-email", "/auth/verify-otp-email").permitAll() // Allow public access
-                        .requestMatchers("/admin/**").hasRole("ADMIN") // Restrict admin pages
-                        .anyRequest().authenticated() // Protect all other pages
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
-                        .defaultSuccessUrl("/home", true) // Redirect to home after login
+                        .defaultSuccessUrl("/home", true)
                         .permitAll()
                 )
                 .logout(logout -> logout
                         .logoutSuccessUrl("/home") // Redirect to home after logout
                         .invalidateHttpSession(true) // Invalidate session
-                        .deleteCookies("JSESSIONID") // Delete session cookie
+                        .deleteCookies("JSESSIONID")
                         .permitAll()
                 );
 
@@ -48,7 +48,7 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(); // Use BCrypt for password hashing
+        return new BCryptPasswordEncoder();
     }
 
 

@@ -25,6 +25,7 @@ public class ForgotPasswordController {
     @Autowired
     private JavaMailSender mailSender;
 
+    //password forget mapping
     @GetMapping("/forgot-password")
     public String showForgotPasswordPage() {
         return "forgot-password"; // Thymeleaf template
@@ -47,6 +48,7 @@ public String processForgotPassword(@RequestParam("email") String email, Model m
     return "verify-otp";
 }
 
+    // for sending otp to email
     private void sendOtpEmail(String to, String otp) {
         SimpleMailMessage email = new SimpleMailMessage();
         email.setTo(to);
@@ -55,6 +57,7 @@ public String processForgotPassword(@RequestParam("email") String email, Model m
         mailSender.send(email);
     }
 
+    //verify otp
     @GetMapping("/verify-otp")
     public String showOtpPage() {
         return "verify-otp";
@@ -72,6 +75,7 @@ public String processForgotPassword(@RequestParam("email") String email, Model m
         return "reset-password";
     }
 
+    //reset password logic
     @PostMapping("/reset-password")
     public String resetPassword(@RequestParam("otp") String otp,
                                 @RequestParam("password") String password, Model model) {

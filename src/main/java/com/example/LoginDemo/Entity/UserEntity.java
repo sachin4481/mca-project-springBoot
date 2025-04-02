@@ -25,7 +25,7 @@ public class UserEntity {
     private String password;
 
     @Column(nullable = false,length = 20)
-    private String role; // Add role field
+    private String role;
 
 
 
@@ -55,10 +55,9 @@ public class UserEntity {
     private boolean verified=false;
 
 
-    private String otp; // Stores the OTP
-    private LocalDateTime otpExpiry; // Expiry time for OTP
+    private String otp;
+    private LocalDateTime otpExpiry;
 
-    // Method to check if OTP is still valid
     public boolean isOtpValid() {
         return otpExpiry != null && otpExpiry.isAfter(LocalDateTime.now());
     }

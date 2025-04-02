@@ -14,10 +14,10 @@ public class ComplaintEntity {
     private Long id;
 
     @Column(name = "username", nullable = false)
-    private String username; // The user submitting the complaint
+    private String username;
 
     @Column(name = "property_id")
-    private Long propertyId; // Optional: Link to a specific property (can be null)
+    private Long propertyId;
 
     @Column(name = "subject", nullable = false)
     private String subject;
@@ -29,10 +29,10 @@ public class ComplaintEntity {
     private LocalDateTime submittedAt;
 
     @Column(name = "status")
-    private String status; // e.g., "Pending", "Resolved"
+    private String status;
 
     @Column(name = "admin_response")
-    private String adminResponse; // Admin's solution or reply
+    private String adminResponse;
 
     @Column(name = "resolved_at")
     private LocalDateTime resolvedAt;
@@ -40,7 +40,7 @@ public class ComplaintEntity {
     // Constructors
     public ComplaintEntity() {
         this.submittedAt = LocalDateTime.now();
-        this.status = "Pending"; // Default status
+        this.status = "Pending";
     }
 
     public ComplaintEntity(String username, Long propertyId, String subject, String description) {

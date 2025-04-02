@@ -2,11 +2,14 @@ package com.example.LoginDemo.Entity;
 
 
 import jakarta.persistence.*;
-import lombok.Data;
-
+import lombok.*;
 
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "Property")
 @Data
 public class PropertyEntity {
@@ -25,12 +28,12 @@ public class PropertyEntity {
     @Column(length = 10)
     private double price;
 
-    @Column(name = "pincode" ,length = 6) // New field for pincode
+    @Column(name = "pincode" ,length = 6)
     private String pincode;
     @Column(length = 15)
-    private Double area;//size
+    private Double area;
     @Column(length = 15)
-    private String status; // "AVAILABLE", "SOLD"
+    private String status;
 
     @ManyToOne
     private UserEntity user;

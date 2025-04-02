@@ -7,7 +7,7 @@
     <title>Register - PropertyNest</title>
     <link rel="stylesheet" href="/css_main/style.css">
     <link rel="stylesheet" href="/css_main/auth.css">
-    <script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
 </head>
 
 <body>
@@ -45,7 +45,7 @@
         <div class="auth-card">
             <h1>Create Account</h1>
 
-            <form id="registerForm" action="/register" class="auth-form" method="post">
+            <form id="registerForm" onsubmit="return confirmLogin()" action="/register" class="auth-form" method="post">
 
                 <div class="form-row">
                     <div class="form-group">
@@ -127,6 +127,7 @@
     </div>
 </div>
 
+
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const form = document.getElementById("registerForm");
@@ -156,11 +157,26 @@
             toggleVisibility(confirmPassword, toggleConfirmPassword);
         });
 
+        function validatePassword(password) {
+            const regex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+            return regex.test(password);
+        }
+
         form.addEventListener("submit", function (event) {
+            if (!validatePassword(password.value)) {
+                event.preventDefault();
+                alert("Password must be at least 8 characters long, contain at least one uppercase letter, one number, and one special character.");
+                password.classList.add("error");
+            } else {
+                password.classList.remove("error");
+            }
+
             if (password.value !== confirmPassword.value) {
                 event.preventDefault();
                 alert("Passwords do not match!");
                 confirmPassword.classList.add("error");
+            } else {
+                confirmPassword.classList.remove("error");
             }
         });
 
@@ -174,7 +190,12 @@
             }
         });
     });
+       // Confirmation box before login submission
+    function confirmLogin() {
+        return window.confirm("Check your details are correct?\nDo you want to register?");
+    }
 </script>
+
 </body>
 
 </html>
