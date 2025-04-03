@@ -198,11 +198,25 @@ public String searchProperties(@RequestParam(required = false) Long category,//n
         return "redirect:/edit-property-details/{id}";
     }
 
+//    @GetMapping("/edit-property-details/{id}")
+//    public String editPropertyDetails(@PathVariable Long id, Model model) {
+//        model.addAttribute("propertyId", id);
+//        return "edit-property-details";
+//    }
     @GetMapping("/edit-property-details/{id}")
     public String editPropertyDetails(@PathVariable Long id, Model model) {
-        model.addAttribute("propertyId", id);
-        return "edit-property-details";
+    // Check if property details exist for the given property ID
+    Optional<PropertyDetails> propertyDetails = propertyDetailsRepository.findByPropertyInfo_PropId(id);
+
+    if (propertyDetails.isEmpty()) {
+        // If no property details exist, redirect to /properties/{id}
+        return "redirect:/user/add-property-details?propId=" + id; // Redirect if details do not exist
     }
+
+    model.addAttribute("propertyId", id);
+    return "edit-property-details";
+}
+
 
 
     // ✅ Show Add Property Form
