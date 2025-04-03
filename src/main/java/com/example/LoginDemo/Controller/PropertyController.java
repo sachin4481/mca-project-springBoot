@@ -43,8 +43,8 @@ public class PropertyController {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private PropertyRepository propertyRepository;
+//    @Autowired
+//    private PropertyRepository propertyRepository;
 
     @Autowired
     private PropertyCatRepository propertyCatRepository;
@@ -138,22 +138,7 @@ public String searchProperties(@RequestParam(required = false) Long category,//n
 
     return "redirect:/properties";
 }
-    // Property Detail Page
-//    @GetMapping("/properties/{id}")
-//    public String getPropertyDetails(@PathVariable Long id, Model model, @AuthenticationPrincipal UserDetails userDetails) {
-//        PropertyInfo propertyInfo = propertyInfoService.getPropertyById(id);
-//        PropertyDetails propertyDetails = propertyDetailsService.getDetailsByPropertyId(id);// Can be null
-//
-//        String currentUsername = userDetails.getUsername();
-//        UserEntity currentUser = userServices.findByUsername(currentUsername);
-//
-//        model.addAttribute("propertyInfo", propertyInfo);
-//        model.addAttribute("propertyDetails", propertyDetails);
-//        model.addAttribute("detailsExist", propertyDetails != null); // Flag for UI
-//        model.addAttribute("currentUserId", currentUser.getId());
-//
-//        return "property-details";
-//    }
+
     @GetMapping("/properties/{id}")
     public String getPropertyDetails(@PathVariable Long id, Model model, @AuthenticationPrincipal UserDetails userDetails) {
         // Fetch propertyInfo using repository
@@ -185,7 +170,7 @@ public String searchProperties(@RequestParam(required = false) Long category,//n
         PropertyInfo propertyInfo = propertyInfoService.getPropertyById(id);
         PropertyDetails propertyDetails = propertyDetailsService.getDetailsByPropertyId(id);
         if (propertyDetails == null) {
-            propertyDetails = new PropertyDetails(); // Create a new empty object
+            propertyDetails = new PropertyDetails();
         }
         String username = userDetails.getUsername();
         UserEntity currentUser = userServices.findByUsername(username);
@@ -193,8 +178,6 @@ public String searchProperties(@RequestParam(required = false) Long category,//n
         if (!propertyInfo.getUser().getId().equals(currentUser.getId())) {
             return "redirect:/properties"; // Redirect if unauthorized
         }
-
-
 
         model.addAttribute("propertyInfo", propertyInfo);
         model.addAttribute("propertyDetails", propertyDetails);
@@ -204,9 +187,23 @@ public String searchProperties(@RequestParam(required = false) Long category,//n
 
     // Update Property
     @PostMapping("/properties/edit/{id}")
-    public String updateProperty(
+    public String updateProperty(@PathVariable Long id,
+                                 @ModelAttribute PropertyInfo propertyInfo,
+                                 @RequestParam("images") MultipartFile[] images,
+                                 @AuthenticationPrincipal UserDetails userDetails) throws IOException {
+        String username = userDetails.getUsername();
+        UserEntity currentUser = userServices.findByUsername(username); // Fetch from service
 
-    ){ return "/properties"; }
+        propertyServices.updateProperty(id, propertyInfo, images, currentUser);
+
+
+    }
+
+    @GetMapping("/edit-property-details/{id}")
+    public String editPropertyDetails(@PathVariable Long id, Model model) {
+        model.addAttribute("propertyId", id);
+        return "edit-property-details";
+    }
 
 
     // ✅ Show Add Property Form
