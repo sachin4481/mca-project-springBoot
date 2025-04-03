@@ -195,8 +195,7 @@ public String searchProperties(@RequestParam(required = false) Long category,//n
         UserEntity currentUser = userServices.findByUsername(username); // Fetch from service
 
         propertyServices.updateProperty(id, propertyInfo, images, currentUser);
-
-
+        return "redirect:/edit-property-details/{id}";
     }
 
     @GetMapping("/edit-property-details/{id}")
