@@ -26,8 +26,8 @@ public class PropertyServices {
 
     private static final Logger logger = LoggerFactory.getLogger(PropertyServices.class);
 
-        @Autowired
-        private PropertyRepository propertyRepository;
+    @Autowired
+    private PropertyRepository propertyRepository;
 
     @Value("${file.upload-dir:src/main/resources/static/uploads}")
     private String uploadDir;
@@ -44,10 +44,7 @@ public class PropertyServices {
     private UserRepository userRepository;
 
 
-
-
-
-    public PropertyEntity listProperty(PropertyEntity property,  MultipartFile[] images) throws IOException {
+    public PropertyEntity listProperty(PropertyEntity property, MultipartFile[] images) throws IOException {
 
         if (property.getStatus() == null) {
             property.setStatus("AVAILABLE");
@@ -68,9 +65,15 @@ public class PropertyServices {
                 File dest = new File(uploadDirectory.getAbsolutePath() + File.separator + fileName);
                 images[i].transferTo(dest);
                 switch (i) {
-                    case 0: property.setImage1("/uploads/" + fileName); break;
-                    case 1: property.setImage2("/uploads/" + fileName); break;
-                    case 2: property.setImage3("/uploads/" + fileName); break;
+                    case 0:
+                        property.setImage1("/uploads/" + fileName);
+                        break;
+                    case 1:
+                        property.setImage2("/uploads/" + fileName);
+                        break;
+                    case 2:
+                        property.setImage3("/uploads/" + fileName);
+                        break;
 
                 }
             }
@@ -109,9 +112,16 @@ public class PropertyServices {
                 String fileName = System.currentTimeMillis() + "-" + images[i].getOriginalFilename();
                 File dest = new File(uploadDirectory.getAbsolutePath() + File.separator + fileName);
                 images[i].transferTo(dest);
-                switch (i) {case 0: existingProperty.setImage1("/uploads/" + fileName); break;
-                    case 1: existingProperty.setImage2("/uploads/" + fileName); break;
-                    case 2: existingProperty.setImage3("/uploads/" + fileName); break;
+                switch (i) {
+                    case 0:
+                        existingProperty.setImage1("/uploads/" + fileName);
+                        break;
+                    case 1:
+                        existingProperty.setImage2("/uploads/" + fileName);
+                        break;
+                    case 2:
+                        existingProperty.setImage3("/uploads/" + fileName);
+                        break;
 
                 }
             }
@@ -121,32 +131,23 @@ public class PropertyServices {
     }
 
 
+    public PropertyEntity listProperty(PropertyEntity property) {
+        property.setStatus("AVAILABLE");
+        return propertyRepository.save(property);
+    }
 
+    public List<PropertyEntity> getAllProperty() {
+        return propertyRepository.findAll();
+    }
 
+    public PropertyEntity getPropertyById(Long id) {
+        return propertyRepository.findById(id).orElseThrow(
+                () -> new RuntimeException("Property Not Found"));
+    }
 
-
-        public PropertyEntity listProperty(PropertyEntity property)
-        {
-            property.setStatus("AVAILABLE");
-            return propertyRepository.save(property);
-        }
-
-        public List<PropertyEntity> getAllProperty()
-        {
-            return propertyRepository.findAll();
-        }
-
-        public PropertyEntity getPropertyById(Long id)
-        {
-            return propertyRepository.findById(id).orElseThrow(
-                    ()->new RuntimeException("Property Not Found"));
-        }
-
-        public void deleteById(Long id)
-        {
-            propertyRepository.deleteById(id);
-        }
-
+    public void deleteById(Long id) {
+        propertyRepository.deleteById(id);
+    }
 
 
     public List<PropertyEntity> getPropertiesByUser(UserEntity user) {
@@ -178,10 +179,9 @@ public class PropertyServices {
         return properties;
     }
 
-    public List<PropertyEntity> getRecentListings(Pageable pageable) {
-        return propertyRepository.findTop4RecentProperties(pageable);
+    public List<PropertyInfo> getRecentListings(Pageable pageable) {
+        return propertyInfoRepository.findTop4RecentProperties(pageable);
     }
-
 
 
 }

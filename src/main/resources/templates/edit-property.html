@@ -1,30 +1,325 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
-  <title>Edit Property</title>
-  <link rel="stylesheet" href="/css/styles.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PropertyNest - Edit Property</title>
+
+  <link rel="stylesheet" th:href="@{/css_main/style.css}">
+  <link rel="stylesheet" th:href="@{/css_main/auth.css}">
+  <link rel="stylesheet" th:href="@{/css_main/add-property.css}">
+  <link rel="stylesheet" th:href="@{/css_main/list-property.css}">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </head>
+
 <body>
-<h1>Edit Property</h1>
-<form th:action="@{/properties/edit/{id}(id=${property.id})}" th:object="${property}" method="post" enctype="multipart/form-data">
-  <label>Title: <input type="text" th:field="*{title}" required /></label><br />
-  <label>Description: <textarea th:field="*{description}" required></textarea></label><br />
-  <label>Location: <input type="text" th:field="*{location}" required /></label><br />
-  <label>Price: <input type="number" th:field="*{price}" step="0.01" required /></label><br />
-  <label>Pincode: <input type="text" th:field="*{pincode}" step="0.01" required /></label><br />
+<div class="min-h-screen bg-white">
 
-  <label>Area (sq ft): <input type="number" th:field="*{area}" step="0.01" required /></label><br />
+  <!-- Header -->
+  <header class="fixed-header">
+    <div class="container">
+      <div class="logo">
+        <a href="/properties" style="all: unset; cursor: pointer; display: flex;">
+          Property<span class="logo-nest">Nest
+            <i data-lucide="home" class="logo-icon"></i>
+          </span>
+        </a>
+      </div>
 
-  <!-- Image Upload Fields -->
-  <label>Image 1: <input type="file" name="images" accept="image/*" /></label>
-  <span th:if="${property.image1}" th:text="'Current: ' + ${property.image1}"></span><br />
-  <label>Image 2: <input type="file" name="images" accept="image/*" /></label>
-  <span th:if="${property.image2}" th:text="'Current: ' + ${property.image2}"></span><br />
-  <label>Image 3: <input type="file" name="images" accept="image/*" /></label>
-  <span th:if="${property.image3}" th:text="'Current: ' + ${property.image3}"></span><br />
+      <nav class="nav-menu">
+        <a th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}" class="nav-link" href="/admin/dashboard">Admin Panel</a>
+        <a href="/properties" class="nav-link">Home</a>
+        <a href="/properties/list" class="nav-link">List Property</a>
+        <a href="/user/properties" class="nav-link">My Properties</a>
+        <a href="/user/complaint" class="nav-link">Submit Complaint</a>
 
-  <button type="submit">Update Property</button>
-</form>
-<a th:href="@{/properties/{id}(id=${property.id})}">Back to Property Details</a>
+        <!-- Show Username & Logout Button if Logged In -->
+        <span th:if="${session.username}" style="display: contents">
+          <a th:href="@{/user/profile}" th:text="${session.username}" class="nav-link username-link" style="color: gold; font-weight: bold;"></a>
+          <span>
+            <form th:action="@{/logout}" method="post" style="display: inline;">
+              <button type="submit" class="btn btn-danger">Logout</button>
+            </form>
+          </span>
+        </span>
+
+        <!-- Show Login/Register if Not Logged In -->
+        <span th:if="${session.username == null}">
+          <a href="/login"><button class="btn-primary">Login</button></a>
+        </span>
+      </nav>
+    </div>
+  </header>
+  <div class="auth-container">
+    <div class="auth-card">
+      <div class="auth-header">
+        <h1>Edit Property</h1>
+        <p>Modify property details below</p>
+      </div>
+
+<!--  <form class="auth-form" th:action="@{/property/update}" method="post" enctype="multipart/form-data">-->
+      <form class="auth-form" th:action="@{'/properties/edit/' + ${propertyInfo.propId}}" method="post" enctype="multipart/form-data">
+
+      <input type="hidden" name="propId" th:value="${propertyInfo.propId}">
+    <div class="form-row">
+      <div class="form-group">
+        <label for="propTitle">Title:</label>
+        <input type="text" id="propTitle" name="propTitle" th:value="${propertyInfo.propTitle}" required>
+      </div>
+
+      <div class="form-group">
+       <label for="location">Location:</label>
+        <input type="text" id="location" name="location" th:value="${propertyInfo.location}" required>
+      </div>
+    </div>
+
+    <label for="pinCode">Pin Code:</label>
+    <input type="text" id="pinCode" name="pinCode" th:value="${propertyInfo.pinCode}" required>
+
+    <label for="area">Area (sq ft):</label>
+    <input type="text" id="area" name="area" th:value="${propertyInfo.area}" required>
+
+    <label for="facing">Facing:</label>
+    <input type="text" id="facing" name="facing" th:value="${propertyInfo.facing}">
+
+    <label for="price">Price:</label>
+    <input type="text" id="price" name="price" th:value="${propertyInfo.price}" required>
+
+    <label for="status">Status:</label>
+    <select id="status" name="status">
+      <option value="AVAILABLE" th:selected="${propertyInfo.status == 'AVAILABLE'}">AVAILABLE</option>
+      <option value="SOLD" th:selected="${propertyInfo.status == 'SOLD'}">SOLD</option>
+    </select>
+
+    <!-- Image Uploads -->
+    <label for="img1">Main Image:</label>
+    <input type="file" id="img1" name="img1">
+    <img th:src="${propertyInfo.img1 != null ? propertyInfo.img1 : '/images/default-property.jpg'}" alt="Property Image 1" width="100">
+
+    <label for="img2">Image 2:</label>
+    <input type="file" id="img2" name="img2">
+    <img th:src="${propertyInfo.img2 != null ? propertyInfo.img2 : '/images/default-property.jpg'}" alt="Property Image 2" width="100">
+
+    <label for="img3">Image 3:</label>
+    <input type="file" id="img3" name="img3">
+    <img th:src="${propertyInfo.img3 != null ? propertyInfo.img3 : '/images/default-property.jpg'}" alt="Property Image 3" width="100">
+
+    <label for="img4">Image 4:</label>
+    <input type="file" id="img4" name="img4">
+    <img th:src="${propertyInfo.img4 != null ? propertyInfo.img4 : '/images/default-property.jpg'}" alt="Property Image 4" width="100">
+
+    <label for="img5">Image 5:</label>
+    <input type="file" id="img5" name="img5">
+    <img th:src="${propertyInfo.img5 != null ? propertyInfo.img5 : '/images/default-property.jpg'}" alt="Property Image 5" width="100">
+
+    <h3>Property Details</h3>
+
+    <!-- Dynamic Fields Container -->
+    <div id="dynamicFields" th:switch="${propertyInfo.propertyCategory.name}" class="form-section">
+      <!-- Villa -->
+      <div th:case="'Villa'">
+        <h2>Villa Details</h2>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="bhk">
+              <i data-lucide="home"></i>
+              BHK
+            </label>
+            <input type="number" id="bhk" name="bhk"  min="0" placeholder="Number of BHK">
+          </div>
+          <div class="form-group">
+            <label for="floors">
+              <i data-lucide="layers"></i>
+              Floors
+            </label>
+            <input type="number" id="floors" name="floors"  min="0" placeholder="Number of floors">
+          </div>
+        </div>
+        <div class="amenities-grid">
+          <label class="toggle-label" >
+            <!--                                <input type="hidden" name="furnished" value="false">-->
+            <input type="checkbox" name="furnished"  >
+            <span class="toggle-button"></span>
+            <span class="toggle-text">Furnished</span>
+          </label>
+          <label class="toggle-label" >
+            <!--                                <input type="hidden" name="parking" value="false">-->
+            <input type="checkbox" name="parking">
+            <span class="toggle-button"></span>
+            <span class="toggle-text">Parking</span>
+          </label>
+        </div>
+      </div>
+      <!-- Tenement -->
+      <div th:case="'Tenement'">
+        <h2>Tenement Details</h2>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="bhk">
+              <i data-lucide="home"></i>
+              BHK
+            </label>
+            <input type="number" id="bhk" name="bhk"  min="0" placeholder="Number of BHK">
+          </div>
+          <div class="form-group">
+            <label for="floors">
+              <i data-lucide="layers"></i>
+              Floors
+            </label>
+            <input type="number" id="floors" name="floors"  min="0" placeholder="Number of floors">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="schemeName">
+            <i data-lucide="building"></i>
+            Scheme Name
+          </label>
+          <input type="text" id="schemeName" name="schemeName"  placeholder="Enter scheme name">
+        </div>
+        <div class="amenities-grid">
+          <label class="toggle-label">
+            <input type="checkbox" name="corner">
+            <span class="toggle-button"></span>
+            <span class="toggle-text">Corner</span>
+          </label>
+          <label class="toggle-label">
+            <input type="checkbox" name="furnished">
+            <span class="toggle-button"></span>
+            <span class="toggle-text">Furnished</span>
+          </label>
+          <label class="toggle-label">
+            <input type="checkbox" name="parking">
+            <span class="toggle-button"></span>
+            <span class="toggle-text">Parking</span>
+          </label>
+        </div>
+      </div>
+      <!-- Plot -->
+      <div th:case="'Plot'">
+        <h2>Plot Details</h2>
+        <div class="form-group">
+          <label for="schemeName">
+            <i data-lucide="building"></i>
+            Scheme Name
+          </label>
+          <input type="text" id="schemeName" name="schemeName"  placeholder="Enter scheme name">
+        </div>
+        <div class="amenities-grid">
+          <label class="toggle-label">
+            <input type="checkbox" name="corner">
+            <span class="toggle-button"></span>
+            <span class="toggle-text">Corner Plot</span>
+          </label>
+        </div>
+      </div>
+      <!-- Apartment -->
+      <div th:case="'Apartment'">
+        <h2>Apartment Details</h2>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="bhk">
+              <i data-lucide="home"></i>
+              BHK
+            </label>
+            <input type="number" id="bhk" name="bhk"  min="0" placeholder="Number of BHK">
+          </div>
+          <div class="form-group">
+            <label for="floor">
+              <i data-lucide="stairs"></i>
+              Floor
+            </label>
+            <input type="number" id="floor" name="floor"  min="0" placeholder="Floor number">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="schemeName">
+            <i data-lucide="building"></i>
+            Scheme Name
+          </label>
+          <input type="text" id="schemeName" name="schemeName"  placeholder="Enter scheme name">
+        </div>
+        <div class="amenities-grid">
+          <label class="toggle-label">
+            <input type="checkbox" name="furnished">
+            <span class="toggle-button"></span>
+            <span class="toggle-text">Furnished</span>
+          </label>
+          <label class="toggle-label">
+            <input type="checkbox" name="parking">
+            <span class="toggle-button"></span>
+            <span class="toggle-text">Parking</span>
+          </label>
+        </div>
+      </div>
+      <!-- Shop -->
+      <div th:case="'Shop'">
+        <h2>Shop Details</h2>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="floor">
+              <i data-lucide="stairs"></i>
+              Floor
+            </label>
+            <input type="number" id="floor" name="floor"  min="0" placeholder="Floor number">
+          </div>
+          <div class="form-group">
+            <label for="washroom">
+              <i data-lucide="bath"></i>
+              Washrooms
+            </label>
+            <input type="number" id="washroom" name="washroom"  min="0" placeholder="Number of washrooms">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="schemeName">
+            <i data-lucide="building"></i>
+            Scheme Name
+          </label>
+          <input type="text" id="schemeName" name="schemeName"  placeholder="Enter scheme name">
+        </div>
+        <div class="amenities-grid">
+          <label class="toggle-label">
+            <input type="checkbox" name="corner">
+            <span class="toggle-button"></span>
+            <span class="toggle-text">Corner</span>
+          </label>
+          <label class="toggle-label">
+            <input type="checkbox" name="parking">
+            <span class="toggle-button"></span>
+            <span class="toggle-text">Parking</span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Common Fields -->
+    <div class="form-section">
+      <h2>Additional Information</h2>
+      <div class="form-group">
+        <label for="propDetails">
+          <i data-lucide="file-text"></i>
+          Property Details
+        </label>
+        <textarea
+                id="propDetails"
+                name="propDetails"
+
+                rows="4"
+                placeholder="Describe your property in detail"
+        ></textarea>
+      </div>
+    </div>
+
+    <button type="submit">Update Property</button>
+  </form>
+
+  <a href="/property/list">Back to List</a>
+
+</div>
 </body>
 </html>

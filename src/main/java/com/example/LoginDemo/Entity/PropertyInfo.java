@@ -13,10 +13,6 @@ import java.util.Date;
 @AllArgsConstructor
 public class PropertyInfo {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long propId;
-
     @ManyToOne
     @JoinColumn(name = "prop_cat_id", nullable = false)
     private PropertyCat propertyCategory;
@@ -38,6 +34,10 @@ public class PropertyInfo {
     private String img3;
     private String img4;
     private String img5;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long propId;
 
     private Double price;
     private Date listingDate;

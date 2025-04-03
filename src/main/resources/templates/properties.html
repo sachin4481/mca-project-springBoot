@@ -7,7 +7,7 @@
   <link rel="stylesheet" th:href=@{/css_main/style.css}>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-  <script src="https://unpkg.com/lucide@latest"></script>
+<!--  <script src="https://unpkg.com/lucide@latest"></script>-->
   <style>
     .clamped-text {
         display: -webkit-box;
@@ -74,11 +74,22 @@
     <form action="/search" method="post" class="search-box">
       <div class="search-grid">
 
+        <!-- Property Category Dropdown -->
+        <div class="dropdown">
+          <label for="category" class="d-flex align-items-center">
+            <i data-lucide="list"></i> Select Category
+          </label>
+          <select id="category" class="dropdown-btn" name="category">
+            <option value="">-- Select Category --</option>
+            <option th:each="cat : ${categories}" th:value="${cat.id}" th:text="${cat.name}" th:selected="${cat.id == selectedCategory}"></option>
+          </select>
+        </div>
 
         <!-- Area Field -->
         <div class="dropdown">
           <input type="number" name="area" class="dropdown-btn" placeholder="Area (in Sq. Ft.)" th:value="${searchArea}">
         </div>
+
 
         <!-- Location Dropdown -->
         <div class="dropdown">
@@ -156,14 +167,14 @@
         <div class="row g-4">
           <div class="col-lg-3 col-md-4 col-sm-6" th:each="property : ${properties}">
             <div class="card border-0 shadow-sm rounded-4">
-              <img th:src="@{${property.image1}}" class="card-img-top rounded-top-4" alt="Property Image">
+              <img th:src="@{${property.img1}}" class="card-img-top rounded-top-4" alt="Property Image">
               <div class="card-body">
-                <h5 class="card-title fw-bold text-dark" th:text="${property.title}">Property Title</h5>
+                <h5 class="card-title fw-bold text-dark" th:text="${property.propTitle}">Property Title</h5>
                 <p class="card-text mb-1"><i class="bi bi-rulers"></i> <span th:text="${property.area} + ' sq ft'"></span></p>
-                <p class="card-text mb-1"><i class="bi bi-geo-alt"></i> <span th:text="${property.pincode}"></span></p>
-                <p class="clamped-text text-muted mb-3" th:text="${#strings.abbreviate(property.description, 120)}"></p>
+                <p class="card-text mb-1"><i class="bi bi-geo-alt"></i> <span th:text="${property.pinCode}"></span></p>
+                <p class="clamped-text text-muted mb-3" th:text="${property.propertyCategory.name}"></p>
                 <p class="card-text h5 text-black"><strong>₹</strong> <span th:text="${property.price}"></span></p>
-                <a th:href="@{/properties/{id}(id=${property.id})}" class="btn btn-warning text-dark fw-semibold w-100">View Details</a>
+                <a th:href="@{/properties/{id}(id=${property.propId})}" class="btn btn-warning text-dark fw-semibold w-100">View Details</a>
               </div>
             </div>
           </div>
@@ -173,21 +184,19 @@
         </div>
       </div>
     </section>
-
-
-    <!--Recent Listings-->
+<!--Recent listings top 4-->
     <section class="listings-section py-5 bg-light">
       <div class="container">
         <h2 class="text-center">Recent Listings</h2>
         <div class="row g-4">
           <div class="col-lg-3 col-md-4 col-sm-6" th:each="property : ${recentListings}">
             <div class="card border-0 shadow-sm rounded-4">
-              <img th:src="@{${property.image1}}" class="card-img-top rounded-top-4" alt="Property Image">
+              <img th:src="@{${property.img1}}" class="card-img-top rounded-top-4" alt="Property Image">
               <div class="card-body">
-                <h5 class="card-title fw-bold text-dark" th:text="${property.title}">Property Title</h5>
+                <h5 class="card-title fw-bold text-dark" th:text="${property.propTitle}">Property Title</h5>
                 <p class="card-text mb-1"><i class="bi bi-geo-alt"></i> <span th:text="${property.location}"></span></p>
                 <p class="card-text h5 text-black"><strong>₹</strong> <span th:text="${property.price}"></span></p>
-                <a th:href="@{/properties/{id}(id=${property.id})}" class="btn btn-warning text-dark fw-semibold w-100">View Details</a>
+                <a th:href="@{/properties/{id}(id=${property.propId})}" class="btn btn-warning text-dark fw-semibold w-100">View Details</a>
               </div>
             </div>
           </div>
@@ -197,6 +206,7 @@
         </div>
       </div>
     </section>
+
     <script>
       lucide.createIcons();
     </script>
