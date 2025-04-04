@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Inquiries - PropertyNest</title>
+  <link rel="stylesheet" th:href="@{/css_main/style.css}">
+  <link rel="stylesheet" th:href="@{/css_main/auth.css}">
+  <link rel="stylesheet" th:href="@{/css_main/my-inquiries.css}">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+</head>
+<body>
+<!-- Header -->
+<header th:replace="fragments :: header" />
+
+<div class="page-container">
+  <div class="page-header">
+    <h1 class="page-title">
+      <i data-lucide="inbox"></i>
+      Property Inquiries
+    </h1>
+    <div class="inquiry-count" th:if="${!inquiries.empty}">
+      <span th:text="${inquiries.size()}"></span> inquiries
+    </div>
+  </div>
+
+  <div class="inquiries-container">
+    <!-- Empty State -->
+    <div th:if="${inquiries.empty}" class="empty-state">
+      <i data-lucide="inbox"></i>
+      <p>You have no inquiries yet.</p>
+    </div>
+
+    <!-- Inquiries Table -->
+    <table th:unless="${inquiries.empty}" class="inquiries-table">
+      <thead>
+      <tr>
+        <th>Property</th>
+        <th>Inquired By</th>
+        <th>Contact Info</th>
+        <th>Inquiry Date</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="inquiry : ${inquiries}">
+        <td>
+          <div class="property-cell">
+            <i data-lucide="home"></i>
+            <span th:text="${inquiry.property.propTitle}"></span>
+          </div>
+        </td>
+        <td>
+          <div class="user-cell">
+            <i data-lucide="user"></i>
+            <span th:text="${inquiry.user.username}"></span>
+          </div>
+        </td>
+        <td>
+          <div class="contact-info">
+            <div class="user-cell">
+              <i data-lucide="mail"></i>
+              <span th:text="${inquiry.user.email}"></span>
+            </div>
+            <div class="user-cell">
+              <i data-lucide="phone"></i>
+              <span th:text="${inquiry.user.phone}"></span>
+            </div>
+          </div>
+        </td>
+        <td th:text="${#temporals.format(inquiry.inqDate, 'dd MMM yyyy, HH:mm')}"></td>
+        <td>
+              <span th:if="${inquiry.status == 'ACTIVE'}" class="status-badge active">
+                <i data-lucide="check-circle"></i>
+                Active
+              </span>
+          <span th:if="${inquiry.status == 'CLOSED'}" class="status-badge closed">
+                <i data-lucide="x-circle"></i>
+                Closed
+              </span>
+        </td>
+        <td>
+          <form th:if="${inquiry.status == 'ACTIVE'}"
+                th:action="@{/inquiries/{id}/close(id=${inquiry.inqId})}"
+                method="post">
+            <button type="submit" class="btn-close">
+              <i data-lucide="x"></i>
+              Close
+            </button>
+          </form>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  lucide.createIcons();
+</script>
+</body>
+</html>

@@ -25,44 +25,39 @@
 <body>
 <div class="min-h-screen bg-white">
     <!-- Header -->
-    <header class="fixed-header">
+    <header th:fragment="header" class="fixed-header">
         <div class="container">
             <div class="logo">
-                <a onclick="showWarning(event)" href="/properties" style="all: unset; cursor: pointer; display: flex;">
+                <a href="/properties" onclick="showWarning(event)" style="all: unset; cursor: pointer; display: flex;">
                     Property<span class="logo-nest">Nest
             <i data-lucide="home" class="logo-icon"></i>
           </span>
                 </a>
             </div>
             <nav class="nav-menu">
-                <a th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}" onclick="showWarning(event)" class="nav-link" href="/admin/dashboard">Admin Panel</a>
-                <a href="/properties" class="nav-link" onclick="showWarning(event)">Home</a>
-<!--                <a href="/properties/list" onclick="showWarning(event)" class="nav-link">List Property</a>-->
-                <!--        <a href="/user/add" class="nav-link">Add Property</a>-->
-                <a href="/user/properties" onclick="showWarning(event)" class="nav-link">My Properties</a>
-                <a href="/user/complaint" onclick="showWarning(event)" class="nav-link">Submit Complaint</a>
-
-
-
+                <a th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}"class="nav-link" onclick="showWarning(event)"  href="/admin/dashboard">Admin Panel</a>
+                <a href="/properties" onclick="showWarning(event)"  class="nav-link">Home</a>
+                <!--        <a href="/properties/list" class="nav-link">List Property</a>-->
+                <a href="/user/add" onclick="showWarning(event)"  class="nav-link">Add Property</a>
+                <a href="/user/properties" onclick="showWarning(event)"  class="nav-link">My Properties</a>
+                <a href="/my-inquiries" onclick="showWarning(event)"  class="nav-link">My Inquiries</a>
+                <a href="/user/complaint" onclick="showWarning(event)"  class="nav-link">Submit Complaint</a>
                 <!-- Show Username & Logout Button if Logged In -->
                 <span th:if="${session.username}" style="display: contents">
-
-            <a th:href="@{/user/profile}" th:text="${session.username}" onclick="showWarning(event)" class="nav-link username-link" style="color: gold; font-weight: bold;"></a>
+            <a th:href="@{/user/profile}" th:text="${session.username}" onclick="showWarning(event)"  class="nav-link username-link" style="color: gold; font-weight: bold;"></a>
             <span>
                 <form th:action="@{/logout}" method="post" style="display: inline;">
-                  <button type="submit" class="btn btn-danger" onclick="showWarning(event)">Logout</button>
+                  <button type="submit" onclick="showWarning(event)"  class="logout-btn">Logout</button>
                 </form>
               </span>
           </span>
-
                 <!-- Show Login/Register if Not Logged In -->
                 <span th:if="${session.username == null}">
-            <a href="/login"><button class="btn-primary" onclick="showWarning(event)">Login</button></a>
+            <a href="/login"><button onclick="showWarning(event)"  class="btn-primary">Login</button></a>
           </span>
             </nav>
         </div>
     </header>
-
     <!-- Property Details Form -->
     <div class="auth-container">
         <div class="auth-card property-form-card">

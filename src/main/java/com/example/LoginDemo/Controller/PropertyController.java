@@ -188,30 +188,18 @@ public String searchProperties(@RequestParam(required = false) Long category,//n
 
     // Update Property
     @PostMapping("/properties/edit/{id}")
-    public String updateProperty(@PathVariable Long id,
-                                 @ModelAttribute PropertyInfo propertyInfo,
-                                 @RequestParam("images") MultipartFile[] images,
-                                 @AuthenticationPrincipal UserDetails userDetails) throws IOException {
-        String username = userDetails.getUsername();
-        UserEntity currentUser = userServices.findByUsername(username); // Fetch from service
+    public String updateProperty(
+            @PathVariable Long id,
+            @ModelAttribute("propertyInfo") PropertyInfo propertyInfo, // Must match Thymeleaf model
+            @RequestParam("images") MultipartFile[] images,
+            @AuthenticationPrincipal UserDetails userDetails) throws IOException {
 
+        UserEntity currentUser = userServices.findByUsername(userDetails.getUsername());
         propertyServices.updateProperty(id, propertyInfo, images, currentUser);
-        return "redirect:/edit-property-details/{id}";
+        return "redirect:/edit-property-details/" + id;
     }
 
-//    @GetMapping("/edit-property-details/{id}")
-//    public String editPropertyDetails(@PathVariable Long id, Model model) {
-//    // Check if property details exist for the given property ID
-//    Optional<PropertyDetails> propertyDetails = propertyDetailsRepository.findByPropertyInfo_PropId(id);
-//
-//    if (propertyDetails.isEmpty()) {
-//        // If no property details exist, redirect to /properties/{id}
-//        return "redirect:/user/add-property-details?propId=" + id; // Redirect if details do not exist
-//    }
-//
-//    model.addAttribute("propertyId", id);
-//    return "edit-property-details";
-//}
+
 
     @GetMapping("/edit-property-details/{id}")
     public String editPropertyDetails(@PathVariable Long id, Model model) {
@@ -399,5 +387,6 @@ public String searchProperties(@RequestParam(required = false) Long category,//n
         return "redirect:/properties/" + propId;
 
     }
+
 
 }

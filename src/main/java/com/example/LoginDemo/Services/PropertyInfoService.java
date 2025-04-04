@@ -1,8 +1,11 @@
 package com.example.LoginDemo.Services;
 
+import com.example.LoginDemo.Entity.PropInquiry;
 import com.example.LoginDemo.Entity.PropertyInfo;
 import com.example.LoginDemo.Entity.UserEntity;
+import com.example.LoginDemo.Repository.PropInquiryRepository;
 import com.example.LoginDemo.Repository.PropertyInfoRepository;
+import com.example.LoginDemo.Repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.*;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -18,6 +22,10 @@ public class PropertyInfoService {
 
     @Autowired
     private PropertyInfoRepository propertyInfoRepository;
+    @Autowired
+    private PropInquiryRepository propInquiryRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     public PropertyInfo getPropertyById(Long id) {
         return propertyInfoRepository.findById(id)
@@ -40,7 +48,9 @@ public class PropertyInfoService {
         if (!existingProperty.getUser().getId().equals(currentUser.getId())) {
             throw new AccessDeniedException("You are not authorized to update this property");
         }
-
+        if (!Arrays.asList("AVAILABLE", "SOLD").contains(updatedProperty.getStatus())) {
+            throw new IllegalArgumentException("Invalid status value");
+        }
         // Update property fields
         existingProperty.setPropTitle(updatedProperty.getPropTitle());
         existingProperty.setLocation(updatedProperty.getLocation());
@@ -78,7 +88,6 @@ public class PropertyInfoService {
     }
 
 
-    public void deleteProperty(Long id) {
-        propertyInfoRepository.deleteById(id);
-    }
+
+
 }

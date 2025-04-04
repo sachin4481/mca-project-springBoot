@@ -13,38 +13,7 @@
 </head>
 <body>
 <!-- Header -->
-<header class="fixed-header">
-  <div class="container">
-    <div class="logo">
-      <a href="/properties" style="all: unset; cursor: pointer; display: flex;">
-        Property<span class="logo-nest">Nest
-            <i data-lucide="home" class="logo-icon"></i>
-          </span>
-      </a>
-    </div>
-    <nav class="nav-menu">
-      <a th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}" class="nav-link" href="/admin/dashboard">Admin Panel</a>
-      <a href="/properties" class="nav-link">Home</a>
-      <a href="/user/add" class="nav-link">Add Property</a>
-      <a href="/user/properties" class="nav-link">My Properties</a>
-      <a href="/owner/inquiries" class="nav-link">My Inquiries</a>
-      <a href="/user/complaint" class="nav-link">Submit Complaint</a>
-
-      <span th:if="${session.username}" style="display: contents">
-          <a th:href="@{/user/profile}" th:text="${session.username}" class="nav-link username-link" style="color: gold; font-weight: bold;"></a>
-          <span>
-            <form th:action="@{/logout}" method="post" style="display: inline;">
-              <button type="submit" class="btn btn-danger">Logout</button>
-            </form>
-          </span>
-        </span>
-
-      <span th:if="${session.username == null}">
-          <a href="/login"><button class="btn-primary">Login</button></a>
-        </span>
-    </nav>
-  </div>
-</header>
+<header th:replace="fragments :: header" />
 
 <div class="page-container">
   <div class="property-header">
@@ -190,24 +159,31 @@
   </div>
 
   <div class="action-buttons">
-    <th:block th:if="${currentUserId != propertyInfo.user.id}">
-      <form th:action="@{/inquiries/create/{id}(id=${propertyInfo.propId})}" method="post" style="margin: 0;">
-        <button type="submit" class="btn btn-primary">
-          <i data-lucide="send"></i>
-          Send Inquiry
-        </button>
+
+    <!-- If current user is the property owner, show Edit button -->
+    <th:block th:if="${propertyInfo.user != null and #authentication.principal.username == propertyInfo.user.username}">
+      <a th:href="@{/properties/edit/{id}(id=${propertyInfo.propId})}" class="btn btn-secondary">
+        <i data-lucide="edit"></i>
+        Edit Property
+      </a>
+    </th:block>
+
+    <!-- If current user is NOT the property owner, show Send Inquiry button -->
+    <th:block th:if="${propertyInfo.user != null and #authentication.principal.username != propertyInfo.user.username}">
+      <form th:action="@{/properties/{id}/inquiry(id=${propertyInfo.propId})}" method="post">
+        <button type="submit" class="btn btn-primary">Send Inquiry</button>
       </form>
     </th:block>
-<th:block th:if="${propertyInfo.user != null and #authentication.principal.username == propertyInfo.user.username}">
-    <a
-       th:href="@{/properties/edit/{id}(id=${propertyInfo.propId})}"
-       class="btn btn-secondary">
-      <i data-lucide="edit"></i>
-      Edit Property
-    </a>
-</th:block>
 
-    <a th:href="@{/properties}" class="btn btn-back">
+  </div>
+  <div th:if="${successMessage}" class="alert alert-success">
+    <span th:text="${successMessage}"></span>
+  </div>
+  <div th:if="${errorMessage}" class="alert alert-danger">
+    <span th:text="${errorMessage}"></span>
+  </div>
+
+  <a th:href="@{/properties}" class="btn btn-back">
       <i data-lucide="arrow-left"></i>
       Back to Listings
     </a>

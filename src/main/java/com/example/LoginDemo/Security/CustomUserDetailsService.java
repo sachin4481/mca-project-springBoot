@@ -73,27 +73,11 @@ public class CustomUserDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException("Username not found!");
         }
         UserEntity user = userOpt.get();
-//        if (!user.isVerified()) {
-//            throw new UsernameNotFoundException("User not verified! Please verify your email.");
-//        }
-
-
         System.out.println("User roles: " + user.getRole());
 
-
-
-
-//        // Convert the role to a GrantedAuthority
         List<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority("ROLE_" +user.getRole())); // Add the role as an authority
 
-
-
-
-
-
-
-        // Return the UserDetails object with roles
         return new User(
                 user.getUsername(),
                 user.getPassword(),

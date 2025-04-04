@@ -134,6 +134,7 @@ public class HomeController {
             String username = userDetails.getUsername();
             session.setAttribute("username", username); // Store in session
 
+
             String role = userServices.getUserRole(username);
             logger.info("User {} authenticated with role {}", username, role);
 

@@ -1,47 +1,332 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <title>Edit Property</title>
-  <link rel="stylesheet" href="/css/styles.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Property - PropertyNest</title>
+  <link rel="stylesheet" th:href="@{/css_main/style.css}">
+  <link rel="stylesheet" th:href="@{/css_main/auth.css}">
+  <link rel="stylesheet" th:href="@{/css_main/list-property.css}">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    .edit-container {
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 2rem;
+      background: white;
+      border-radius: 1rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .edit-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .edit-header h1 {
+      font-size: 2rem;
+      color: #1a1a1a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+    }
+
+    .edit-header h1 i {
+      color: #eab308;
+    }
+
+    .form-section {
+      margin-bottom: 2rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .form-section:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+      margin-bottom: 1rem;
+    }
+
+    .form-section h2 {
+      font-size: 1.25rem;
+      color: #4b5563;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .form-section h2 i {
+      color: #eab308;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.875rem;
+      color: #4b5563;
+      margin-bottom: 0.5rem;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #e5e7eb;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      transition: all 0.2s ease;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #eab308;
+      box-shadow: 0 0 0 3px rgba(234, 179, 8, 0.1);
+    }
+
+    .image-upload {
+      margin-bottom: 1rem;
+    }
+
+    .image-upload label {
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    .current-image {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+      color: #6b7280;
+      margin-top: 0.25rem;
+    }
+
+    .current-image i {
+      color: #eab308;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    .btn-submit,
+    .btn-back {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.75rem;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+
+    .btn-submit {
+      background: #eab308;
+      color: white;
+      border: none;
+    }
+
+    .btn-submit:hover {
+      background: #ca8a04;
+    }
+
+    .btn-back {
+      background: #f3f4f6;
+      color: #4b5563;
+      border: none;
+    }
+
+    .btn-back:hover {
+      background: #e5e7eb;
+      color: #1f2937;
+    }
+
+    @media (max-width: 640px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .form-actions {
+        flex-direction: column;
+      }
+    }
+  </style>
 </head>
 <body>
-<h1>Edit Property</h1>
-<form th:action="@{/properties/edit/{id}(id=${propertyInfo.propId})}" th:object="${propertyInfo}" method="post" enctype="multipart/form-data">
+<!-- Header -->
+<header class="fixed-header">
+  <div class="container">
+    <a href="index.html" class="logo">
+      Property<span class="logo-nest">Nest
+          <i data-lucide="home" class="logo-icon"></i>
+        </span>
+    </a>
+    <nav class="nav-menu">
+      <a href="/properties" class="nav-link">Home</a>
+      <a href="/user/properties" class="nav-link">My Properties</a>
+      <a href="/my-inquiries" class="nav-link">My Inquiries</a>
+      <a href="/user/complaint" class="nav-link">Submit Complaint</a>
+      <a href="/login" class="btn-primary">Logout</a>
+    </nav>
+  </div>
+</header>
 
-  <label>Title: <input type="text" th:field="*{propTitle}" required /></label><br />
-  <label>Location: <input type="text" th:field="*{location}" required /></label><br />
-  <label>Pincode: <input type="text" th:field="*{pinCode}" required /></label><br />
-  <label>Area (sq ft): <input type="text" th:field="*{area}" required /></label><br />
-  <label>Facing: <input type="text" th:field="*{facing}" required /></label><br />
-  <label>Price: <input type="number" th:field="*{price}" step="0.01" required /></label><br />
-<!--  <label>Listing Date: <input type="date" th:field="*{listingDate}" required /></label><br />-->
+<div class="container" style="padding-top: 5rem;">
+  <div class="edit-container">
+    <div class="edit-header">
+      <h1>
+        <i data-lucide="edit"></i>
+        Edit Property
+      </h1>
+    </div>
 
-  <!-- Status Field -->
-  <label>Status:
-    <select th:field="*{status}" required>
-      <option value="AVAILABLE">AVAILABLE</option>
-      <option value="UNSOLD">UNSOLD</option>
-    </select>
-  </label><br />
+    <form th:action="@{/properties/edit/{id}(id=${propertyInfo.propId})}"
+          th:object="${propertyInfo}"
+          method="post"
+          enctype="multipart/form-data">
 
-  <!-- Image Upload Fields -->
-  <label>Image 1: <input type="file" name="images" accept="image/*" /></label>
-  <span th:if="${propertyInfo.img1}" th:text="'Current: ' + ${propertyInfo.img1}"></span><br />
+      <!-- Basic Details -->
+      <div class="form-section">
+        <h2>
+          <i data-lucide="clipboard"></i>
+          Basic Details
+        </h2>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Property Title</label>
+            <input type="text" th:field="*{propTitle}" required />
+          </div>
+          <div class="form-group">
+            <label>Location</label>
+            <input type="text" th:field="*{location}" required />
+          </div>
+          <div class="form-group">
+            <label>PIN Code</label>
+            <input type="text" th:field="*{pinCode}" required />
+          </div>
+          <div class="form-group">
+            <label>Area (sq ft)</label>
+            <input type="text" th:field="*{area}" required />
+          </div>
+          <div class="form-group">
+            <label>Facing</label>
+            <select th:field="*{facing}" required>
+              <option value="north">North</option>
+              <option value="south">South</option>
+              <option value="east">East</option>
+              <option value="west">West</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Price (₹)</label>
+            <input type="number" th:field="*{price}" step="0.01" required />
+          </div>
+        </div>
+      </div>
 
-  <label>Image 2: <input type="file" name="images" accept="image/*" /></label>
-  <span th:if="${propertyInfo.img2}" th:text="'Current: ' + ${propertyInfo.img2}"></span><br />
+      <!-- Status -->
+      <div class="form-section">
+        <h2>
+          <i data-lucide="check-circle"></i>
+          Property Status
+        </h2>
+        <div class="form-group">
+          <label>Current Status</label>
+          <select th:field="*{status}" name="status" required>
+            <option th:value="AVAILABLE" th:selected="${propertyInfo.status == 'AVAILABLE'}">Available</option>
+            <option th:value="SOLD" th:selected="${propertyInfo.status == 'SOLD'}">Sold</option>
+          </select>
+        </div>
+      </div>
 
-  <label>Image 3: <input type="file" name="images" accept="image/*" /></label>
-  <span th:if="${propertyInfo.img3}" th:text="'Current: ' + ${propertyInfo.img3}"></span><br />
+      <!-- Images -->
+      <div class="form-section">
+        <h2>
+          <i data-lucide="image"></i>
+          Property Images
+        </h2>
 
-  <label>Image 4: <input type="file" name="images" accept="image/*" /></label>
-  <span th:if="${propertyInfo.img4}" th:text="'Current: ' + ${propertyInfo.img4}"></span><br />
+        <div class="image-upload">
+          <label>Main Image</label>
+          <input type="file" name="images" accept="image/*" />
+          <div class="current-image" th:if="${propertyInfo.img1}">
+            <i data-lucide="image"></i>
+            <span th:text="${propertyInfo.img1}"></span>
+          </div>
+        </div>
 
-  <label>Image 5: <input type="file" name="images" accept="image/*" /></label>
-  <span th:if="${propertyInfo.img5}" th:text="'Current: ' + ${propertyInfo.img5}"></span><br />
+        <div class="image-upload">
+          <label>Additional Image 1</label>
+          <input type="file" name="images" accept="image/*" />
+          <div class="current-image" th:if="${propertyInfo.img2}">
+            <i data-lucide="image"></i>
+            <span th:text="${propertyInfo.img2}"></span>
+          </div>
+        </div>
 
-  <button type="submit">Update Property</button>
-</form>
-<a th:href="@{/edit-property-details/{id}(id=${propertyInfo.propId})}">Back to Property Details</a>
+        <div class="image-upload">
+          <label>Additional Image 2</label>
+          <input type="file" name="images" accept="image/*" />
+          <div class="current-image" th:if="${propertyInfo.img3}">
+            <i data-lucide="image"></i>
+            <span th:text="${propertyInfo.img3}"></span>
+          </div>
+        </div>
+
+        <div class="image-upload">
+          <label>Additional Image 3</label>
+          <input type="file" name="images" accept="image/*" />
+          <div class="current-image" th:if="${propertyInfo.img4}">
+            <i data-lucide="image"></i>
+            <span th:text="${propertyInfo.img4}"></span>
+          </div>
+        </div>
+
+        <div class="image-upload">
+          <label>Additional Image 4</label>
+          <input type="file" name="images" accept="image/*" />
+          <div class="current-image" th:if="${propertyInfo.img5}">
+            <i data-lucide="image"></i>
+            <span th:text="${propertyInfo.img5}"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn-submit">
+          <i data-lucide="save"></i>
+          Update Property
+        </button>
+        <a th:href="@{/edit-property-details/{id}(id=${propertyInfo.propId})}" class="btn-back">
+          <i data-lucide="arrow-left"></i>
+          Back to Details
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  lucide.createIcons();
+</script>
 </body>
 </html>

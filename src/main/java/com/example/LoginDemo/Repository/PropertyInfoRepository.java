@@ -11,6 +11,7 @@ import java.util.List;
 
 @Repository
 public interface PropertyInfoRepository extends JpaRepository<PropertyInfo, Long> {
+
     @Query("SELECT p FROM PropertyInfo p ORDER BY p.propId DESC")
     List<PropertyInfo> findTop4RecentProperties(Pageable pageable);
 

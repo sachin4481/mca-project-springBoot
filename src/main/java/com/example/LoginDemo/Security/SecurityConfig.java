@@ -27,7 +27,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/home", "/Registration", "/register", "/css/**", "/css_main/**", "/js/**", "/static/**","/forgot-password", "/verify-otp", "/reset-password","/verify-otp-email", "/auth/verify-otp-email").permitAll() // Allow public access
+                        .requestMatchers("/", "/home", "/Registration", "/register", "/css/**", "/css_main/**", "/js/**", "/static/**","/forgot-password", "/verify-otp", "/reset-password","/verify-otp-email", "/auth/verify-otp-email","/my-inquiries","/properties/**").permitAll() // Allow public access
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )

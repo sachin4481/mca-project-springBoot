@@ -2,11 +2,13 @@ package com.example.LoginDemo.Entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.util.Date;
 
 @Entity
 @Table(name = "property_info")
+@DynamicUpdate
 @Getter
 @Setter
 @NoArgsConstructor
@@ -43,5 +45,12 @@ public class PropertyInfo {
     private Date listingDate;
 
     @Column(nullable = false)
-    private String status = "AVAILABLE";
+    private String status;
+
+    @PrePersist
+    public void setDefaultStatus() {
+        if (this.status == null) {
+            this.status = "AVAILABLE";
+        }
+    }
 }
