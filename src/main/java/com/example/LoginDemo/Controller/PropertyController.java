@@ -4,6 +4,7 @@ package com.example.LoginDemo.Controller;
 import com.example.LoginDemo.Entity.*;
 import com.example.LoginDemo.Repository.*;
 import com.example.LoginDemo.Services.*;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -200,26 +201,53 @@ public String searchProperties(@RequestParam(required = false) Long category,//n
 
 //    @GetMapping("/edit-property-details/{id}")
 //    public String editPropertyDetails(@PathVariable Long id, Model model) {
-//        model.addAttribute("propertyId", id);
-//        return "edit-property-details";
+//    // Check if property details exist for the given property ID
+//    Optional<PropertyDetails> propertyDetails = propertyDetailsRepository.findByPropertyInfo_PropId(id);
+//
+//    if (propertyDetails.isEmpty()) {
+//        // If no property details exist, redirect to /properties/{id}
+//        return "redirect:/user/add-property-details?propId=" + id; // Redirect if details do not exist
 //    }
+//
+//    model.addAttribute("propertyId", id);
+//    return "edit-property-details";
+//}
+
     @GetMapping("/edit-property-details/{id}")
     public String editPropertyDetails(@PathVariable Long id, Model model) {
-    // Check if property details exist for the given property ID
-    Optional<PropertyDetails> propertyDetails = propertyDetailsRepository.findByPropertyInfo_PropId(id);
+        Optional<PropertyDetails> propertyDetails = propertyDetailsRepository.findByPropertyInfo_PropId(id);
 
-    if (propertyDetails.isEmpty()) {
-        // If no property details exist, redirect to /properties/{id}
-        return "redirect:/user/add-property-details?propId=" + id; // Redirect if details do not exist
+        if (propertyDetails.isEmpty()) {
+            return "redirect:/user/add-property-details?propId=" + id;
+        }
+
+        PropertyDetails details = propertyDetails.get();
+        String categoryName = details.getPropertyInfo().getPropertyCategory().getName(); // Assuming there's a getCatName()
+
+        model.addAttribute("propertyDetails", details);
+        model.addAttribute("propertyId", id);
+        model.addAttribute("category", categoryName);
+        return "edit-property-details";
     }
 
-    model.addAttribute("propertyId", id);
-    return "edit-property-details";
-}
+
+    @PostMapping("/edit-property-details")
+    public String updatePropertyDetails(@ModelAttribute PropertyDetails propertyDetails, @RequestParam("propId") Long propId) {
+        // Fetch the associated PropertyInfo
+        Optional<PropertyInfo> propertyInfoOpt = propertyInfoRepository.findById(propId);
+        if (propertyInfoOpt.isEmpty()) {
+            return "redirect:/error"; // or handle gracefully
+        }
+
+        propertyDetails.setPropertyInfo(propertyInfoOpt.get());
+        propertyDetailsRepository.save(propertyDetails);
+
+        return "redirect:/properties/" + propId;
+    }
 
 
 
-    // ✅ Show Add Property Form
+
     @GetMapping("/user/add")
     public String showAddPropertyForm(Model model) {
         model.addAttribute("categories", propertyCatRepository.findAll());
@@ -318,7 +346,7 @@ public String searchProperties(@RequestParam(required = false) Long category,//n
         return "add-property-details";
     }
 
-
+    @Transactional
     @PostMapping("/user/add-property-details")
     public String addPropertyDetails(@RequestParam("propId") Long propId,
                                      @RequestParam(required = false) Integer bhk,
@@ -345,6 +373,7 @@ public String searchProperties(@RequestParam(required = false) Long category,//n
 
         Optional<PropertyInfo> propertyOptional = propertyInfoRepository.findById(propId);
         if (!propertyOptional.isPresent()) {
+            System.out.println("Property ID not found: " + propId);
             redirectAttributes.addFlashAttribute("error", "Invalid property ID.");
             return "redirect:/properties";
         }
@@ -367,10 +396,8 @@ public String searchProperties(@RequestParam(required = false) Long category,//n
 
         System.out.println("Property details saved successfully!");
 
-        return "redirect:/properties";
+        return "redirect:/properties/" + propId;
+
     }
-
-
-
 
 }

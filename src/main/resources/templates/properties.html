@@ -7,7 +7,7 @@
   <link rel="stylesheet" th:href=@{/css_main/style.css}>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-<!--  <script src="https://unpkg.com/lucide@latest"></script>-->
+  <script src="https://unpkg.com/lucide@latest"></script>
   <style>
     .clamped-text {
         display: -webkit-box;
@@ -94,11 +94,11 @@
         <!-- Location Dropdown -->
         <div class="dropdown">
           <label for="location" class="d-flex align-items-center">
-            <i data-lucide="map-pin" class="me-2"></i> <!-- Use icon before the label -->
-            Select Location
+             <!-- Use icon before the label -->
+
           </label>
           <select id="location" class="dropdown-btn" name="location">
-            <option value="">-- Select Location --</option>
+
             <div class="dropdown-content" id="locationDropdown">
               <option th:each="loc : ${locations}" th:value="${loc}" th:text="${loc}" th:selected="${loc == selectedLocation}"></option>
             </div>

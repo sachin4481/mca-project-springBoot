@@ -2,9 +2,80 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Edit Property Details</title>
-    <link rel="stylesheet" href="/css/styles.css" />
+    <script>
+        function toggleFieldsByCategory(category) {
+            const allFields = document.querySelectorAll(".dynamic-field");
+            allFields.forEach(field => field.style.display = "none");
+
+            const visibleFields = document.querySelectorAll(`.show-${category}`);
+            visibleFields.forEach(field => field.style.display = "block");
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const category = document.getElementById("property-category").value;
+            toggleFieldsByCategory(category);
+        });
+    </script>
 </head>
 <body>
-<h1>Hello Dev</h1>
+<h2>Edit Property Details</h2>
+
+<!-- Hidden input to hold category name -->
+<input type="hidden" id="property-category" th:value="${category}" />
+
+<form th:action="@{/edit-property-details}" method="post" th:object="${propertyDetails}">
+    <input type="hidden" th:field="*{propDetailsId}" />
+    <input type="hidden" name="propId" th:value="${propertyId}" />
+
+    <!-- Dynamic Fields -->
+    <div class="dynamic-field show-Villa show-Tenement show-Apartment">
+        <label>BHK:</label>
+        <input type="number" th:field="*{bhk}" /><br/>
+    </div>
+
+    <div class="dynamic-field show-Villa show-Tenement">
+        <label>Floors:</label>
+        <input type="number" th:field="*{floors}" /><br/>
+    </div>
+
+    <div class="dynamic-field show-Apartment show-Shop">
+        <label>Floor:</label>
+        <input type="number" th:field="*{floor}" /><br/>
+    </div>
+
+    <div class="dynamic-field show-Villa show-Tenement show-Apartment">
+        <label>Furnished:</label>
+        <input type="checkbox" th:field="*{furnished}" /><br/>
+    </div>
+
+    <div class="dynamic-field show-Villa show-Tenement show-Apartment show-Shop">
+        <label>Parking:</label>
+        <input type="checkbox" th:field="*{parking}" /><br/>
+    </div>
+
+    <div class="dynamic-field show-Tenement show-Plot show-Shop show-Apartment">
+        <label>Scheme Name:</label>
+        <input type="text" th:field="*{schemeName}" /><br/>
+    </div>
+
+    <div class="dynamic-field show-Tenement show-Plot show-Shop">
+        <label>Corner:</label>
+        <input type="checkbox" th:field="*{corner}" /><br/>
+    </div>
+
+    <div class="dynamic-field show-Shop">
+        <label>Washroom:</label>
+        <input type="number" th:field="*{washroom}" /><br/>
+    </div>
+
+    <!-- Common Field -->
+    <div>
+        <label>Property Details:</label>
+        <textarea th:field="*{propDetails}"></textarea><br/>
+    </div>
+
+    <button type="submit">Update</button>
+</form>
+
 </body>
 </html>
