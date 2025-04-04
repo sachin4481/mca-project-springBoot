@@ -60,7 +60,7 @@ public class PropertyController {
     public String showUserProperties(Model model, @AuthenticationPrincipal UserDetails userDetails) {
         String username = userDetails.getUsername();
         UserEntity currentUser = userServices.findByUsername(username);
-        List<PropertyEntity> properties = propertyServices.getPropertiesByUser(currentUser);
+        List<PropertyInfo> properties = propertyServices.getPropertiesByUser(currentUser);
         model.addAttribute("properties", properties);
         model.addAttribute("currentUser", currentUser);
         return "user-properties";

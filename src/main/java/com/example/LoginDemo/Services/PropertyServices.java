@@ -143,10 +143,7 @@ public PropertyInfo getPropertyInfoById(Long id) {
 
 
 
-    public PropertyEntity listProperty(PropertyEntity property) {
-        property.setStatus("AVAILABLE");
-        return propertyRepository.save(property);
-    }
+
 
     public List<PropertyEntity> getAllProperty() {
         return propertyRepository.findAll();
@@ -162,8 +159,8 @@ public PropertyInfo getPropertyInfoById(Long id) {
     }
 
 
-    public List<PropertyEntity> getPropertiesByUser(UserEntity user) {
-        return propertyRepository.findByUser(user);
+    public List<PropertyInfo> getPropertiesByUser(UserEntity user) {
+        return propertyInfoRepository.findByUser(user);
     }
 
 
