@@ -166,7 +166,7 @@ public String searchProperties(@RequestParam(required = false) String area,
 }
 
 
-    // ✅ Show Add Property Form
+    //  Show Add Property Form
     @GetMapping("/user/add")
     public String showAddPropertyForm(Model model) {
         model.addAttribute("categories", propertyCatRepository.findAll());

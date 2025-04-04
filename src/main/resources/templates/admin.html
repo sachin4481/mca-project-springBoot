@@ -1,151 +1,469 @@
+<!--<!DOCTYPE html>-->
+<!--<html xmlns:th="http://www.thymeleaf.org"-->
+<!--      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">-->
+<!--<head>-->
+<!--    <title>Admin Dashboard</title>-->
+<!--    <link rel="stylesheet" href="/css/admin_style.css">-->
+<!--    <style>-->
+<!--        .dashboard-box {-->
+<!--            display: inline-block;-->
+<!--            width: 200px;-->
+<!--            padding: 20px;-->
+<!--            margin: 10px;-->
+<!--            border: 1px solid #ccc;-->
+<!--            text-align: center;-->
+<!--            cursor: pointer;-->
+<!--        }-->
+<!--        .hidden {-->
+<!--            display: none;-->
+<!--        }-->
+<!--    </style>-->
+<!--</head>-->
+<!--<body>-->
+<!--<h1>Welcome to the Admin Dashboard</h1>-->
+<!--<p>You are logged in as: <span sec:authentication="name"></span></p>-->
+<!--<p>Your role is: <span sec:authentication="principal.authorities"></span></p>-->
+
+<!--&lt;!&ndash; Dashboard Summary Boxes &ndash;&gt;-->
+<!--<div class="dashboard-box" onclick="toggleSection('userList')">-->
+<!--    <h3>Total Users</h3>-->
+<!--    <p th:text="${#lists.size(users)}">0</p>-->
+<!--</div>-->
+<!--<div class="dashboard-box" onclick="toggleSection('propertyList')">-->
+<!--    <h3>Total Properties</h3>-->
+<!--    <p th:text="${#lists.size(properties)}">0</p>-->
+<!--</div>-->
+
+<!--<div class="dashboard-box" onclick="window.location.href='/admin/complaints'">-->
+<!--    <h3>Total Complaints</h3>-->
+<!--    <p th:text="${#lists.size(complaints)}">0</p>-->
+<!--</div>-->
+
+
+
+<!--&lt;!&ndash; Display a list of users (if applicable) &ndash;&gt;-->
+<!--<div id="userList" class="hidden">-->
+<!--    <h2>User List</h2>-->
+<!--    <table>-->
+<!--        <thead>-->
+<!--        <tr>-->
+<!--            <th>Username</th>-->
+<!--            <th>Email</th>-->
+<!--            <th>Gender</th>-->
+<!--            <th>Phone</th>-->
+<!--            <th>Role</th>-->
+<!--            <th>Action</th>-->
+<!--        </tr>-->
+<!--        </thead>-->
+<!--        <tbody>-->
+<!--        <tr th:each="user : ${users}">-->
+<!--            <td th:text="${user.username}"></td>-->
+<!--            <td th:text="${user.email}"></td>-->
+<!--            <td th:text="${user.gender}"></td>-->
+<!--            <td th:text="${user.phone}"></td>-->
+<!--            <td th:text="${user.role}"></td>-->
+<!--            <td>-->
+<!--                <form th:action="@{/admin/delete-user/{id}(id=${user.id})}" method="post">-->
+<!--                    <button type="submit">Delete</button>-->
+<!--                </form>-->
+<!--            </td>-->
+<!--        </tr>-->
+<!--        </tbody>-->
+<!--    </table>-->
+<!--</div>-->
+
+<!--&lt;!&ndash; Properties List &ndash;&gt;-->
+<!--<div id="propertyList" class="hidden">-->
+<!--    <h2>Properties</h2>-->
+<!--    <table>-->
+<!--        <thead>-->
+<!--        <tr>-->
+<!--            <th>Title</th>-->
+<!--            <th>Price</th>-->
+<!--            <th>Location</th>-->
+<!--            <th>Owner</th>-->
+<!--            <th>Status</th>-->
+<!--            <th>Action</th>-->
+<!--            <th>Info</th>-->
+<!--        </tr>-->
+<!--        </thead>-->
+<!--        <tbody>-->
+<!--        <tr th:each="property : ${properties}">-->
+<!--            <td th:text="${property.title}"></td>-->
+<!--            <td th:text="${property.price}"></td>-->
+<!--            <td th:text="${property.location}"></td>-->
+<!--            <td th:text="${property.user.username}"></td>-->
+<!--            <td th:text="${property.status}"></td>-->
+<!--            <td>-->
+<!--                <form th:action="@{/admin/delete-property/{id}(id=${property.id})}" method="post">-->
+<!--                    <button type="submit">Delete</button>-->
+<!--                </form>-->
+<!--            </td>-->
+<!--            <td>-->
+<!--                <a th:href="@{/properties/{id}(id=${property.id})}" class="btn btn-warning text-dark fw-semibold w-100">View Details</a>-->
+<!--            </td>-->
+<!--        </tr>-->
+<!--        </tbody>-->
+<!--    </table>-->
+<!--</div>-->
+<!--&lt;!&ndash; Add this inside your admin dashboard &ndash;&gt;-->
+<!--<div class="dashboard-box" onclick="toggleSection('categoryList')">-->
+<!--    <h3>Property Categories</h3>-->
+<!--    <p th:text="${#lists.size(categories)}">0</p>-->
+<!--</div>-->
+
+<!--&lt;!&ndash; Category Management Section &ndash;&gt;-->
+<!--<div id="categoryList" class="hidden">-->
+<!--    <h2>Manage Property Categories</h2>-->
+
+<!--    &lt;!&ndash; Add New Category Form &ndash;&gt;-->
+<!--    <form th:action="@{/admin/add-category}" method="post">-->
+<!--        <input type="text" name="name" placeholder="Enter Category Name" required>-->
+<!--        <button type="submit">Add Category</button>-->
+<!--    </form>-->
+
+<!--    &lt;!&ndash; Categories List &ndash;&gt;-->
+<!--    <table>-->
+<!--        <thead>-->
+<!--        <tr>-->
+<!--            <th>Category Name</th>-->
+<!--            <th>Action</th>-->
+<!--        </tr>-->
+<!--        </thead>-->
+<!--        <tbody>-->
+<!--        <tr th:each="category : ${categories}">-->
+<!--            <td th:text="${category.name}"></td>-->
+<!--            <td>-->
+<!--                <form th:action="@{/admin/delete-category/{id}(id=${category.id})}" method="post">-->
+<!--                    <button type="submit">Delete</button>-->
+<!--                </form>-->
+<!--            </td>-->
+<!--        </tr>-->
+<!--        </tbody>-->
+<!--    </table>-->
+<!--</div>-->
+
+
+<!--<a th:href="@{/properties}">Back to Listings</a>-->
+
+<!--&lt;!&ndash; Logout Button &ndash;&gt;-->
+<!--<form th:action="@{/logout}" method="post">-->
+<!--    <button type="submit">Logout</button>-->
+<!--</form>-->
+
+<!--<script>-->
+<!--    function toggleSection(sectionId) {-->
+<!--        const section = document.getElementById(sectionId);-->
+<!--        if (section.classList.contains('hidden')) {-->
+<!--            section.classList.remove('hidden');-->
+<!--        } else {-->
+<!--            section.classList.add('hidden');-->
+<!--        }-->
+<!--    }-->
+<!--</script>-->
+<!--</body>-->
+<!--</html>-->
+
+
+
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
+    <meta charset="UTF-8">
     <title>Admin Dashboard</title>
-    <link rel="stylesheet" href="/css/admin_style.css">
+    <!-- Bootstrap 5 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        .dashboard-box {
-            display: inline-block;
-            width: 200px;
-            padding: 20px;
-            margin: 10px;
-            border: 1px solid #ccc;
-            text-align: center;
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f7fc;
+        }
+        /* Sidebar styling */
+        .sidebar {
+            height: 100vh;
+            position: fixed;
+            width: 240px;
+            background-color: #343a40;
+            padding-top: 20px;
+        }
+        .sidebar a {
+            color: #adb5bd;
+            padding: 15px;
+            display: block;
+            text-decoration: none;
+            transition: background 0.3s, color 0.3s;
+        }
+        .sidebar a:hover, .sidebar a.active {
+            background-color: #495057;
+            color: #fff;
+        }
+        /* Main content styling */
+        .content {
+            margin-left: 240px;
+            padding: 30px;
+        }
+        /* Navbar styling */
+        .navbar {
+            margin-left: 240px;
+            background-color: #fff;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .dashboard-card {
+            transition: transform 0.3s ease;
             cursor: pointer;
         }
-        .hidden {
-            display: none;
+        .dashboard-card:hover {
+            transform: scale(1.02);
+        }
+        .card-icon {
+            font-size: 2.5rem;
         }
     </style>
 </head>
 <body>
-<h1>Welcome to the Admin Dashboard</h1>
-<p>You are logged in as: <span sec:authentication="name"></span></p>
-<p>Your role is: <span sec:authentication="principal.authorities"></span></p>
-
-<!-- Dashboard Summary Boxes -->
-<div class="dashboard-box" onclick="toggleSection('userList')">
-    <h3>Total Users</h3>
-    <p th:text="${#lists.size(users)}">0</p>
-</div>
-<div class="dashboard-box" onclick="toggleSection('propertyList')">
-    <h3>Total Properties</h3>
-    <p th:text="${#lists.size(properties)}">0</p>
-</div>
-
-<div class="dashboard-box" onclick="window.location.href='/admin/complaints'">
-    <h3>Total Complaints</h3>
-    <p th:text="${#lists.size(complaints)}">0</p>
+<!-- Sidebar -->
+<div class="sidebar">
+    <h4 class="text-center text-light mb-4">Admin Panel</h4>
+    <a href="#" class="active" onclick="showSection('overview')"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+    <a href="#" onclick="showSection('users')"><i class="fa-solid fa-users"></i> Users</a>
+    <a href="#" onclick="showSection('properties')"><i class="fa-solid fa-building"></i> Properties</a>
+    <a href="#" onclick="showSection('categories')"><i class="fa-solid fa-list"></i> Categories</a>
+    <a href="/admin/complaints"><i class="fa-solid fa-comments"></i> Complaints</a>
+    <a th:href="@{/properties}"><i class="fa-solid fa-home"></i>HomePage</a>
+    <a href="/logout" th:action="@{/logout}" onclick="event.preventDefault(); document.getElementById('logoutForm').submit();">
+        <i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+    <form id="logoutForm" th:action="@{/logout}" method="post" style="display:none;"></form>
 </div>
 
+<!-- Main Content -->
+<div class="content">
+    <!-- Top Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light mb-4">
+        <div class="container-fluid">
+            <span class="navbar-text">
+                Logged in as: <strong sec:authentication="name"></strong> |
+                Role: <strong sec:authentication="principal.authorities"></strong>
+            </span>
+        </div>
+    </nav>
 
+    <!-- Success Message -->
+    <div th:if="${param.success}" class="alert alert-success" role="alert">
+        <span th:text="${param.success}"></span>
+    </div>
 
-<!-- Display a list of users (if applicable) -->
-<div id="userList" class="hidden">
-    <h2>User List</h2>
-    <table>
-        <thead>
-        <tr>
-            <th>Username</th>
-            <th>Email</th>
-            <th>Role</th>
-            <th>Action</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="user : ${users}">
-            <td th:text="${user.username}"></td>
-            <td th:text="${user.email}"></td>
-            <td th:text="${user.role}"></td>
-            <td>
-                <form th:action="@{/admin/delete-user/{id}(id=${user.id})}" method="post">
-                    <button type="submit">Delete</button>
-                </form>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+    <!-- Overview Section -->
+    <div id="overviewSection">
+        <div class="row text-center mb-4">
+            <div class="col-md-3">
+                <div class="card dashboard-card shadow-sm">
+                    <div class="card-body">
+                        <div class="card-icon text-primary mb-2"><i class="fa-solid fa-users"></i></div>
+                        <h5 class="card-title">Total Users</h5>
+                        <p class="card-text fs-4" th:text="${users.totalElements}">0</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card dashboard-card shadow-sm">
+                    <div class="card-body">
+                        <div class="card-icon text-success mb-2"><i class="fa-solid fa-building"></i></div>
+                        <h5 class="card-title">Total Properties</h5>
+                        <p class="card-text fs-4" th:text="${properties.totalElements}">0</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card dashboard-card shadow-sm">
+                    <div class="card-body">
+                        <div class="card-icon text-warning mb-2"><i class="fa-solid fa-list"></i></div>
+                        <h5 class="card-title">Categories</h5>
+                        <p class="card-text fs-4" th:text="${#lists.size(categories)}">0</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card dashboard-card shadow-sm" onclick="window.location.href='/admin/complaints'">
+                    <div class="card-body">
+                        <div class="card-icon text-danger mb-2"><i class="fa-solid fa-comments"></i></div>
+                        <h5 class="card-title">Complaints</h5>
+                        <p class="card-text fs-4" th:text="${#lists.size(complaints)}">0</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Users Section -->
+    <div id="usersSection" class="d-none">
+        <h2>User List</h2>
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered">
+                <thead class="table-dark">
+                <tr>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Gender</th>
+                    <th>Phone</th>
+                    <th>Role</th>
+                    <th>Action</th>
+                    <th>Edit</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="user : ${users.content}">
+                    <td th:text="${user.username}"></td>
+                    <td th:text="${user.email}"></td>
+                    <td th:text="${user.gender}"></td>
+                    <td th:text="${user.phone}"></td>
+                    <td th:text="${user.role}"></td>
+                    <td>
+                        <form th:action="@{/admin/delete-user/{id}(id=${user.id})}" method="post">
+                            <button class="btn btn-danger btn-sm" type="submit">Delete</button>
+                        </form>
+                    </td>
+                    <td>
+                        <form method="post" action="/admin/change-role" th:if="${user.role != 'ADMIN'}"
+                              onsubmit="return confirm('Are you sure you want to make ' + '${user.username}' + ' an admin?');">
+                            <input type="hidden" name="userId" th:value="${user.id}" />
+                            <input type="hidden" name="page" th:value="${users.number}" />
+                            <input type="submit" value="Make Admin" class="btn btn-primary btn-sm" />
+                        </form>
+                        <span th:if="${user.role == 'ADMIN'}">Already Admin</span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination for Users Table -->
+        <nav th:if="${users.totalPages > 1}" aria-label="User Table Pagination">
+            <ul class="pagination justify-content-center">
+                <li class="page-item" th:classappend="${users.first} ? 'disabled'">
+                    <a class="page-link" th:href="@{/admin/dashboard(page=${users.number - 1})}">Previous</a>
+                </li>
+                <li class="page-item" th:each="i : ${#numbers.sequence(0, users.totalPages - 1)}"
+                    th:classappend="${i == users.number} ? 'active'">
+                    <a class="page-link" th:href="@{/admin/dashboard(page=${i})}" th:text="${i + 1}">1</a>
+                </li>
+                <li class="page-item" th:classappend="${users.last} ? 'disabled'">
+                    <a class="page-link" th:href="@{/admin/dashboard(page=${users.number + 1})}">Next</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- Properties Section -->
+    <div id="propertiesSection" class="d-none">
+        <h2>Properties</h2>
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered">
+                <thead class="table-dark">
+                <tr>
+                    <th>Title</th>
+                    <th>Price</th>
+                    <th>Location</th>
+                    <th>Owner</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                    <th>Info</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="property : ${properties.content}">
+                    <td th:text="${property.title}"></td>
+                    <td th:text="${property.price}"></td>
+                    <td th:text="${property.location}"></td>
+                    <td th:text="${property.user.username}"></td>
+                    <td th:text="${property.status}"></td>
+                    <td>
+                        <form th:action="@{/admin/delete-property/{id}(id=${property.id})}" method="post">
+                            <button class="btn btn-danger btn-sm" type="submit">Delete</button>
+                        </form>
+                    </td>
+                    <td>
+                        <a th:href="@{/properties/{id}(id=${property.id})}" class="btn btn-primary btn-sm">View Details</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination for Properties Table -->
+        <nav th:if="${properties.totalPages > 1}" aria-label="Properties Table Pagination">
+            <ul class="pagination justify-content-center">
+                <li class="page-item" th:classappend="${properties.first} ? 'disabled'">
+                    <a class="page-link" th:href="@{/admin/dashboard(page=${properties.number - 1})}">Previous</a>
+                </li>
+                <li class="page-item" th:each="i : ${#numbers.sequence(0, properties.totalPages - 1)}"
+                    th:classappend="${i == properties.number} ? 'active'">
+                    <a class="page-link" th:href="@{/admin/dashboard(page=${i})}" th:text="${i + 1}">1</a>
+                </li>
+                <li class="page-item" th:classappend="${properties.last} ? 'disabled'">
+                    <a class="page-link" th:href="@{/admin/dashboard(page=${properties.number + 1})}">Next</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- Categories Section -->
+    <div id="categoriesSection" class="d-none">
+        <h2>Manage Categories</h2>
+        <form th:action="@{/admin/add-category}" method="post" class="mb-4">
+            <div class="input-group">
+                <input type="text" name="name" class="form-control" placeholder="Enter Category Name" required>
+                <button class="btn btn-primary" type="submit">Add Category</button>
+            </div>
+        </form>
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered">
+                <thead class="table-dark">
+                <tr>
+                    <th>Category Name</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="category : ${categories}">
+                    <td th:text="${category.name}"></td>
+                    <td>
+                        <form th:action="@{/admin/delete-category/{id}(id=${category.id})}" method="post">
+                            <button class="btn btn-danger btn-sm" type="submit">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
-<!-- Properties List -->
-<div id="propertyList" class="hidden">
-    <h2>Properties</h2>
-    <table>
-        <thead>
-        <tr>
-            <th>Title</th>
-            <th>Price</th>
-            <th>Action</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="property : ${properties}">
-            <td th:text="${property.title}"></td>
-            <td th:text="${property.price}"></td>
-            <td>
-                <form th:action="@{/admin/delete-property/{id}(id=${property.id})}" method="post">
-                    <button type="submit">Delete</button>
-                </form>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-</div>
-<!-- Add this inside your admin dashboard -->
-<div class="dashboard-box" onclick="toggleSection('categoryList')">
-    <h3>Property Categories</h3>
-    <p th:text="${#lists.size(categories)}">0</p>
-</div>
-
-<!-- Category Management Section -->
-<div id="categoryList" class="hidden">
-    <h2>Manage Property Categories</h2>
-
-    <!-- Add New Category Form -->
-    <form th:action="@{/admin/add-category}" method="post">
-        <input type="text" name="name" placeholder="Enter Category Name" required>
-        <button type="submit">Add Category</button>
-    </form>
-
-    <!-- Categories List -->
-    <table>
-        <thead>
-        <tr>
-            <th>Category Name</th>
-            <th>Action</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="category : ${categories}">
-            <td th:text="${category.name}"></td>
-            <td>
-                <form th:action="@{/admin/delete-category/{id}(id=${category.id})}" method="post">
-                    <button type="submit">Delete</button>
-                </form>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-</div>
-
-
-<a th:href="@{/properties}">Back to Listings</a>
-
-<!-- Logout Button -->
-<form th:action="@{/logout}" method="post">
-    <button type="submit">Logout</button>
-</form>
-
+<!-- Bootstrap & Custom JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    function toggleSection(sectionId) {
-        const section = document.getElementById(sectionId);
-        if (section.classList.contains('hidden')) {
-            section.classList.remove('hidden');
+    function showSection(section) {
+        // Hide all sections
+        document.getElementById('overviewSection').classList.add('d-none');
+        document.getElementById('usersSection').classList.add('d-none');
+        document.getElementById('propertiesSection').classList.add('d-none');
+        document.getElementById('categoriesSection').classList.add('d-none');
+
+        // Show selected section
+        if (section === 'users') {
+            document.getElementById('usersSection').classList.remove('d-none');
+        } else if (section === 'properties') {
+            document.getElementById('propertiesSection').classList.remove('d-none');
+        } else if (section === 'categories') {
+            document.getElementById('categoriesSection').classList.remove('d-none');
         } else {
-            section.classList.add('hidden');
+            document.getElementById('overviewSection').classList.remove('d-none');
         }
     }
 </script>
 </body>
 </html>
+
+

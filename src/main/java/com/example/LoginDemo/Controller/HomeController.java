@@ -5,6 +5,7 @@ import com.example.LoginDemo.Entity.PropertyEntity;
 import com.example.LoginDemo.Entity.UserEntity;
 import com.example.LoginDemo.Repository.PropertyRepository;
 import com.example.LoginDemo.Services.ComplaintServices;
+import com.example.LoginDemo.Services.FavoriteService;
 import com.example.LoginDemo.Services.PropertyServices;
 import com.example.LoginDemo.Services.UserServices;
 import jakarta.servlet.http.HttpSession;
@@ -37,6 +38,9 @@ public class HomeController {
 
     @Autowired
     private PropertyRepository propertyRepository;
+
+    @Autowired
+    private  FavoriteService favoriteService;
 
 
 
@@ -188,6 +192,7 @@ public class HomeController {
         model.addAttribute("property", property);
         model.addAttribute("currentUserId",currentUser.getId());
         model.addAttribute("listedBy",property.getUser());
+        model.addAttribute("favorites", favoriteService.getUserFavorites(currentUser.getId()));
 
         return "property-details";
     }
@@ -256,4 +261,7 @@ public class HomeController {
         complaintServices.submitComplaint(complaint);
         return "redirect:/user/complaint?submitted=true";
     }
+
+
+
 }

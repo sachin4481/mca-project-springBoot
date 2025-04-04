@@ -197,5 +197,18 @@ public class UserServices {
     }
 
 
+    //for changing the user role
+    public void changeUserRole(Long userId, String newRole) {
+        logger.debug("Changing role for user ID: {} to {}", userId, newRole);
+        UserEntity user = userRepository.findById(userId).orElse(null);
+        if (user != null) {
+            user.setRole(newRole);
+            userRepository.save(user);
+            logger.info("Role updated to {} for user: {}", newRole, user.getUsername());
+        } else {
+            logger.warn("User not found for ID: {}", userId);
+        }
+    }
+
 
 }

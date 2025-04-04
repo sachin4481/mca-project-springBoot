@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>My Favorites</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <style>
+    .property-card { margin-bottom: 20px; }
+  </style>
+</head>
+<body>
+<div class="container mt-4">
+  <h1>My Favorite Properties</h1>
+  <div th:if="${favorites.isEmpty()}">
+    <p>No favorite properties yet.</p>
+  </div>
+  <div class="row">
+    <div class="col-md-4" th:each="property : ${favorites}">
+      <div class="card property-card">
+        <div class="card-body">
+          <h5 class="card-title" th:text="${property.title}"></h5>
+          <p class="card-text"><strong>Location:</strong> <span th:text="${property.location}"></span></p>
+          <p class="card-text"><strong>Price:</strong> <span th:text="${property.price}"></span></p>
+          <a th:href="@{/properties/{id}(id=${property.id})}" class="btn btn-primary">View Details</a>
+          <form th:action="@{/properties/favorite/remove}" method="post" class="d-inline">
+            <input type="hidden" name="propertyId" th:value="${property.id}" />
+            <button type="submit" class="btn btn-danger">Remove</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a href="/properties" class="btn btn-secondary mt-3">Back to Properties</a>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

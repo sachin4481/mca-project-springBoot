@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
   <title>Property Details</title>
   <link rel="stylesheet" href="/css/property-details.css" />
@@ -226,9 +226,37 @@
 <!--  <p th:if="${param.inquirySuccess}" style="color: green;">Inquiry sent successfully!</p>-->
 
 
+  <!-- Favorite Toggle -->
+  <div sec:authorize="isAuthenticated()">
+    <form th:action="@{/properties/favorite/add}" method="post" th:if="${!favorites.contains(property)}">
+      <input type="hidden" name="propertyId" th:value="${property.id}" />
+      <button type="submit" class="btn btn-outline-primary">Add to Favorites</button>
+    </form>
+    <form th:action="@{/properties/favorite/remove}" method="post" th:if="${favorites.contains(property)}">
+      <input type="hidden" name="propertyId" th:value="${property.id}" />
+      <button type="submit" class="btn btn-outline-danger">Remove from Favorites</button>
+    </form>
+  </div>
+<a href="/properties" class="btn btn-secondary mt-3">Back to Properties</a>
+<a href="/user/favorites" class="btn btn-info mt-3">View Favorites</a>
+</div>
+
   <footer>
-    <a class="btn-back" th:href="@{/properties}">Back to Listings</a>
+<!--    <a class="btn-back" th:href="@{/properties}">Back to Listings</a>-->
   </footer>
 </div>
 </body>
+<script>
+  function addFavorite(propertyId) {
+      fetch('/favorites/add?userId=' + USER_ID + '&propertyId=' + propertyId, {
+          method: 'POST'
+      }).then(response => response.text()).then(data => alert(data));
+  }
+
+  function removeFavorite(propertyId) {
+      fetch('/favorites/remove?userId=' + USER_ID + '&propertyId=' + propertyId, {
+          method: 'DELETE'
+      }).then(response => response.text()).then(data => alert(data));
+  }
+</script>
 </html>
