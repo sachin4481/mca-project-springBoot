@@ -33,7 +33,11 @@
             <!--        <a href="/properties/list" class="nav-link">List Property</a>-->
             <a href="/user/add" class="nav-link">Add Property</a>
             <a href="/user/properties" class="nav-link">My Properties</a>
-            <a href="/my-submitted-inquiries" class="nav-link">Inquiries</a>
+            <a href="/my-inquiries" class="nav-link">My Inquiries</a>
+
+            <a href="/user/favorites" class="nav-link">Favorites</a>
+
+
             <a href="/user/complaint" class="nav-link">Submit Complaint</a>
 
 
@@ -56,52 +60,5 @@
         </nav>
     </div>
 </header>
-<!-- Footer -->
-<footer th:fragment="footer" class="footer">
-    <div class="container">
-        <div class="footer-content">
-            <div class="footer-section">
-                <h3>Quick Links</h3>
-                <ul class="footer-links">
-                    <li><a href="/properties">Home</a></li>
-                    <li><a href="/user/add">Add Property</a></li>
-                    <li><a href="/my-submitted-inquiries">Inquiries</a></li>
-                    <li><a th:href="@{/user/profile}" th:text="${session.username}" style="color: gold; font-weight: bold;"></a></li>
-                </ul>
-            </div>
-
-            <div class="footer-section">
-                <h3>Properties</h3>
-                <ul class="footer-links">
-                    <li><a href="/properties">!!! Search now !!!</a></li>
-                    <li><a href="list-apartment.html">Contact us</a></li>
-                    <li><a href="/user/complaint">Submit Complaint</a></li>
-                </ul>
-            </div>
-
-            <div class="footer-section">
-                <div class="footer-contact">
-                    <div class="logo">
-                        <a href="/properties" style="all: unset; cursor: pointer; display: flex;">
-                            Property<span style="color: #fff;" class="logo-nest">Nest
-                            <i data-lucide="home" class="logo-icon"></i>
-                                    </span>
-                        </a>
-                    </div>
-                    <br/>
-                    <p><i data-lucide="map-pin"></i> 123 Property Street, Real Estate City, 380015</p>
-                    <p><i data-lucide="phone"></i> +91 98765 43210</p>
-                    <p><i data-lucide="mail"></i> contact@propertynest.com</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="footer-bottom">
-            <p>&copy; 2025 PropertyNest. All rights reserved.</p>
-        </div>
-    </div>
-</footer>
-</div>
-
 </body>
 </html>

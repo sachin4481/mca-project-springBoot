@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -33,7 +33,7 @@
 </head>
 <body>
 <!-- Header -->
-<header th:replace="fragments :: header" />
+<header th:replace="~{fragments :: header}" />
 
 <div class="page-container">
   <div th:if="${successMessage}" class="alert alert-warning" role="alert">
@@ -193,6 +193,44 @@
     </div>
   </div>
 
+
+
+
+
+
+
+
+
+  <!-- Favorite Section -->
+  <div class="favorite-actions" sec:authorize="isAuthenticated()">
+    <!-- Debug info -->
+    <div style="display: none;">
+      Property ID: <span th:text="${propertyInfo?.propId}"></span><br>
+      Favorites Count: <span th:text="${favorites?.size()}"></span>
+    </div>
+
+    <!-- Add to Favorites -->
+    <form th:action="@{/properties/favorite/add}" method="post"
+          th:if="${propertyInfo != null and !favorites.contains(propertyInfo)}">
+      <input type="hidden" name="propId" th:value="${propertyInfo.propId}">
+      <button type="submit" class="btn btn-outline-primary">
+        <i data-lucide="heart"></i> Add to Favorites
+      </button>
+    </form>
+
+    <!-- Remove from Favorites -->
+    <form th:action="@{/properties/favorite/remove}" method="post"
+          th:if="${propertyInfo != null and favorites.contains(propertyInfo)}">
+      <input type="hidden" name="propId" th:value="${propertyInfo.propId}">
+      <button type="submit" class="btn btn-outline-danger">
+        <i data-lucide="heart-off"></i> Remove from Favorites
+      </button>
+    </form>
+  </div>
+
+
+
+
   <div class="action-buttons">
 
     <!-- If current user is the property owner, show Edit button -->
@@ -234,6 +272,18 @@
       successMessage.classList.remove('show');
     }, 3000);
   }
+
+  function addFavorite(propertyId) {
+       fetch('/favorites/add?userId=' + USER_ID + '&propertyId=' + propertyId, {
+           method: 'POST'
+       }).then(response => response.text()).then(data => alert(data));
+   }
+
+   function removeFavorite(propertyId) {
+       fetch('/favorites/remove?userId=' + USER_ID + '&propertyId=' + propertyId, {
+           method: 'DELETE'
+       }).then(response => response.text()).then(data => alert(data));
+   }
 </script>
 </body>
 </html>

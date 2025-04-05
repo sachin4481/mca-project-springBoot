@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -55,6 +56,9 @@ public class PropertyController {
 
     @Autowired
     private PropertyDetailsRepository propertyDetailsRepository;
+
+    @Autowired
+    private FavoriteRepository favoriteRepository;
 
     @GetMapping("/user/properties")
     public String showUserProperties(Model model, @AuthenticationPrincipal UserDetails userDetails) {
@@ -144,21 +148,48 @@ public String searchProperties(@RequestParam(required = false) Long category,//n
 }
 
     @GetMapping("/properties/{id}")
-    public String getPropertyDetails(@PathVariable Long id, Model model, @AuthenticationPrincipal UserDetails userDetails) {
+    public String getPropertyDetails(@PathVariable Long id,
+                                     Model model,
+                                     @AuthenticationPrincipal UserDetails userDetails) {
         // Fetch propertyInfo using repository
-        PropertyInfo propertyInfo = propertyInfoRepository.findById(id).orElse(null);
+        PropertyInfo propertyInfo = propertyInfoRepository.findById(id)
+                .orElse(null);
 
-        // Check if propertyInfo exists before proceeding
+        // Check if propertyInfo exists
         if (propertyInfo == null) {
             model.addAttribute("errorMessage", "Property not found.");
             return "error-page"; // Your error page template
         }
 
-        // Fetch property details based on propertyInfo's ID
-        PropertyDetails propertyDetails = propertyDetailsRepository.findByPropertyInfo_PropId(id).orElse(null);
+        // Always initialize favorites to avoid null pointer exceptions
+        List<PropertyInfo> favorites = Collections.emptyList();
 
+        // Get favorites if user is logged in
+        if (userDetails != null) {
+            try {
+                UserEntity user = userRepository.findByUsername(userDetails.getUsername())
+                        .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                favorites = favoriteRepository.findByUserId(user.getId())
+                        .stream()
+                        .map(Favorite::getProperty)
+                        .filter(Objects::nonNull) // Safety against null properties
+                        .collect(Collectors.toList());
+            } catch (UsernameNotFoundException e) {
+                // Log the error, but don't fail the whole page load
+//                log.warn("User not found for username: {}", userDetails.getUsername());
+                System.out.println("error");
+            }
+        }
+
+        // Fetch property details
+        PropertyDetails propertyDetails = propertyDetailsRepository
+                .findByPropertyInfo_PropId(id)
+                .orElse(null);
+
+        // Add attributes to model
         model.addAttribute("propertyInfo", propertyInfo);
         model.addAttribute("propertyDetails", propertyDetails);
+        model.addAttribute("favorites", favorites);
 
         if (propertyDetails == null) {
             model.addAttribute("noDetailsMessage", "Owner did not provide other details.");
@@ -166,7 +197,6 @@ public String searchProperties(@RequestParam(required = false) Long category,//n
 
         return "property-details"; // Your HTML file name
     }
-
     // Edit Property Form
     @GetMapping("/properties/edit/{id}")
     public String showEditPropertyForm(@PathVariable Long id, Model model, @AuthenticationPrincipal UserDetails userDetails) {
