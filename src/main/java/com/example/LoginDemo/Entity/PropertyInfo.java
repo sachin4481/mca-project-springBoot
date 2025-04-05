@@ -2,20 +2,18 @@ package com.example.LoginDemo.Entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.util.Date;
 
 @Entity
 @Table(name = "property_info")
+@DynamicUpdate
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class PropertyInfo {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long propId;
 
     @ManyToOne
     @JoinColumn(name = "prop_cat_id", nullable = false)
@@ -39,9 +37,20 @@ public class PropertyInfo {
     private String img4;
     private String img5;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long propId;
+
     private Double price;
     private Date listingDate;
 
     @Column(nullable = false)
-    private String status = "AVAILABLE";
+    private String status;
+
+    @PrePersist
+    public void setDefaultStatus() {
+        if (this.status == null) {
+            this.status = "AVAILABLE";
+        }
+    }
 }

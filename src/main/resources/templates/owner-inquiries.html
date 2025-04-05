@@ -100,7 +100,7 @@
       </thead>
       <tbody>
       <tr th:each="inquiry : ${inquiries}">
-        <td th:text="${inquiry.property.title}"></td>
+        <td th:text="${inquiry.propertyInfo.propTitle}"></td>
         <td th:text="${inquiry.user.username}"></td>
         <td>
           <a th:href="'mailto:' + ${inquiry.user.email}" th:text="${inquiry.user.email}"></a>

@@ -1,53 +1,54 @@
 package com.example.LoginDemo.Services;
 
-
-import com.example.LoginDemo.Entity.Inquiry;
-import com.example.LoginDemo.Entity.PropertyEntity;
+import com.example.LoginDemo.Entity.PropInquiry;
+import com.example.LoginDemo.Entity.PropertyInfo;
 import com.example.LoginDemo.Entity.UserEntity;
-import com.example.LoginDemo.Repository.InquiryRepository;
-import com.example.LoginDemo.Repository.PropertyRepository;
+import com.example.LoginDemo.Repository.PropInquiryRepository;
+import com.example.LoginDemo.Repository.PropertyInfoRepository;
 import com.example.LoginDemo.Repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class InquiryService {
+    private final PropInquiryRepository propInquiryRepository;
 
+    @Autowired
+    private PropertyInfoRepository propertyInfoRepository;
 
-    private final InquiryRepository inquiryRepository;
-    private final PropertyRepository propertyRepository;
-    private final UserRepository userRepository;
+    @Autowired
+    private UserRepository userRepository;
 
-    public InquiryService(InquiryRepository inquiryRepository, PropertyRepository propertyRepository, UserRepository userRepository) {
-        this.inquiryRepository = inquiryRepository;
-        this.propertyRepository = propertyRepository;
-        this.userRepository = userRepository;
+    public void createInquiry(Long propertyId, String username) {
+        PropertyInfo property = propertyInfoRepository.findById(propertyId)
+                .orElseThrow(() -> new EntityNotFoundException("Property not found"));
+
+        UserEntity user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        // Check if inquiry already exists to prevent duplicates
+        if (!propInquiryRepository.existsActiveInquiryByPropertyAndUser(property, user)) {
+            PropInquiry inquiry = new PropInquiry();
+            inquiry.setProperty(property);
+            inquiry.setUser(user);
+            propInquiryRepository.save(inquiry);
+        } else {
+            throw new IllegalStateException("You have already sent an inquiry for this property.");
+        }
+    }
+    public List<PropInquiry> getInquiriesForOwner(Long ownerId) {
+        return propInquiryRepository.findInquiriesByOwnerId(ownerId);
     }
 
-    public void createInquiry(Long userId, Long propertyId) {
-        Inquiry inquiry = new Inquiry();
-        inquiry.setUser(userRepository.findById(userId).orElseThrow());
-        inquiry.setProperty(propertyRepository.findById(propertyId).orElseThrow());
-        inquiry.setInqDate(LocalDateTime.now());
-
-        inquiryRepository.save(inquiry);
-    }
-//    public List<Inquiry> getInquiriesForOwner(Long ownerId) {
-//        return inquiryRepository.findByProperty_User_Id(ownerId);
-//    }
-
-    public List<Inquiry> getInquiriesForProperty(Long propertyId) {
-        return inquiryRepository.findByProperty_Id(propertyId);
-    }
-    public List<Inquiry> getInquiriesForOwner(Long ownerId) {
-        return inquiryRepository.findByPropertyOwnerId(ownerId);
-    }
-
-    public void deleteInquiry(Long id)
-    {
-        inquiryRepository.deleteById(id);
+    public void closeInquiry(Long inquiryId) {
+        PropInquiry inquiry = propInquiryRepository.findById(inquiryId)
+                .orElseThrow(() -> new RuntimeException("Inquiry not found"));
+        inquiry.setStatus("CLOSED");
+        propInquiryRepository.save(inquiry);
     }
 }
-

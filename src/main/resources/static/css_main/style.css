@@ -76,6 +76,21 @@ body {
 .nav-link:hover {
   color: #eab308;
 }
+.logout-btn {
+  background-color: #dc2626; /* Red-600 */
+  color: white;
+  border: none;
+  padding: 0.45rem 1rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  border-radius: 6px; /* Less curly */
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.logout-btn:hover {
+  background-color: #b91c1c; /* Red-700 */
+}
 
 .btn-primary {
   background: #eab308;

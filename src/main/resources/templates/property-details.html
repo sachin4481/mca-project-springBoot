@@ -1,262 +1,213 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <title>Property Details</title>
-  <link rel="stylesheet" href="/css/property-details.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body {
-      font-family: 'Roboto', sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #f7f7f7;
-      color: #333;
-    }
+  <title>PropertyNest - Property Details</title>
+  <link rel="stylesheet" th:href="@{/css_main/style.css}">
+  <link rel="stylesheet" th:href="@{/css_main/property-details.css}">
+  <link rel="stylesheet" th:href="@{/css_main/auth.css}">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
 
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-
-    header {
-      background-color: #ffffff;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      margin-bottom: 30px;
-    }
-
-    header h1 {
-      font-size: 2.5rem;
-      color: #2c3e50;
-      margin: 0;
-    }
-
-    .meta-info {
-      font-size: 1rem;
-      color: #7f8c8d;
-      margin-top: 10px;
-    }
-
-    .meta-info span {
-      margin-right: 15px;
-    }
-
-    .meta-info .price {
-      color: #27ae60;
-      font-weight: bold;
-    }
-
-    .description {
-      background-color: #ffffff;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      margin-bottom: 30px;
-    }
-
-    .description p {
-      font-size: 1.1rem;
-      color: #555;
-      line-height: 1.6;
-    }
-
-    .gallery {
-      background-color: #ffffff;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      margin-bottom: 30px;
-    }
-
-    .gallery h2 {
-      font-size: 1.5rem;
-      color: #2c3e50;
-      margin-bottom: 20px;
-    }
-
-    .image-gallery {
-      display: flex;
-      gap: 20px;
-      justify-content: space-between;
-      flex-wrap: wrap;
-    }
-
-    .image-gallery img {
-      width: 100%;
-      max-width: 350px;
-      height: auto;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      transition: transform 0.3s ease;
-    }
-
-    .image-gallery img:hover {
-      transform: scale(1.05);
-    }
-
-    .btn {
-      background-color: #3498db;
-      color: white;
-      padding: 10px 20px;
-      text-decoration: none;
-      border-radius: 8px;
-      font-weight: 500;
-      display: inline-block;
-      margin: 20px 0;
-      transition: background-color 0.3s ease;
-    }
-
-    .btn:hover {
-      background-color: #2980b9;
-    }
-
-    .btn-back {
-      background-color: #95a5a6;
-    }
-
-    .btn-back:hover {
-      background-color: #7f8c8d;
-    }
-
-    footer {
-      text-align: center;
-      margin-top: 30px;
-    }
-
-    footer a {
-      text-decoration: none;
-      color: #2c3e50;
-      font-weight: 500;
-      font-size: 1rem;
-    }
-
-    footer a:hover {
-      color: #3498db;
-    }
-
-    @media (max-width: 768px) {
-      header h1 {
-        font-size: 2rem;
-      }
-
-      .meta-info {
-        font-size: 0.9rem;
-      }
-
-      .image-gallery {
-        flex-direction: column;
-        align-items: center;
-      }
-
-      .image-gallery img {
-        max-width: 90%;
-      }
-    }
-
-    @media (max-width: 480px) {
-      .meta-info {
-        font-size: 0.8rem;
-      }
-
-      .btn {
-        width: 100%;
-      }
-    }
-  </style>
 </head>
 <body>
-<div class="container">
-  <header>
-    <h1 th:text="${property.title}"></h1>
-    <p class="meta-info">
-      <span class="location" th:text="${property.location}"></span> |
-      <span class="price">₹<span th:text="${property.price}"></span></span> |
-      <span class="area" th:text="${property.area + ' sq ft'}"></span> |
-      <span class="pincode" th:text="${property.pincode + ' pin code' }"></span>
+<!-- Header -->
+<header th:replace="fragments :: header" />
 
-    </p>
-  </header>
-
-  <section class="description">
-    <p th:text="${property.description}"></p>
-  </section>
-
-  <section class="gallery">
-    <h2>Property Images</h2>
-    <div class="image-gallery">
-      <img th:if="${property.image1}" th:src="@{${property.image1}}" alt="Image 1" />
-      <img th:if="${property.image2}" th:src="@{${property.image2}}" alt="Image 2" />
-      <img th:if="${property.image3}" th:src="@{${property.image3}}" alt="Image 3" />
+<div class="page-container">
+  <div class="property-header">
+    <h1 class="property-title">
+      <i data-lucide="home"></i>
+      <span th:text="${propertyInfo.propTitle}"></span>
+    </h1>
+    <div class="property-meta">
+      <div class="meta-item">
+        <i data-lucide="map-pin"></i>
+        <span th:text="${propertyInfo.location}"></span>
+      </div>
+      <div class="meta-item price">
+        <i data-lucide="indian-rupee"></i>
+        <span th:text="${propertyInfo.price}"></span>
+      </div>
+      <div class="meta-item">
+        <i data-lucide="square"></i>
+        <span th:text="${propertyInfo.area + ' sq ft'}"></span>
+      </div>
+      <div class="meta-item">
+        <i data-lucide="hash"></i>
+        <span th:text="${propertyInfo.pinCode}"></span>
+      </div>
     </div>
-  </section>
-
-
-
-  <div th:if="${property.user != null and #authentication.principal.username == property.user.username}">
-    <a th:href="@{/properties/edit/{id}(id=${property.id})}" class="btn">Edit Property</a>
   </div>
 
-<!--  property owner details-->
-  <div th:if="${listedBy != null}">
-    <h3>Listed by</h3>
-    <p><strong>Owner Name:</strong> <span th:text="${property.user.username != null ? property.user.username : 'N/A'}"></span></p>
 
-    <p><strong>Email :</strong> <span th:text="${property.user.email != null ? property.user.email : 'N/A'}"></span></p>
 
-    <p><strong>Phone No:</strong> <span th:text="${property.user.phone != null ? property.user.phone : 'N/A'}"></span></p>
-
+  <div class="content-section">
+    <h2 class="section-title">
+      <i data-lucide="clipboard-list"></i>
+      Property Details
+    </h2>
+    <div class="property-details-grid">
+      <div class="detail-item">
+        <span class="detail-label">Category</span>
+        <span class="detail-value" th:text="${propertyInfo.propertyCategory.name}"></span>
+      </div>
+      <th:block th:if="${propertyDetails != null}">
+      <div class="detail-item" th:if="${propertyDetails.bhk}">
+        <span class="detail-label">BHK</span>
+        <span class="detail-value" th:text="${propertyDetails.bhk}"></span>
+      </div>
+      <div class="detail-item" th:if="${propertyDetails.floors}">
+        <span class="detail-label">Floors</span>
+        <span class="detail-value" th:text="${propertyDetails.floors}"></span>
+      </div>
+      <div class="detail-item" th:if="${propertyDetails.floor}">
+        <span class="detail-label">Floor</span>
+        <span class="detail-value" th:text="${propertyDetails.floor}"></span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Furnished</span>
+        <span class="detail-value" th:text="${propertyDetails.furnished != null and propertyDetails.furnished ? 'Yes' : 'No'}"></span>
+      </div>
+      <div class="detail-item" th:if="${propertyDetails.washroom}">
+        <span class="detail-label">Washrooms</span>
+        <span class="detail-value" th:text="${propertyDetails.washroom}"></span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Corner Property</span>
+        <span class="detail-value" th:text="${propertyDetails.corner != null and propertyDetails.corner ? 'Yes' : 'No'}"></span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Parking Available</span>
+        <span class="detail-value" th:text="${propertyDetails.parking != null and propertyDetails.parking ? 'Yes' : 'No'}"></span>
+      </div>
+      <div class="detail-item" th:if="${propertyDetails.schemeName}">
+        <span class="detail-label">Scheme Name</span>
+        <span class="detail-value" th:text="${propertyDetails.schemeName}"></span>
+      </div>
+      </th:block>
+      <div class="detail-item">
+        <span class="detail-label">Status</span>
+        <span class="detail-value" th:text="${propertyInfo.status}"></span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Posted on</span>
+        <span class="detail-value" th:text="${propertyInfo.listingDate != null ? #dates.format(propertyInfo.listingDate, 'dd MMM yyyy') : 'N/A'}"></span>
+      </div>
+    </div>
   </div>
 
-<!--  //inquery button-->
-  <th:block th:if="${currentUserId != property.user.id}">
-  <form th:action="@{/inquiries/create/{id}(id=${property.id})}" method="post">
-    <button type="submit" class="btn btn-primary">Inquire</button>
-  </form>
-
-  <div th:if="${successMessage}" class="alert alert-success">
-    <p th:text="${successMessage}"></p>
-  </div>
+  <!-- If propertyDetails is missing, show a message -->
+  <th:block th:if="${propertyDetails == null}">
+    <p style="color: red; font-weight: bold;">Sorry! The owner did not provide more details about the property.</p>
   </th:block>
 
-
-<!--  &lt;!&ndash; Show a success message if inquiry is made &ndash;&gt;-->
-<!--  <p th:if="${param.inquirySuccess}" style="color: green;">Inquiry sent successfully!</p>-->
-
-
-  <!-- Favorite Toggle -->
-  <div sec:authorize="isAuthenticated()">
-    <form th:action="@{/properties/favorite/add}" method="post" th:if="${!favorites.contains(property)}">
-      <input type="hidden" name="propertyId" th:value="${property.id}" />
-      <button type="submit" class="btn btn-outline-primary">Add to Favorites</button>
-    </form>
-    <form th:action="@{/properties/favorite/remove}" method="post" th:if="${favorites.contains(property)}">
-      <input type="hidden" name="propertyId" th:value="${property.id}" />
-      <button type="submit" class="btn btn-outline-danger">Remove from Favorites</button>
-    </form>
+  <div class="content-section">
+    <h2 class="section-title">
+      <i data-lucide="file-text"></i>
+      Description
+    </h2>
+    <th:block th:if="${propertyDetails != null}">
+    <p class="property-description" th:text="${propertyDetails.propDetails}"></p>
+    </th:block>
   </div>
-<a href="/properties" class="btn btn-secondary mt-3">Back to Properties</a>
-<a href="/user/favorites" class="btn btn-info mt-3">View Favorites</a>
+
+  <div class="content-section">
+    <h2 class="section-title">
+      <i data-lucide="image"></i>
+      Property Images
+    </h2>
+    <div class="image-gallery">
+      <div class="gallery-image" th:if="${propertyInfo.img1}">
+        <img th:src="@{${propertyInfo.img1}}" alt="Property Image 1">
+      </div>
+      <div class="gallery-image" th:if="${propertyInfo.img2}">
+        <img th:src="@{${propertyInfo.img2}}" alt="Property Image 2">
+      </div>
+      <div class="gallery-image" th:if="${propertyInfo.img3}">
+        <img th:src="@{${propertyInfo.img3}}" alt="Property Image 3">
+      </div>
+      <div class="gallery-image" th:if="${propertyInfo.img4}">
+        <img th:src="@{${propertyInfo.img4}}" alt="Property Image 4">
+      </div>
+      <div class="gallery-image" th:if="${propertyInfo.img5}">
+        <img th:src="@{${propertyInfo.img5}}" alt="Property Image 5">
+      </div>
+    </div>
+  </div>
+
+  <div class="content-section" th:if="${propertyInfo.user != null}">
+    <h2 class="section-title">
+      <i data-lucide="user"></i>
+      Listed by
+    </h2>
+    <div class="owner-info">
+      <div class="contact-item">
+        <i data-lucide="user"></i>
+        <span th:text="${propertyInfo.user.username}"></span>
+      </div>
+      <div class="contact-item">
+        <i data-lucide="mail"></i>
+        <span th:text="${propertyInfo.user.email}"></span>
+      </div>
+      <div class="contact-item">
+        <i data-lucide="phone"></i>
+        <span th:text="${propertyInfo.user.phone}"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="action-buttons">
+
+    <!-- If current user is the property owner, show Edit button -->
+    <th:block th:if="${propertyInfo.user != null and #authentication.principal.username == propertyInfo.user.username}">
+      <a th:href="@{/properties/edit/{id}(id=${propertyInfo.propId})}" class="btn btn-secondary">
+        <i data-lucide="edit"></i>
+        Edit Property
+      </a>
+    </th:block>
+
+    <!-- If current user is NOT the property owner, show Send Inquiry button -->
+    <th:block th:if="${propertyInfo.user != null and #authentication.principal.username != propertyInfo.user.username}">
+      <form th:action="@{/properties/{id}/inquiry(id=${propertyInfo.propId})}" method="post">
+        <button type="submit" class="btn btn-primary">Send Inquiry</button>
+      </form>
+    </th:block>
+
+  </div>
+  <div th:if="${successMessage}" class="alert alert-success">
+    <span th:text="${successMessage}"></span>
+  </div>
+  <div th:if="${errorMessage}" class="alert alert-danger">
+    <span th:text="${errorMessage}"></span>
+  </div>
+
+  <a th:href="@{/properties}" class="btn btn-back">
+      <i data-lucide="arrow-left"></i>
+      Back to Listings
+    </a>
+  </div>
+
+  <div class="success-message">
+    <i data-lucide="check-circle"></i>
+    <span>Inquiry sent successfully!</span>
+  </div>
 </div>
 
-  <footer>
-<!--    <a class="btn-back" th:href="@{/properties}">Back to Listings</a>-->
-  </footer>
-</div>
-</body>
 <script>
-  function addFavorite(propertyId) {
-      fetch('/favorites/add?userId=' + USER_ID + '&propertyId=' + propertyId, {
-          method: 'POST'
-      }).then(response => response.text()).then(data => alert(data));
-  }
+  lucide.createIcons();
 
-  function removeFavorite(propertyId) {
-      fetch('/favorites/remove?userId=' + USER_ID + '&propertyId=' + propertyId, {
-          method: 'DELETE'
-      }).then(response => response.text()).then(data => alert(data));
+  // Handle success message
+  const successMessage = document.querySelector('.success-message');
+  const urlParams = new URLSearchParams(window.location.search);
+
+  if (urlParams.get('inquirySuccess')) {
+    successMessage.classList.add('show');
+    setTimeout(() => {
+      successMessage.classList.remove('show');
+    }, 3000);
   }
 </script>
+</body>
 </html>

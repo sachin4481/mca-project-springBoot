@@ -1,63 +1,61 @@
 package com.example.LoginDemo.Controller;
 
-
-
-
-import com.example.LoginDemo.Entity.Inquiry;
+import com.example.LoginDemo.Repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.ui.Model;
+import com.example.LoginDemo.Entity.PropInquiry;
 import com.example.LoginDemo.Entity.UserEntity;
 import com.example.LoginDemo.Services.InquiryService;
-import com.example.LoginDemo.Services.UserServices;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.security.Principal;
 import java.util.List;
 
 @Controller
-@RequestMapping()
+@RequiredArgsConstructor
 public class InquiryController {
-
     private final InquiryService inquiryService;
-    private final UserServices userService;
 
+    @Autowired
+    private UserRepository userRepository;
 
-    public InquiryController(InquiryService inquiryService,UserServices userService) {
-        this.inquiryService = inquiryService;
-        this.userService = userService;
+    @PostMapping("/properties/{id}/inquiry")
+    public String sendInquiry(@PathVariable Long id,
+                              @AuthenticationPrincipal UserDetails userDetails,
+                              RedirectAttributes redirectAttributes) {
+        try {
+            inquiryService.createInquiry(id, userDetails.getUsername());
+            redirectAttributes.addFlashAttribute("successMessage", "Inquiry sent successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to send inquiry: " + e.getMessage());
+        }
+        return "redirect:/properties/" + id;
     }
 
-    @PostMapping("/inquiries/create/{propertyId}")
-    public String createInquiry(@PathVariable Long propertyId, Principal principal, RedirectAttributes redirectAttributes) {
-        String username = principal.getName();
-        UserEntity user = userService.findByUsername(username);
+    @GetMapping("/my-inquiries")
+    public String showMyInquiries(@AuthenticationPrincipal UserDetails userDetails, Model model) {
+        String username = userDetails.getUsername();
+        UserEntity user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        inquiryService.createInquiry(user.getId(), propertyId);
-        redirectAttributes.addFlashAttribute("successMessage", "Your inquiry has been sent successfully!");
+        List<PropInquiry> inquiries = inquiryService.getInquiriesForOwner(user.getId());
 
-
-        return "redirect:/properties/" + propertyId;  // Redirect back to property details
-    }
-
-    @GetMapping("/owner/inquiries")
-    public String showOwnerInquiries(Model model, Principal principal) {
-        String username = principal.getName();
-        UserEntity user = userService.findByUsername(username);
-
-        List<Inquiry> inquiries = inquiryService.getInquiriesForOwner(user.getId());
+        System.out.println("Inquiries found: " + inquiries.size()); // Add this line
         model.addAttribute("inquiries", inquiries);
-
-        return "owner-inquiries";
+        return "my-inquiries";
     }
 
 
-    @PostMapping("/owner/inquiries/delete/{id}")
-    public String deleteInquiry(@PathVariable Long id) {
-        inquiryService.deleteInquiry(id);
-        return "redirect:/owner/inquiries";
+    @PostMapping("/inquiries/{id}/close")
+    public String closeInquiry(@PathVariable Long id) {
+        inquiryService.closeInquiry(id);
+        return "redirect:/my-inquiries";
     }
-
 }

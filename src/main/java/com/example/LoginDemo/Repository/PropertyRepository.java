@@ -19,12 +19,12 @@ public interface PropertyRepository extends JpaRepository<PropertyEntity,Long> {
     List<PropertyEntity> findByPriceLessThanEqual(double price);
     List<PropertyEntity> findByPincode(String pincode);
 
-    @Query("SELECT DISTINCT p.location FROM PropertyEntity p")
-    List<String> findDistinctLocations();
-
-
-    @Query("SELECT p FROM PropertyEntity p ORDER BY p.id DESC")
-    List<PropertyEntity> findTop4RecentProperties(Pageable pageable);
-
+//    @Query("SELECT DISTINCT p.location FROM PropertyEntity p")
+//    List<String> findDistinctLocations();
+//
+//
+//    @Query("SELECT p FROM PropertyEntity p ORDER BY p.id DESC")
+//    List<PropertyEntity> findTop4RecentProperties(Pageable pageable);
+//
 
 }

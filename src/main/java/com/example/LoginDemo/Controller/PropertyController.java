@@ -3,8 +3,8 @@ package com.example.LoginDemo.Controller;
 
 import com.example.LoginDemo.Entity.*;
 import com.example.LoginDemo.Repository.*;
-import com.example.LoginDemo.Services.PropertyServices;
-import com.example.LoginDemo.Services.UserServices;
+import com.example.LoginDemo.Services.*;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -13,20 +13,16 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Controller
@@ -37,13 +33,19 @@ public class PropertyController {
 
 
     @Autowired
+    private PropertyInfoService propertyInfoService;  // Add this
+
+    @Autowired
+    private PropertyDetailsService propertyDetailsService;  // Add this
+
+    @Autowired
     private UserServices userServices;
 
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private PropertyRepository propertyRepository;
+//    @Autowired
+//    private PropertyRepository propertyRepository;
 
     @Autowired
     private PropertyCatRepository propertyCatRepository;
@@ -58,83 +60,55 @@ public class PropertyController {
     public String showUserProperties(Model model, @AuthenticationPrincipal UserDetails userDetails) {
         String username = userDetails.getUsername();
         UserEntity currentUser = userServices.findByUsername(username);
-        List<PropertyEntity> properties = propertyServices.getPropertiesByUser(currentUser);
+        List<PropertyInfo> properties = propertyServices.getPropertiesByUser(currentUser);
         model.addAttribute("properties", properties);
         model.addAttribute("currentUser", currentUser);
         return "user-properties";
     }
 
-//
-//    @GetMapping("/properties")
-//    public String showProperties(Model model) {
-//        List<String> locations = propertyRepository.findDistinctLocations();
-//        model.addAttribute("locations", locations);
-//        model.addAttribute("selectedLocation", ""); // Initialize with an empty string or default value
-//        return "properties"; // Your HTML page name
-//    }
 
-@GetMapping("/properties")
-public String showProperties(Model model) {
+    @GetMapping("/properties")
+    public String showProperties(Model model) {
+        List<PropertyCat> categories = propertyCatRepository.findAll();
+        model.addAttribute("categories", categories);
 
-    List<String> locations = propertyRepository.findDistinctLocations();
-    model.addAttribute("locations", locations);
+        List<String> locations = propertyInfoRepository.findDistinctLocations();
+        model.addAttribute("locations", locations);
 
-    // Fetch the 4 most recent listings
-    Pageable pageable = PageRequest.of(0, 4);
-    List<PropertyEntity> recentListings = propertyServices.getRecentListings(pageable);
+        // Fetch the 4 most recent listings
+        Pageable pageable = PageRequest.of(0, 4);
+        List<PropertyInfo> recentListings = propertyInfoRepository.findTop4RecentProperties(pageable);
 
-    // Add to model
-    model.addAttribute("recentListings", recentListings);
+        // Debugging: Print properties
+        System.out.println("Fetched Recent Listings: " + recentListings);
 
+        model.addAttribute("recentListings", recentListings);
+        return "properties";
+    }
 
-    return "properties"; // Your HTML page name
-}
-
-
-
-
-//    @PostMapping("/search")
-//    public String searchProperties(@RequestParam(required = false) String area,
-//                                   @RequestParam(required = false) Double price,
-//                                   @RequestParam(required = false) String location,
-//                                   Model model) {
-//
-//        List<PropertyEntity> properties = propertyRepository.findAll();
-//
-//        if (location != null && !location.trim().isEmpty()) {
-//            properties = properties.stream()
-//                    .filter(p -> p.getLocation().toLowerCase().contains(location.toLowerCase()))
-//                    .collect(Collectors.toList());
-//        }
-//
-//        if (price != null) {
-//            properties = properties.stream()
-//                    .filter(p -> p.getPrice() <= price)
-//                    .collect(Collectors.toList());
-//        }
-//
-//        model.addAttribute("properties", properties);
-//        model.addAttribute("locations", propertyRepository.findDistinctLocations());
-//        model.addAttribute("searchArea", area);
-//        model.addAttribute("searchPrice", price);
-//        model.addAttribute("selectedLocation", location);
-//
-//        return "properties";
-//    }
 @PostMapping("/search")
-public String searchProperties(@RequestParam(required = false) String area,
+public String searchProperties(@RequestParam(required = false) Long category,//new added code
+                               @RequestParam(required = false) String area,
                                @RequestParam(required = false) Double price,
                                @RequestParam(required = false) String location,
                                RedirectAttributes redirectAttributes) {
     // Retrieve all properties
-    List<PropertyEntity> properties = propertyRepository.findAll();
+//    List<PropertyEntity> properties = propertyRepository.findAll();
+    List<PropertyInfo> properties = propertyInfoRepository.findAll();//new added code
+    // Filter by Property Category
+    if (category != null) {//new added code
+        properties = properties.stream()//new added code
+                .filter(p -> p.getPropertyCategory().getId().equals(category))//new added code
+                .collect(Collectors.toList());//new added code
+    }//new added code
 
     //  Filter by Area (Fix Applied)
     if (area != null && !area.trim().isEmpty()) {
         try {
             int areaValue = Integer.parseInt(area);
             properties = properties.stream()
-                    .filter(p -> p.getArea() != null && p.getArea() <= areaValue)
+//                    .filter(p -> p.getArea() != null && p.getArea() <= areaValue)
+                    .filter(p -> p.getArea() != null && Integer.parseInt(p.getArea()) <= areaValue)//new added code
                     .collect(Collectors.toList());
         } catch (NumberFormatException e) {
             redirectAttributes.addFlashAttribute("error", "Invalid area value");
@@ -161,12 +135,107 @@ public String searchProperties(@RequestParam(required = false) String area,
     redirectAttributes.addFlashAttribute("searchArea", area);
     redirectAttributes.addFlashAttribute("searchPrice", price);
     redirectAttributes.addFlashAttribute("selectedLocation", location);
+    redirectAttributes.addFlashAttribute("selectedCategory", category);
 
     return "redirect:/properties";
 }
 
+    @GetMapping("/properties/{id}")
+    public String getPropertyDetails(@PathVariable Long id, Model model, @AuthenticationPrincipal UserDetails userDetails) {
+        // Fetch propertyInfo using repository
+        PropertyInfo propertyInfo = propertyInfoRepository.findById(id).orElse(null);
 
-    //  Show Add Property Form
+        // Check if propertyInfo exists before proceeding
+        if (propertyInfo == null) {
+            model.addAttribute("errorMessage", "Property not found.");
+            return "error-page"; // Your error page template
+        }
+
+        // Fetch property details based on propertyInfo's ID
+        PropertyDetails propertyDetails = propertyDetailsRepository.findByPropertyInfo_PropId(id).orElse(null);
+
+        model.addAttribute("propertyInfo", propertyInfo);
+        model.addAttribute("propertyDetails", propertyDetails);
+
+        if (propertyDetails == null) {
+            model.addAttribute("noDetailsMessage", "Owner did not provide other details.");
+        }
+
+        return "property-details"; // Your HTML file name
+    }
+
+    // Edit Property Form
+    @GetMapping("/properties/edit/{id}")
+    public String showEditPropertyForm(@PathVariable Long id, Model model, @AuthenticationPrincipal UserDetails userDetails) {
+
+        PropertyInfo propertyInfo = propertyInfoService.getPropertyById(id);
+        PropertyDetails propertyDetails = propertyDetailsService.getDetailsByPropertyId(id);
+        if (propertyDetails == null) {
+            propertyDetails = new PropertyDetails();
+        }
+        String username = userDetails.getUsername();
+        UserEntity currentUser = userServices.findByUsername(username);
+
+        if (!propertyInfo.getUser().getId().equals(currentUser.getId())) {
+            return "redirect:/properties"; // Redirect if unauthorized
+        }
+
+        model.addAttribute("propertyInfo", propertyInfo);
+        model.addAttribute("propertyDetails", propertyDetails);
+
+        return "edit-property";
+    }
+
+    // Update Property
+    @PostMapping("/properties/edit/{id}")
+    public String updateProperty(
+            @PathVariable Long id,
+            @ModelAttribute("propertyInfo") PropertyInfo propertyInfo, // Must match Thymeleaf model
+            @RequestParam("images") MultipartFile[] images,
+            @AuthenticationPrincipal UserDetails userDetails) throws IOException {
+
+        UserEntity currentUser = userServices.findByUsername(userDetails.getUsername());
+        propertyServices.updateProperty(id, propertyInfo, images, currentUser);
+        return "redirect:/edit-property-details/" + id;
+    }
+
+
+
+    @GetMapping("/edit-property-details/{id}")
+    public String editPropertyDetails(@PathVariable Long id, Model model) {
+        Optional<PropertyDetails> propertyDetails = propertyDetailsRepository.findByPropertyInfo_PropId(id);
+
+        if (propertyDetails.isEmpty()) {
+            return "redirect:/user/add-property-details?propId=" + id;
+        }
+
+        PropertyDetails details = propertyDetails.get();
+        String categoryName = details.getPropertyInfo().getPropertyCategory().getName(); // Assuming there's a getCatName()
+
+        model.addAttribute("propertyDetails", details);
+        model.addAttribute("propertyId", id);
+        model.addAttribute("category", categoryName);
+        return "edit-property-details";
+    }
+
+
+    @PostMapping("/edit-property-details")
+    public String updatePropertyDetails(@ModelAttribute PropertyDetails propertyDetails, @RequestParam("propId") Long propId) {
+        // Fetch the associated PropertyInfo
+        Optional<PropertyInfo> propertyInfoOpt = propertyInfoRepository.findById(propId);
+        if (propertyInfoOpt.isEmpty()) {
+            return "redirect:/error"; // or handle gracefully
+        }
+
+        propertyDetails.setPropertyInfo(propertyInfoOpt.get());
+        propertyDetailsRepository.save(propertyDetails);
+
+        return "redirect:/properties/" + propId;
+    }
+
+
+
+
     @GetMapping("/user/add")
     public String showAddPropertyForm(Model model) {
         model.addAttribute("categories", propertyCatRepository.findAll());
@@ -265,7 +334,7 @@ public String searchProperties(@RequestParam(required = false) String area,
         return "add-property-details";
     }
 
-
+    @Transactional
     @PostMapping("/user/add-property-details")
     public String addPropertyDetails(@RequestParam("propId") Long propId,
                                      @RequestParam(required = false) Integer bhk,
@@ -292,6 +361,7 @@ public String searchProperties(@RequestParam(required = false) String area,
 
         Optional<PropertyInfo> propertyOptional = propertyInfoRepository.findById(propId);
         if (!propertyOptional.isPresent()) {
+            System.out.println("Property ID not found: " + propId);
             redirectAttributes.addFlashAttribute("error", "Invalid property ID.");
             return "redirect:/properties";
         }
@@ -314,10 +384,9 @@ public String searchProperties(@RequestParam(required = false) String area,
 
         System.out.println("Property details saved successfully!");
 
-        return "redirect:/properties";
+        return "redirect:/properties/" + propId;
+
     }
-
-
 
 
 }

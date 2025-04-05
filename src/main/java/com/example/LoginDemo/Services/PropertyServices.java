@@ -5,6 +5,7 @@ import com.example.LoginDemo.Entity.PropertyEntity;
 import com.example.LoginDemo.Entity.PropertyInfo;
 import com.example.LoginDemo.Entity.UserEntity;
 import com.example.LoginDemo.Repository.*;
+import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +27,8 @@ public class PropertyServices {
 
     private static final Logger logger = LoggerFactory.getLogger(PropertyServices.class);
 
-        @Autowired
-        private PropertyRepository propertyRepository;
+    @Autowired
+    private PropertyRepository propertyRepository;
 
     @Value("${file.upload-dir:src/main/resources/static/uploads}")
     private String uploadDir;
@@ -41,13 +42,13 @@ public class PropertyServices {
     private PropertyInfoRepository propertyInfoRepository;
 
     @Autowired
+    private PropertyDetailsRepository propertyDetailsRepository;
+
+    @Autowired
     private UserRepository userRepository;
 
 
-
-
-
-    public PropertyEntity listProperty(PropertyEntity property,  MultipartFile[] images) throws IOException {
+    public PropertyEntity listProperty(PropertyEntity property, MultipartFile[] images) throws IOException {
 
         if (property.getStatus() == null) {
             property.setStatus("AVAILABLE");
@@ -68,9 +69,15 @@ public class PropertyServices {
                 File dest = new File(uploadDirectory.getAbsolutePath() + File.separator + fileName);
                 images[i].transferTo(dest);
                 switch (i) {
-                    case 0: property.setImage1("/uploads/" + fileName); break;
-                    case 1: property.setImage2("/uploads/" + fileName); break;
-                    case 2: property.setImage3("/uploads/" + fileName); break;
+                    case 0:
+                        property.setImage1("/uploads/" + fileName);
+                        break;
+                    case 1:
+                        property.setImage2("/uploads/" + fileName);
+                        break;
+                    case 2:
+                        property.setImage3("/uploads/" + fileName);
+                        break;
 
                 }
             }
@@ -79,26 +86,32 @@ public class PropertyServices {
         return propertyRepository.save(property);
     }
 
-    public PropertyEntity updateProperty(Long id, PropertyEntity updatedProperty, MultipartFile[] images, UserEntity currentUser) throws IOException {
-        PropertyEntity existingProperty = getPropertyById(id);
+public PropertyInfo getPropertyInfoById(Long id) {
+    return propertyInfoRepository.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Property not found with ID: " + id));
+}
 
+    public PropertyInfo updateProperty(Long id, PropertyInfo updatedProperty, MultipartFile[] images, UserEntity currentUser) throws IOException {
+    PropertyInfo existingProperty = getPropertyInfoById(id);
 
-        if (!existingProperty.getUser().getId().equals(currentUser.getId())) {
-            logger.warn("User {} attempted to edit property {} but is not authorized", currentUser.getId(), id);
-            throw new SecurityException("You are not authorized to update this property.");
-        }
+    // Authorization check
+    if (!existingProperty.getUser().getId().equals(currentUser.getId())) {
+        logger.warn("User {} attempted to edit property {} but is not authorized", currentUser.getId(), id);
+        throw new SecurityException("You are not authorized to update this property.");
+    }
 
-        logger.info("Updating property ID: {}", id);
+    logger.info("Updating property ID: {}", id);
 
-        existingProperty.setTitle(updatedProperty.getTitle());
-        existingProperty.setDescription(updatedProperty.getDescription());
-        existingProperty.setLocation(updatedProperty.getLocation());
-        existingProperty.setPrice(updatedProperty.getPrice());
-        existingProperty.setPincode(updatedProperty.getPincode());
+    // Update only non-null fields
+    if (updatedProperty.getPropTitle() != null) existingProperty.setPropTitle(updatedProperty.getPropTitle());
+    if (updatedProperty.getLocation() != null) existingProperty.setLocation(updatedProperty.getLocation());
+    if (updatedProperty.getPinCode() != null) existingProperty.setPinCode(updatedProperty.getPinCode());
+    if (updatedProperty.getArea() != null) existingProperty.setArea(updatedProperty.getArea());
+    if (updatedProperty.getFacing() != null) existingProperty.setFacing(updatedProperty.getFacing());
+    if (updatedProperty.getPrice() != null) existingProperty.setPrice(updatedProperty.getPrice());
 
-
-        existingProperty.setArea(updatedProperty.getArea());
-
+    // Handle image uploads safely
+    if (images != null) {
         File uploadDirectory = new File(uploadDir);
         if (!uploadDirectory.exists()) {
             uploadDirectory.mkdirs();
@@ -109,48 +122,45 @@ public class PropertyServices {
                 String fileName = System.currentTimeMillis() + "-" + images[i].getOriginalFilename();
                 File dest = new File(uploadDirectory.getAbsolutePath() + File.separator + fileName);
                 images[i].transferTo(dest);
-                switch (i) {case 0: existingProperty.setImage1("/uploads/" + fileName); break;
-                    case 1: existingProperty.setImage2("/uploads/" + fileName); break;
-                    case 2: existingProperty.setImage3("/uploads/" + fileName); break;
 
+                String imagePath = "/uploads/" + fileName;
+
+                switch (i) {
+                    case 0: if (imagePath != null) existingProperty.setImg1(imagePath); break;
+                    case 1: if (imagePath != null) existingProperty.setImg2(imagePath); break;
+                    case 2: if (imagePath != null) existingProperty.setImg3(imagePath); break;
+                    case 3: if (imagePath != null) existingProperty.setImg4(imagePath); break;
+                    case 4: if (imagePath != null) existingProperty.setImg5(imagePath); break;
                 }
             }
         }
+    }
 
-        return propertyRepository.save(existingProperty);
+    PropertyInfo updatedInfo = propertyInfoRepository.save(existingProperty);
+    logger.info("Property {} updated successfully by user {}", id, currentUser.getId());
+    return updatedInfo;
+}
+
+
+
+
+
+    public List<PropertyEntity> getAllProperty() {
+        return propertyRepository.findAll();
+    }
+
+    public PropertyEntity getPropertyById(Long id) {
+        return propertyRepository.findById(id).orElseThrow(
+                () -> new RuntimeException("Property Not Found"));
+    }
+
+    public void deleteById(Long id) {
+        propertyRepository.deleteById(id);
     }
 
 
-
-
-
-
-        public PropertyEntity listProperty(PropertyEntity property)
-        {
-            property.setStatus("AVAILABLE");
-            return propertyRepository.save(property);
-        }
-
-        public List<PropertyEntity> getAllProperty()
-        {
-            return propertyRepository.findAll();
-        }
-
-        public PropertyEntity getPropertyById(Long id)
-        {
-            return propertyRepository.findById(id).orElseThrow(
-                    ()->new RuntimeException("Property Not Found"));
-        }
-
-        public void deleteById(Long id)
-        {
-            propertyRepository.deleteById(id);
-        }
-
-
-
-    public List<PropertyEntity> getPropertiesByUser(UserEntity user) {
-        return propertyRepository.findByUser(user);
+    public List<PropertyInfo> getPropertiesByUser(UserEntity user) {
+        return propertyInfoRepository.findByUser(user);
     }
 
 
@@ -178,10 +188,9 @@ public class PropertyServices {
         return properties;
     }
 
-    public List<PropertyEntity> getRecentListings(Pageable pageable) {
-        return propertyRepository.findTop4RecentProperties(pageable);
+    public List<PropertyInfo> getRecentListings(Pageable pageable) {
+        return propertyInfoRepository.findTop4RecentProperties(pageable);
     }
-
 
 
 }
