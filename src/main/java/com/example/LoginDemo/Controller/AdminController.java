@@ -41,7 +41,7 @@ public class AdminController {
     public String adminDashboard(Model model)
     {
         List<UserEntity> users = userServices.getAllUser();
-        List<PropertyEntity> properties = propertyServices.getAllProperty();
+        List<PropertyInfo> properties = propertyServices.getAllProperty();
         List<ComplaintEntity> complaints= complaintServices.getAllComplaints();
         List<PropertyCat> categories = propertyCatRepository.findAll();
         model.addAttribute("categories", categories);

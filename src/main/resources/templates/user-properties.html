@@ -1,191 +1,292 @@
+
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Properties | PropertyNest</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <title>My Properties - PropertyNest</title>
+    <link rel="stylesheet" th:href="@{/css_main/style.css}">
+    <link rel="stylesheet" th:href="@{/css_main/auth.css}">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        :root {
-            --primary: #3498db;
-            --secondary: #2c3e50;
-            --accent: #f39c12;
-            --light: #f8f9fa;
-            --dark: #343a40;
+        .page-container {
+          max-width: 1200px;
+          margin: 7rem auto 2rem;
+          padding: 0 1rem;
         }
 
-        body {
-            background-color: #f5f5f5;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            padding-top: 80px;
+        .page-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 2rem;
         }
 
-        .property-header {
-            background: linear-gradient(135deg, var(--secondary), var(--primary));
-            color: white;
-            padding: 2rem 0;
-            margin-bottom: 2rem;
-            border-radius: 0 0 10px 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        .page-title {
+          font-size: 1.875rem;
+          font-weight: 700;
+          color: #1a1a1a;
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+        }
+
+        .page-title i {
+          color: #eab308;
+        }
+
+        .property-count {
+          background: #eab308;
+          color: white;
+          padding: 0.5rem 1rem;
+          border-radius: 9999px;
+          font-weight: 500;
+          font-size: 0.875rem;
+        }
+
+        .properties-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+          gap: 1.5rem;
+          margin-bottom: 2rem;
         }
 
         .property-card {
-            border: none;
-            border-radius: 10px;
-            overflow: hidden;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-            height: 100%;
+          background: white;
+          border-radius: 1rem;
+          overflow: hidden;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+          transition: all 0.3s ease;
         }
 
         .property-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+          transform: translateY(-0.25rem);
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
 
-        .card-img-top {
-            height: 200px;
-            object-fit: cover;
-            transition: transform 0.5s;
+        .property-image {
+          position: relative;
+          height: 200px;
+          overflow: hidden;
         }
 
-        .property-card:hover .card-img-top {
-            transform: scale(1.05);
+        .property-image img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          transition: transform 0.3s ease;
         }
 
-        .badge-status {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            font-size: 0.8rem;
-            padding: 5px 10px;
+        .property-card:hover .property-image img {
+          transform: scale(1.05);
         }
 
-        .btn-action {
-            border-radius: 50px;
-            font-weight: 500;
-            padding: 8px 20px;
-            transition: all 0.3s;
+        .property-status {
+          position: absolute;
+          top: 1rem;
+          right: 1rem;
+          padding: 0.5rem 1rem;
+          border-radius: 9999px;
+          font-size: 0.875rem;
+          font-weight: 500;
         }
 
-        .btn-details {
-            background-color: var(--primary);
-            border-color: var(--primary);
+        .status-available {
+          background: #dcfce7;
+          color: #059669;
+        }
+
+        .status-pending {
+          background: #fef3c7;
+          color: #d97706;
+        }
+
+        .property-content {
+          padding: 1.5rem;
+        }
+
+        .property-title {
+          font-size: 1.25rem;
+          font-weight: 600;
+          color: #1a1a1a;
+          margin-bottom: 1rem;
+        }
+
+        .property-details {
+          display: grid;
+          gap: 0.75rem;
+          margin-bottom: 1.5rem;
+        }
+
+        .detail-item {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          color: #4b5563;
+        }
+
+        .detail-item i {
+          color: #eab308;
+          width: 1.25rem;
+          height: 1.25rem;
+        }
+
+        .property-price {
+          color: #eab308;
+          font-size: 1.25rem;
+          font-weight: 600;
+          margin-bottom: 1rem;
+        }
+
+        .property-actions {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 0.75rem;
+        }
+
+        .btn {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+          padding: 0.75rem;
+          border-radius: 0.5rem;
+          font-size: 0.875rem;
+          font-weight: 500;
+          transition: all 0.2s ease;
+          text-decoration: none;
+        }
+
+        .btn-view {
+          background: #eab308;
+          color: white;
+        }
+
+        .btn-view:hover {
+          background: #ca8a04;
         }
 
         .btn-edit {
-            background-color: var(--accent);
-            border-color: var(--accent);
-        }
-
-        .btn-details:hover {
-            background-color: #2980b9;
-            border-color: #2980b9;
+          background: #f3f4f6;
+          color: #4b5563;
         }
 
         .btn-edit:hover {
-            background-color: #e67e22;
-            border-color: #e67e22;
+          background: #e5e7eb;
+          color: #1a1a1a;
         }
 
         .empty-state {
-            background-color: white;
-            border-radius: 10px;
-            padding: 3rem;
-            text-align: center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+          text-align: center;
+          padding: 4rem 2rem;
+          background: white;
+          border-radius: 1rem;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
 
-        .empty-state-icon {
-            font-size: 4rem;
-            color: var(--primary);
-            margin-bottom: 1rem;
+        .empty-state i {
+          width: 4rem;
+          height: 4rem;
+          color: #9ca3af;
+          margin-bottom: 1.5rem;
+        }
+
+        .empty-state h3 {
+          font-size: 1.5rem;
+          color: #1a1a1a;
+          margin-bottom: 1rem;
+        }
+
+        .empty-state p {
+          color: #6b7280;
+          margin-bottom: 2rem;
+        }
+
+        .btn-add-property {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+          background: #eab308;
+          color: white;
+          padding: 0.75rem 1.5rem;
+          border-radius: 0.5rem;
+          font-weight: 500;
+          text-decoration: none;
+          transition: background-color 0.2s ease;
+        }
+
+        .btn-add-property:hover {
+          background: #ca8a04;
+        }
+
+        @media (max-width: 640px) {
+          .page-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+          }
+
+          .properties-grid {
+            grid-template-columns: 1fr;
+          }
+
+          .property-actions {
+            grid-template-columns: 1fr;
+          }
         }
     </style>
 </head>
 <body>
-<!--<div class="min-h-screen bg-white">-->
-<!--    &lt;!&ndash; Header &ndash;&gt;-->
-<!--    <header class="fixed-header">-->
-<!--        <div class="container">-->
-<!--            <div class="logo">-->
-<!--                <a href="/properties" style="all: unset; cursor: pointer; display: flex;">-->
-<!--                    Property<span class="logo-nest">Nest-->
-<!--            <i data-lucide="home" class="logo-icon"></i>-->
-<!--          </span>-->
-<!--                </a>-->
-<!--            </div>-->
-<!--            <nav class="nav-menu">-->
-<!--                <a th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}"class="nav-link" href="/admin/dashboard">Admin Panel</a>-->
-<!--                <a href="/properties" class="nav-link">Home</a>-->
-<!--                <a href="/properties/list" class="nav-link">List Property</a>-->
-<!--                <a href="/user/properties" class="nav-link">My Properties</a>-->
-<!--                <a href="/owner/inquiries" class="nav-link">My Inquiries</a>-->
+<!-- Header -->
+<header th:replace="fragments :: header" />
 
+<div class="page-container">
+    <div class="page-header">
+        <h1 class="page-title">
+            <i data-lucide="building"></i>
+            My Properties
+        </h1>
+        <div class="property-count" th:if="${properties != null and not #lists.isEmpty(properties)}">
+            <span th:text="${#lists.size(properties)}"></span> properties
+        </div>
+    </div>
 
-
-<!--                <a href="/user/complaint" class="nav-link">Submit Complaint</a>-->
-
-
-
-<!--                &lt;!&ndash; Show Username & Logout Button if Logged In &ndash;&gt;-->
-<!--                <span th:if="${session.username}" style="display: contents">-->
-
-<!--            <a th:href="@{/user/profile}" th:text="${session.username}" class="nav-link username-link" style="color: gold; font-weight: bold;"></a>-->
-<!--            <span>-->
-<!--                <form th:action="@{/logout}" method="post" style="display: inline;">-->
-<!--                  <button type="submit" class="btn btn-danger">Logout</button>-->
-<!--                </form>-->
-<!--              </span>-->
-<!--          </span>-->
-
-<!--                &lt;!&ndash; Show Login/Register if Not Logged In &ndash;&gt;-->
-<!--                <span th:if="${session.username == null}">-->
-<!--            <a href="/login"><button class="btn-primary">Login</button></a>-->
-<!--          </span>-->
-<!--            </nav>-->
-<!--        </div>-->
-<!--    </header>-->
-<!--</div>-->
-
-
-
-<div class="container">
     <!-- Properties Grid -->
-    <div class="row g-4" th:if="${properties != null and not #lists.isEmpty(properties)}">
-        <div class="col-lg-4 col-md-6" th:each="property : ${properties}">
-            <div class="property-card card h-100">
+    <div class="properties-grid" th:if="${properties != null and not #lists.isEmpty(properties)}">
+        <div class="property-card" th:each="property : ${properties}">
+            <div class="property-image">
                 <img th:src="${property.img1 != null ? property.img1 : '/images/default-property.jpg'}"
-                     class="card-img-top" alt="Property image">
-                <span class="badge badge-status"
-                      th:classappend="${property.status == 'AVAILABLE'} ? 'bg-success' : 'bg-secondary'"
-                      th:text="${property.status}"></span>
-                <div class="card-body">
-                    <h5 class="card-title fw-bold" th:text="${property.propTitle}"></h5>
-                    <div class="d-flex align-items-center mb-2">
-                        <i class="bi bi-geo-alt-fill text-primary me-2"></i>
-                        <span class="card-text" th:text="${property.location}"></span>
+                     th:alt="${property.propTitle}">
+                <span class="property-status"
+                      th:classappend="${property.status == 'AVAILABLE'} ? 'status-available' : 'status-pending'"
+                      th:text="${property.status}">
+          </span>
+            </div>
+            <div class="property-content">
+                <h2 class="property-title" th:text="${property.propTitle}"></h2>
+                <div class="property-details">
+                    <div class="detail-item">
+                        <i data-lucide="map-pin"></i>
+                        <span th:text="${property.location}"></span>
                     </div>
-                    <div class="d-flex justify-content-between mb-3">
-                        <div>
-                            <i class="bi bi-currency-rupee text-muted"></i>
-                            <span class="fw-bold h5" th:text="${property.price}"></span>
-                        </div>
-                        <div>
-                            <i class="bi bi-rulers text-muted"></i>
-                            <span th:text="${property.area} + ' sq ft'"></span>
-                        </div>
+                    <div class="detail-item">
+                        <i data-lucide="square"></i>
+                        <span th:text="${property.area + ' sq ft'}"></span>
                     </div>
-                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                        <a th:href="@{/properties/{id}(id=${property.propId})}" class="btn btn-action btn-details text-white me-md-2">
-                            <i class="bi bi-eye-fill"></i> View
-                        </a>
-<!--                        <a th:href="@{/properties/edit/{id}(id=${property.id})}" class="btn btn-action btn-edit text-white">-->
-<!--                            <i class="bi bi-pencil-fill"></i> Edit-->
-<!--                        </a>-->
-                    </div>
+                </div>
+                <div class="property-price">
+                    <i data-lucide="indian-rupee"></i>
+                    <span th:text="${property.price}"></span>
+                </div>
+                <div class="property-actions">
+                    <a th:href="@{/properties/{id}(id=${property.propId})}" class="btn btn-view">
+                        <i data-lucide="eye"></i>
+                        View Details
+                    </a>
+                    <a th:href="@{/properties/edit/{id}(id=${property.propId})}" class="btn btn-edit">
+                        <i data-lucide="edit"></i>
+                        Edit
+                    </a>
                 </div>
             </div>
         </div>
@@ -193,20 +294,12 @@
 
     <!-- Empty State -->
     <div class="empty-state" th:if="${properties == null or #lists.isEmpty(properties)}">
-        <div class="empty-state-icon">
-            <i class="bi bi-house-exclamation"></i>
-        </div>
-        <h3 class="mb-3">No Properties Listed Yet</h3>
-        <p class="text-muted mb-4">You haven't listed any properties yet. Start by adding your first property!</p>
-        <a th:href="@{/properties/list}" class="btn btn-primary btn-lg px-4">
-            <i class="bi bi-plus-circle"></i> List a Property
-        </a>
-    </div>
-
-    <!-- Back Button -->
-    <div class="text-center mt-5">
-        <a th:href="@{/user/profile}" class="btn btn-outline-secondary px-4">
-            <i class="bi bi-arrow-left"></i> Back to Profile
+        <i data-lucide="home"></i>
+        <h3>No Properties Listed Yet</h3>
+        <p>Start building your property portfolio by listing your first property.</p>
+        <a href="/user/add" class="btn-add-property">
+            <i data-lucide="plus"></i>
+            Add Your First Property
         </a>
     </div>
 </div>
@@ -214,7 +307,5 @@
 <script>
     lucide.createIcons();
 </script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
 </body>
 </html>

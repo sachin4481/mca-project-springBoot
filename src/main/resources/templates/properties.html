@@ -24,7 +24,7 @@
         <!-- Property Category Dropdown -->
         <div class="dropdown">
           <label for="category" class="d-flex align-items-center">
-            <i data-lucide="list"></i> Select Category
+<!--            <i data-lucide="list"></i> Select Category-->
           </label>
           <select id="category" class="dropdown-btn" name="category">
             <option value="">-- Select Category --</option>
@@ -51,7 +51,6 @@
             </div>
           </select>
         </div>
-
         <script>
           window.onload = function () {
               const locationSelect = document.getElementById('location');
@@ -61,10 +60,6 @@
               }
           };
         </script>
-
-
-
-
         <!-- Price Range -->
         <div class="price-range">
           <input
@@ -93,19 +88,11 @@
             });
         });
       </script>
-
-
       <button type="submit" class="search-btn">
         <i data-lucide="search"></i>
         Search Properties
       </button>
     </form>
-
-
-
-
-
-
 
     <!-- Listings search results -->
     <section class="listings-section py-5 bg-light">
@@ -160,5 +147,6 @@
 
   </section>
 </div>
+    <footer th:replace="fragments :: footer" />
 </body>
 </html>

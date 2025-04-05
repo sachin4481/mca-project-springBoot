@@ -16,10 +16,11 @@ public interface PropertyInfoRepository extends JpaRepository<PropertyInfo, Long
 
     List<PropertyInfo> findByUser(UserEntity user);
 
-    @Query("SELECT p FROM PropertyInfo p ORDER BY p.propId DESC")
+    @Query("SELECT p FROM PropertyInfo p WHERE p.status <> 'SOLD' ORDER BY p.propId DESC")
     List<PropertyInfo> findTop4RecentProperties(Pageable pageable);
 
-    @Query("SELECT DISTINCT p.location FROM PropertyEntity p")
+
+    @Query("SELECT DISTINCT p.location FROM PropertyInfo p")
     List<String> findDistinctLocations();
 
 }

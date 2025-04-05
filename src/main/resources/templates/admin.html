@@ -81,13 +81,9 @@
         </thead>
         <tbody>
         <tr th:each="property : ${properties}">
-            <td th:text="${property.title}"></td>
+            <td th:text="${property.propTitle}"></td>
             <td th:text="${property.price}"></td>
-            <td>
-                <form th:action="@{/admin/delete-property/{id}(id=${property.id})}" method="post">
-                    <button type="submit">Delete</button>
-                </form>
-            </td>
+
         </tr>
         </tbody>
     </table>

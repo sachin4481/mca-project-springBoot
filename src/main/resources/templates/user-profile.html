@@ -15,42 +15,8 @@
 <body>
 <div class="min-h-screen bg-white">
     <!-- Header -->
-    <header class="fixed-header">
-        <div class="container">
-            <div class="logo">
-                <a href="/properties" style="all: unset; cursor: pointer; display: flex;">
-                    Property<span class="logo-nest">Nest
-            <i data-lucide="home" class="logo-icon"></i>
-          </span>
-                </a>
-            </div>
-            <nav class="nav-menu">
-                <a th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}"class="nav-link" href="/admin/dashboard">Admin Panel</a>
-                <a href="/properties" class="nav-link">Home</a>
-                <a href="/properties/list" class="nav-link">List Property</a>
-                <a href="/user/properties" class="nav-link">My Properties</a>
-                <a href="/user/complaint" class="nav-link">Submit Complaint</a>
+    <header th:replace="fragments :: header" />
 
-
-
-                <!-- Show Username & Logout Button if Logged In -->
-                <span th:if="${session.username}" style="display: contents">
-
-            <a th:href="@{/user/profile}" th:text="${session.username}" class="nav-link username-link" style="color: gold; font-weight: bold;"></a>
-            <span>
-                <form th:action="@{/logout}" method="post" style="display: inline;">
-                  <button type="submit" class="btn btn-danger">Logout</button>
-                </form>
-              </span>
-          </span>
-
-                <!-- Show Login/Register if Not Logged In -->
-                <span th:if="${session.username == null}">
-            <a href="/login"><button class="btn-primary">Login</button></a>
-          </span>
-            </nav>
-        </div>
-    </header>
     <!-- Profile Form -->
     <div class="auth-container">
         <div class="auth-card">
