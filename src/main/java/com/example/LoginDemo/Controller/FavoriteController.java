@@ -90,10 +90,12 @@
 package com.example.LoginDemo.Controller;
 
 import com.example.LoginDemo.Entity.PropertyEntity;
+import com.example.LoginDemo.Entity.PropertyInfo;
 import com.example.LoginDemo.Entity.UserEntity;
 import com.example.LoginDemo.Repository.UserRepository;
 import com.example.LoginDemo.Services.FavoriteService; // Assuming you created this
 import com.example.LoginDemo.Services.UserServices;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -103,6 +105,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 
 @Controller
@@ -117,21 +120,26 @@ public class FavoriteController {
     private UserServices userServices;
 
     @PostMapping("/properties/favorite/add")
-    public String addFavorite(@RequestParam("propertyId") Long propertyId,
+    public String addFavorite(@RequestParam("propId") Long propId,
                               @AuthenticationPrincipal UserDetails userDetails) {
-        logger.debug("Adding favorite for propertyId: {} by user: {}", propertyId, userDetails.getUsername());
+        logger.debug("Adding favorite for propertyId: {} by user: {}", propId, userDetails.getUsername());
         UserEntity user = userServices.findByUsername(userDetails.getUsername()); // Assuming this method exists
-        favoriteService.addFavorite(user.getId(), propertyId);
-        return "redirect:/properties/" + propertyId; // Redirect back to property details
+        favoriteService.addFavorite(user.getId(), propId);
+        return "redirect:/properties/" + propId; // Redirect back to property details
     }
 
+    @Transactional
     @PostMapping("/properties/favorite/remove")
-    public String removeFavorite(@RequestParam("propertyId") Long propertyId,
+    public String removeFavorite(@RequestParam("propId") Long propId,
                                  @AuthenticationPrincipal UserDetails userDetails) {
-        logger.debug("Removing favorite for propertyId: {} by user: {}", propertyId, userDetails.getUsername());
+        if (propId == null) {
+            logger.error("Missing property ID for removal.");
+            return "redirect:/error"; // You could show an error page or handle this differently.
+        }
+        logger.debug("Removing favorite for propertyId: {} by user: {}", propId, userDetails.getUsername());
         UserEntity user = userServices.findByUsername(userDetails.getUsername());
-        favoriteService.removeFavorite(user.getId(), propertyId);
-        return "redirect:/properties/" + propertyId; // Redirect back to property details
+        favoriteService.removeFavorite(user.getId(), propId);
+        return "redirect:/properties/" + propId; // Redirect back to property details
     }
 
     @GetMapping("/user/favorites")
@@ -142,8 +150,10 @@ public class FavoriteController {
         }
         logger.debug("Viewing favorites for user: {}", userDetails.getUsername());
         UserEntity user = userServices.findByUsername(userDetails.getUsername());
-        List<PropertyEntity> favorites = favoriteService.getUserFavorites(user.getId());
+        List<PropertyInfo> favorites = favoriteService.getUserFavorites(user.getId());
         model.addAttribute("favorites", favorites);
         return "user-favorites"; // New template for favorites page
     }
+
+
 }

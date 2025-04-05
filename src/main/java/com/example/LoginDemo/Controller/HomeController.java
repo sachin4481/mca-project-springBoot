@@ -2,6 +2,7 @@ package com.example.LoginDemo.Controller;
 
 import com.example.LoginDemo.Entity.ComplaintEntity;
 import com.example.LoginDemo.Entity.PropertyEntity;
+import com.example.LoginDemo.Entity.PropertyInfo;
 import com.example.LoginDemo.Entity.UserEntity;
 import com.example.LoginDemo.Repository.PropertyRepository;
 import com.example.LoginDemo.Services.ComplaintServices;
@@ -171,55 +172,55 @@ public class HomeController {
 
 
     //new property list form logic
-    @PostMapping("/properties/list")
-    public String listProperty(@ModelAttribute PropertyEntity property,
-                               @RequestParam("images") MultipartFile[] images,
-                               @AuthenticationPrincipal UserDetails userDetails) throws IOException {
-        String username = userDetails.getUsername();
-        UserEntity currentUser = userServices.findByUsername(username);
-        property.setUser(currentUser); // Set the UserEntity when listing
-        propertyServices.listProperty(property, images);
-        return "redirect:/properties";
-    }
+//    @PostMapping("/properties/list")
+//    public String listProperty(@ModelAttribute PropertyEntity property,
+//                               @RequestParam("images") MultipartFile[] images,
+//                               @AuthenticationPrincipal UserDetails userDetails) throws IOException {
+//        String username = userDetails.getUsername();
+//        UserEntity currentUser = userServices.findByUsername(username);
+//        property.setUser(currentUser); // Set the UserEntity when listing
+//        propertyServices.listProperty(property, images);
+//        return "redirect:/properties";
+//    }
 
 
     //property detail page
-    @GetMapping("/properties/{id}")
-    public String getPropertyDetails(@PathVariable Long id, Model model, @AuthenticationPrincipal UserDetails userDetails) {
-       PropertyEntity property=propertyServices.getPropertyById(id);
-       String currentUsername=userDetails.getUsername();//get log in user name
-        UserEntity currentUser=userServices.findByUsername(currentUsername);
-        model.addAttribute("property", property);
-        model.addAttribute("currentUserId",currentUser.getId());
-        model.addAttribute("listedBy",property.getUser());
-        model.addAttribute("favorites", favoriteService.getUserFavorites(currentUser.getId()));
+//    @GetMapping("/properties/{id}")
+//    public String getPropertyDetails(@PathVariable Long id, Model model, @AuthenticationPrincipal UserDetails userDetails) {
+//       PropertyEntity property=propertyServices.getPropertyById(id);
+//       String currentUsername=userDetails.getUsername();//get log in user name
+//        UserEntity currentUser=userServices.findByUsername(currentUsername);
+//        model.addAttribute("property", property);
+//        model.addAttribute("currentUserId",currentUser.getId());
+//        model.addAttribute("listedBy",property.getUser());
+//        model.addAttribute("favorites", favoriteService.getUserFavorites(currentUser.getId()));
+//
+//        return "property-details";
+//    }
 
-        return "property-details";
-    }
-
-    @GetMapping("/properties/edit/{id}")
-    public String showEditPropertyForm(@PathVariable Long id, Model model, @AuthenticationPrincipal UserDetails userDetails) {
-        PropertyEntity property = propertyServices.getPropertyById(id);
-        String username = userDetails.getUsername();
-        UserEntity currentUser = userServices.findByUsername(username);
-
-        if (!property.getUser().getId().equals(currentUser.getId())) {
-            return "redirect:/properties"; // Redirect if unauthorized
-        }
-
-        model.addAttribute("property", property);
-        return "edit-property";
-    }
-    @PostMapping("/properties/edit/{id}")
-    public String updateProperty(@PathVariable Long id,
-                                 @ModelAttribute PropertyEntity property,
-                                 @RequestParam("images") MultipartFile[] images,
-                                 @AuthenticationPrincipal UserDetails userDetails) throws IOException {
-        String username = userDetails.getUsername();
-        UserEntity currentUser = userServices.findByUsername(username); // Fetch from service
-        propertyServices.updateProperty(id, property, images, currentUser);
-        return "redirect:/properties/{id}";
-    }
+//    @GetMapping("/properties/edit/{id}")
+//    public String showEditPropertyForm(@PathVariable Long id, Model model, @AuthenticationPrincipal UserDetails userDetails) {
+//        PropertyEntity property = propertyServices.getPropertyById(id);
+//        String username = userDetails.getUsername();
+//        UserEntity currentUser = userServices.findByUsername(username);
+//
+//        if (!property.getUser().getId().equals(currentUser.getId())) {
+//            return "redirect:/properties"; // Redirect if unauthorized
+//        }
+//
+//        model.addAttribute("property", property);
+//        return "edit-property";
+//    }
+//    @PostMapping("/properties/edit/{id}")
+//    public String updateProperty(@PathVariable Long id,
+//                                 @ModelAttribute PropertyInfo property,
+//                                 @RequestParam("images") MultipartFile[] images,
+//                                 @AuthenticationPrincipal UserDetails userDetails) throws IOException {
+//        String username = userDetails.getUsername();
+//        UserEntity currentUser = userServices.findByUsername(username); // Fetch from service
+//        propertyServices.updateProperty(id, property, images, currentUser);
+//        return "redirect:/properties/{id}";
+//    }
 
 
     @GetMapping("/user/profile")
