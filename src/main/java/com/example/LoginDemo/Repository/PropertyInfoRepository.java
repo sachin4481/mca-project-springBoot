@@ -7,6 +7,7 @@ import com.example.LoginDemo.Entity.UserEntity;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -22,5 +23,11 @@ public interface PropertyInfoRepository extends JpaRepository<PropertyInfo, Long
 
     @Query("SELECT DISTINCT p.location FROM PropertyInfo p")
     List<String> findDistinctLocations();
+
+    @Query("SELECT pi FROM PropertyInfo pi " +
+            "JOIN PropInquiry inq ON inq.property = pi " +
+            "WHERE inq.user.id = :userId AND inq.status = 'ACTIVE'")
+    List<PropertyInfo> findInquiredPropertiesByUserId(@Param("userId") Long userId);
+
 
 }

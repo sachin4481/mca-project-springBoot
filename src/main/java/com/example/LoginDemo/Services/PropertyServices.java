@@ -108,6 +108,9 @@ public PropertyInfo getPropertyInfoById(Long id) {
 
 
 
+    public List<PropertyInfo> getInquiredPropertiesByUserId(Long userId) {
+        return propertyInfoRepository.findInquiredPropertiesByUserId(userId);
+    }
 
 
     public List<PropertyInfo> getAllProperty() {

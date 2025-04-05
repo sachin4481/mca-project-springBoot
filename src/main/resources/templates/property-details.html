@@ -112,14 +112,19 @@
         <span class="detail-label">Scheme Name</span>
         <span class="detail-value" th:text="${propertyDetails.schemeName}"></span>
       </div>
-      </th:block>
       <div class="detail-item">
         <span class="detail-label">Status</span>
         <span class="detail-value" th:text="${propertyInfo.status}"></span>
       </div>
       <div class="detail-item">
-        <span class="detail-label">Propert's age</span>
-        <span class="detail-value" th:text="${propertyDetails.age}"></span>
+        <div th:if="${propertyDetails != null}">
+          <span class="detail-label">Property's age</span><br/>
+          <span class="detail-value" th:text="${propertyDetails.age}"></span>
+        </div>
+        <div th:unless="${propertyDetails != null}">
+          <span class="detail-label">Property's age</span><br/>
+          <span class="detail-value">N/A</span>
+        </div>
       </div>
       <div class="detail-item">
         <span class="detail-label">Posted on</span>

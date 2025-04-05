@@ -160,9 +160,9 @@
     <div class="form-group">
       <label for="propertyId">
         <i data-lucide="home"></i>
-        Related Property (optional)
+        Related Property (You can submit complaints only for inquired properties.)
       </label>
-      <select th:field="*{propertyId}" id="propertyId">
+      <select th:field="*{propertyId}" id="propertyId" required>
         <option value="">-- Select Property --</option>
         <option th:each="property : ${properties}"
                 th:value="${property.propId}"

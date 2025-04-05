@@ -2,6 +2,7 @@ package com.example.LoginDemo.Controller;
 
 import com.example.LoginDemo.Entity.ComplaintEntity;
 import com.example.LoginDemo.Entity.PropertyEntity;
+import com.example.LoginDemo.Entity.PropertyInfo;
 import com.example.LoginDemo.Entity.UserEntity;
 import com.example.LoginDemo.Repository.PropertyRepository;
 import com.example.LoginDemo.Services.ComplaintServices;
@@ -21,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
+import java.util.List;
 
 @Controller
 public class HomeController {
@@ -185,15 +187,31 @@ public class HomeController {
     }
 
 
-    @GetMapping("/user/complaint")
-    public String showComplaintForm(Model model, @AuthenticationPrincipal UserDetails userDetails) {
-        if (userDetails == null) {
-            return "redirect:/login";
-        }
-        model.addAttribute("complaint", new ComplaintEntity());
-        model.addAttribute("properties", propertyServices.getAllProperty()); // For property selection
-        return "complaint";
+//    @GetMapping("/user/complaint")
+//    public String showComplaintForm(Model model, @AuthenticationPrincipal UserDetails userDetails) {
+//        if (userDetails == null) {
+//            return "redirect:/login";
+//        }
+//        model.addAttribute("complaint", new ComplaintEntity());
+//        model.addAttribute("properties", propertyServices.getAllProperty()); // For property selection
+//        return "complaint";
+//    }
+@GetMapping("/user/complaint")
+public String showComplaintForm(Model model, @AuthenticationPrincipal UserDetails userDetails) {
+    if (userDetails == null) {
+        return "redirect:/login";
     }
+
+    UserEntity loggedInUser = userServices.findByUsername(userDetails.getUsername());
+
+    List<PropertyInfo> inquiredProperties = propertyServices.getInquiredPropertiesByUserId(loggedInUser.getId());
+
+    model.addAttribute("complaint", new ComplaintEntity());
+    model.addAttribute("properties", inquiredProperties); // Only show properties inquired by this user
+
+    return "complaint";
+}
+
 
     @PostMapping("/user/complaint")
     public String submitComplaint(@ModelAttribute("complaint") ComplaintEntity complaint,

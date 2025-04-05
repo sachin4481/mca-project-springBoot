@@ -20,4 +20,6 @@ public interface PropInquiryRepository extends JpaRepository<PropInquiry, Long> 
     boolean existsActiveInquiryByPropertyAndUser(@Param("property") PropertyInfo property,
                                                  @Param("user") UserEntity user);
 
+    List<PropInquiry> findByUser(UserEntity user);
+
 }

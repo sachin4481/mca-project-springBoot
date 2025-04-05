@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Submitted Inquiries - PropertyNest</title>
+    <link rel="stylesheet" th:href="@{/css_main/style.css}">
+    <link rel="stylesheet" th:href="@{/css_main/auth.css}">
+    <link rel="stylesheet" th:href="@{/css_main/my-inquiries.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body>
+<header th:replace="fragments :: header" />
+
+<div class="page-container">
+    <div class="page-header">
+        <h1 class="page-title">
+            <i data-lucide="send"></i>
+            My Submitted Inquiries
+        </h1>
+        <div class="inquiry-count" th:if="${!inquiries.empty}">
+            <span th:text="${inquiries.size()}"></span> submitted
+        </div>
+    </div>
+
+    <div class="inquiries-container">
+        <!-- Empty State -->
+        <div th:if="${inquiries.empty}" class="empty-state">
+            <i data-lucide="inbox"></i>
+            <p>You haven’t submitted any inquiries yet.</p>
+        </div>
+
+        <!-- Inquiries Table -->
+        <table th:unless="${inquiries.empty}" class="inquiries-table">
+            <thead>
+            <tr>
+                <th>Property</th>
+                <th>Owner</th>
+                <th>Contact</th>
+                <th>Inquiry Date</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="inquiry : ${inquiries}">
+                <td>
+                    <div class="property-cell">
+                        <i data-lucide="home"></i>
+                        <span th:text="${inquiry.property.propTitle}">Property Title</span>
+                    </div>
+                </td>
+                <td>
+                    <div class="user-cell">
+                        <i data-lucide="user"></i>
+                        <span th:text="${inquiry.property.user.firstName + ' ' + inquiry.property.user.lastName}">Owner Name</span>
+                    </div>
+                </td>
+                <td>
+                    <div class="contact-info">
+                        <div class="user-cell">
+                            <i data-lucide="phone"></i>
+                            <span th:text="${inquiry.property.user.phone}">Phone</span>
+                        </div>
+                    </div>
+                </td>
+                <td th:text="${#temporals.format(inquiry.inqDate, 'dd MMM yyyy, hh:mm a')}"></td>
+                <td>
+                    <a th:href="@{'/properties/' + ${inquiry.property.propId}}" style="text-decoration:none;" class="btn-close">
+                        <i data-lucide="eye"></i>
+                        View Property
+                    </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    lucide.createIcons();
+</script>
+</body>
+</html>
