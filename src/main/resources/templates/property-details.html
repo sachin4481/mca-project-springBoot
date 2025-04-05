@@ -54,7 +54,7 @@
       </div>
       <div class="meta-item price">
         <i data-lucide="indian-rupee"></i>
-        <span th:text="${propertyInfo.price}"></span>
+        <span th:text="${#numbers.formatDecimal(propertyInfo.price, 0, 'COMMA', 0, 'POINT')}"></span>
       </div>
       <div class="meta-item">
         <i data-lucide="square"></i>

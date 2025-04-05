@@ -82,7 +82,7 @@
                 </div>
                 <div class="summary-item">
                     <span class="label">Price:</span>
-                    <span class="value" id="propPrice" th:text="${property.price}"> ₹</span>
+                    <span class="value" id="propPrice" th:text="${#numbers.formatDecimal(property.price, 0, 'COMMA', 0, 'POINT')}"> ₹</span>
                 </div>
             </div>
 

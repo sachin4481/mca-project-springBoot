@@ -181,7 +181,7 @@
                 <img th:src="@{${property.image1}}" alt="Property Image">
                 <div class="property-details">
                     <h3 th:text="${property.title}"></h3>
-                    <p th:text="'$' + ${property.price} + ' USD'"></p>
+                    <p th:text="'$' + ${#numbers.formatDecimal(property.price, 0, 'COMMA', 0, 'POINT')} + ' USD'"></p>
                     <p><strong>Area:</strong> <span th:text="${property.area} + ' sq ft'"></span></p>
                     <p><strong>Pincode:</strong> <span th:text="${property.pincode}"></span></p>
                     <p class="clamped-text" th:text="${#strings.abbreviate(property.description, 300)}"></p>

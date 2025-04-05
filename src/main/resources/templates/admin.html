@@ -90,7 +90,7 @@
 <!--        <tbody>-->
 <!--        <tr th:each="property : ${properties}">-->
 <!--            <td th:text="${property.title}"></td>-->
-<!--            <td th:text="${property.price}"></td>-->
+<!--            <td th:text="${#numbers.formatDecimal(property.price, 0, 'COMMA', 0, 'POINT')}"></td>-->
 <!--            <td th:text="${property.location}"></td>-->
 <!--            <td th:text="${property.user.username}"></td>-->
 <!--            <td th:text="${property.status}"></td>-->
@@ -374,8 +374,8 @@
                 </thead>
                 <tbody>
                 <tr th:each="property : ${properties.content}">
-                    <td th:text="${property.title}"></td>
-                    <td th:text="${property.price}"></td>
+                    <td th:text="${property.propTitle}"></td>
+                    <td th:text="${#numbers.formatDecimal(property.price, 0, 'COMMA', 0, 'POINT')}"></td>
                     <td th:text="${property.location}"></td>
                     <td th:text="${property.user.username}"></td>
                     <td th:text="${property.status}"></td>

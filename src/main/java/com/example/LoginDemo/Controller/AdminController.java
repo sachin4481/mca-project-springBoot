@@ -119,7 +119,7 @@ public class AdminController {
                              Model model) {
         userServices.changeUserRole(userId, "ADMIN");
         // Fetch paginated data again
-        List<PropertyEntity> properties = propertyServices.getAllProperty();
+        List<PropertyInfo> properties = propertyServices.getAllProperty();
         List<ComplaintEntity> complaints = complaintServices.getAllComplaints();
         List<PropertyCat> categories = propertyCatRepository.findAll();
         Page<UserEntity> usersPage = userRepository.findAll(PageRequest.of(page, 10));

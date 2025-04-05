@@ -282,7 +282,7 @@
                 </div>
                 <div class="property-price">
                     <i data-lucide="indian-rupee"></i>
-                    <span th:text="${property.price}"></span>
+                    <span th:text="${#numbers.formatDecimal(property.price, 0, 'COMMA', 0, 'POINT')}"></span>
                 </div>
                 <div class="property-actions">
                     <a th:href="@{/properties/{id}(id=${property.propId})}" class="btn btn-view">

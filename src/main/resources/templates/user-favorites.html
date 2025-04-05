@@ -19,7 +19,7 @@
         <div class="card-body">
           <h5 class="card-title" th:text="${property.propTitle}"></h5>
           <p class="card-text"><strong>Location:</strong> <span th:text="${property.location}"></span></p>
-          <p class="card-text"><strong>Price:</strong> <span th:text="${property.price}"></span></p>
+          <p class="card-text"><strong>Price:</strong> <span th:text="${#numbers.formatDecimal(property.price, 0, 'COMMA', 0, 'POINT')}"></span></p>
           <a th:href="@{/properties/{id}(id=${property.propId})}" class="btn btn-primary">View Details</a>
           <form th:action="@{/properties/favorite/remove}" method="post" class="d-inline">
             <input type="hidden" name="propId" th:value="${property.propId}" />
