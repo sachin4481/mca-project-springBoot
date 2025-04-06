@@ -9,17 +9,9 @@
       --danger: #dc2626;
     }
 
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: var(--bg-light);
-      color: var(--text-primary);
-      margin: 0;
-      padding-top: 64px;
-    }
-
     .page-container {
       max-width: 1200px;
-      margin: 2rem auto;
+      margin: 6rem auto;
       padding: 0 1rem;
     }
 

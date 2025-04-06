@@ -1,58 +1,209 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Submit Complaint</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <title>Submit Complaint - PropertyNest</title>
+  <link rel="stylesheet" th:href="@{/css_main/style.css}">
+  <link rel="stylesheet" th:href="@{/css_main/auth.css}">
+  <script src="https://unpkg.com/lucide@latest"></script>
   <style>
-    .container { max-width: 600px; margin: 20px auto; padding: 20px; }
-    .form-group { margin-bottom: 15px; }
-    label { font-weight: bold; }
-    .btn { background-color: #007bff; color: white; }
-    .success { color: green; }
+    .complaint-container {
+      max-width: 800px;
+      margin: 7rem auto 2rem;
+      padding: 2rem;
+      background: white;
+      border-radius: 1rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .complaint-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .complaint-header h1 {
+      font-size: 2rem;
+      color: #1a1a1a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+    }
+
+    .complaint-header h1 i {
+      color: #eab308;
+    }
+
+    .success-message {
+      background: #ecfdf5;
+      color: #059669;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .success-message i {
+      color: #059669;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.875rem;
+      color: #4b5563;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+    }
+
+    .form-group select,
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #e5e7eb;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      transition: all 0.2s ease;
+    }
+
+    .form-group select:focus,
+    .form-group input:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #eab308;
+      box-shadow: 0 0 0 3px rgba(234, 179, 8, 0.1);
+    }
+
+    .form-group textarea {
+      min-height: 150px;
+      resize: vertical;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    .btn {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.75rem;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: none;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: #eab308;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #ca8a04;
+    }
+
+    .btn-secondary {
+      background: #f3f4f6;
+      color: #4b5563;
+    }
+
+    .btn-secondary:hover {
+      background: #e5e7eb;
+    }
+
+    @media (max-width: 640px) {
+      .complaint-container {
+        margin: 5rem 1rem 2rem;
+        padding: 1rem;
+      }
+
+      .form-actions {
+        flex-direction: column;
+      }
+    }
   </style>
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <div class="container">
-    <a class="navbar-brand" href="#">Property Portal</a>
-    <div class="collapse navbar-collapse">
-      <ul class="navbar-nav ms-auto">
-        <li class="nav-item"><a class="nav-link" th:href="@{/properties}">Home</a></li>
-        <li class="nav-item"><a class="nav-link" th:href="@{/user/profile}">Profile</a></li>
-        <li class="nav-item"><a class="nav-link" th:href="@{/logout}">LogOut</a></li>
-      </ul>
-    </div>
-  </div>
-</nav>
+<!-- Header -->
+<header th:replace="fragments :: header" />
 
-<div class="container">
-  <h1>Submit a Complaint</h1>
-  <p class="success" th:if="${param.submitted}">Complaint submitted successfully!</p>
+
+<div class="complaint-container">
+  <div class="complaint-header">
+    <h1>
+      <i data-lucide="message-square"></i>
+      Submit a Complaint
+    </h1>
+  </div>
+
+  <div th:if="${param.submitted}" class="success-message">
+    <i data-lucide="check-circle"></i>
+    Complaint submitted successfully!
+  </div>
 
   <form th:action="@{/user/complaint}" th:object="${complaint}" method="post">
     <div class="form-group">
-      <label for="propertyId">Related Property (optional):</label>
-      <select th:field="*{propertyId}" id="propertyId" class="form-control">
+      <label for="propertyId">
+        <i data-lucide="home"></i>
+        Related Property (You can submit complaints only for inquired properties.)
+      </label>
+      <select th:field="*{propId}" id="propertyId" required>
         <option value="">-- Select Property --</option>
         <option th:each="property : ${properties}"
-                th:value="${property.id}"
-                th:text="${property.title}"></option>
+                th:value="${property.propId}"
+                th:text="${property.propTitle}">
+        </option>
       </select>
     </div>
+
     <div class="form-group">
-      <label for="subject">Subject:</label>
-      <input type="text" th:field="*{subject}" id="subject" class="form-control" required />
+      <label for="subject">
+        <i data-lucide="edit"></i>
+        Subject
+      </label>
+      <input type="text" th:field="*{subject}" id="subject" required
+             placeholder="Enter the subject of your complaint" />
     </div>
+
     <div class="form-group">
-      <label for="description">Description:</label>
-      <textarea th:field="*{description}" id="description" class="form-control" rows="5" required></textarea>
+      <label for="description">
+        <i data-lucide="file-text"></i>
+        Description
+      </label>
+      <textarea th:field="*{description}" id="description" required
+                placeholder="Provide detailed information about your complaint"></textarea>
     </div>
-    <button type="submit" class="btn">Submit Complaint</button>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">
+        <i data-lucide="send"></i>
+        Submit Complaint
+      </button>
+      <a href="/properties" class="btn btn-secondary">
+        <i data-lucide="x"></i>
+        Cancel
+      </a>
+    </div>
   </form>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  lucide.createIcons();
+</script>
 </body>
 </html>

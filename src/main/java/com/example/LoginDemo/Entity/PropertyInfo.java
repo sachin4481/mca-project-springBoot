@@ -56,4 +56,5 @@ public class PropertyInfo {
             this.status = "AVAILABLE";
         }
     }
+
 }

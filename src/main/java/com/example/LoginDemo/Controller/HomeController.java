@@ -23,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
+import java.util.List;
 
 @Controller
 public class HomeController {
@@ -139,6 +140,7 @@ public class HomeController {
             String username = userDetails.getUsername();
             session.setAttribute("username", username); // Store in session
 
+
             String role = userServices.getUserRole(username);
             logger.info("User {} authenticated with role {}", username, role);
 
@@ -242,15 +244,30 @@ public class HomeController {
     }
 
 
-    @GetMapping("/user/complaint")
-    public String showComplaintForm(Model model, @AuthenticationPrincipal UserDetails userDetails) {
-        if (userDetails == null) {
-            return "redirect:/login";
-        }
-        model.addAttribute("complaint", new ComplaintEntity());
-        model.addAttribute("properties", propertyServices.getAllProperty()); // For property selection
-        return "complaint";
+//    @GetMapping("/user/complaint")
+//    public String showComplaintForm(Model model, @AuthenticationPrincipal UserDetails userDetails) {
+//        if (userDetails == null) {
+//            return "redirect:/login";
+//        }
+//        model.addAttribute("complaint", new ComplaintEntity());
+//        model.addAttribute("properties", propertyServices.getAllProperty()); // For property selection
+//        return "complaint";
+//    }
+@GetMapping("/user/complaint")
+public String showComplaintForm(Model model, @AuthenticationPrincipal UserDetails userDetails) {
+    if (userDetails == null) {
+        return "redirect:/login";
     }
+
+    UserEntity loggedInUser = userServices.findByUsername(userDetails.getUsername());
+
+    List<PropertyInfo> inquiredProperties = propertyServices.getInquiredPropertiesByUserId(loggedInUser.getId());
+
+    model.addAttribute("complaint", new ComplaintEntity());
+    model.addAttribute("properties", inquiredProperties); // Only show properties inquired by this user
+
+    return "complaint";
+}
 
     @PostMapping("/user/complaint")
     public String submitComplaint(@ModelAttribute("complaint") ComplaintEntity complaint,
@@ -262,7 +279,4 @@ public class HomeController {
         complaintServices.submitComplaint(complaint);
         return "redirect:/user/complaint?submitted=true";
     }
-
-
-
 }

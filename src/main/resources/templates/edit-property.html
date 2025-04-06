@@ -8,6 +8,34 @@
   <link rel="stylesheet" th:href="@{/css_main/auth.css}">
   <link rel="stylesheet" th:href="@{/css_main/list-property.css}">
   <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const fileInputs = document.querySelectorAll('input[type="file"]');
+
+      fileInputs.forEach((input, index) => {
+        input.addEventListener("change", function (e) {
+          const file = e.target.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = function (event) {
+              let existingPreview = input.parentElement.querySelector('.preview-image');
+              if (!existingPreview) {
+                existingPreview = document.createElement('img');
+                existingPreview.classList.add('preview-image');
+                existingPreview.style.height = "100px";
+                existingPreview.style.borderRadius = "0.5rem";
+                existingPreview.style.marginTop = "0.5rem";
+                input.parentElement.appendChild(existingPreview);
+              }
+              existingPreview.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+          }
+        });
+      });
+    });
+  </script>
+
   <style>
     .edit-container {
       max-width: 800px;
@@ -116,6 +144,45 @@
     .current-image i {
       color: #eab308;
     }
+.image-upload {
+  margin-bottom: 1.5rem;
+}
+
+.image-upload label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: #374151;
+}
+
+.image-upload input[type="file"] {
+  display: block;
+  border: 1px solid #e5e7eb;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  width: 100%;
+  background-color: #f9fafb;
+  font-size: 0.95rem;
+  transition: border-color 0.3s ease;
+}
+
+.image-upload input[type="file"]:hover {
+  border-color: #eab308;
+}
+
+.current-image {
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #6b7280;
+}
+
+.preview-image {
+  height: 100px;
+  border-radius: 0.5rem;
+  object-fit: cover;
+}
 
     .form-actions {
       display: flex;
@@ -173,22 +240,8 @@
 </head>
 <body>
 <!-- Header -->
-<header class="fixed-header">
-  <div class="container">
-    <a href="index.html" class="logo">
-      Property<span class="logo-nest">Nest
-          <i data-lucide="home" class="logo-icon"></i>
-        </span>
-    </a>
-    <nav class="nav-menu">
-      <a href="/properties" class="nav-link">Home</a>
-      <a href="/user/properties" class="nav-link">My Properties</a>
-      <a href="/my-inquiries" class="nav-link">My Inquiries</a>
-      <a href="/user/complaint" class="nav-link">Submit Complaint</a>
-      <a href="/login" class="btn-primary">Logout</a>
-    </nav>
-  </div>
-</header>
+<header th:replace="fragments :: header" />
+
 
 <div class="container" style="padding-top: 5rem;">
   <div class="edit-container">
@@ -268,45 +321,50 @@
         <div class="image-upload">
           <label>Main Image</label>
           <input type="file" name="images" accept="image/*" />
-          <div class="current-image" th:if="${propertyInfo.img1}">
-            <i data-lucide="image"></i>
-            <span th:text="${propertyInfo.img1}"></span>
-          </div>
+<!--          <div class="current-image" th:if="${propertyInfo.img1}">-->
+<!--            <i data-lucide="image"></i>-->
+<!--            <span th:text="${propertyInfo.img1}"></span>-->
+<!--          </div>-->
+        <div class="current-image" th:if="${propertyInfo.img1}">
+          <i data-lucide="image"></i>
+          <img th:src="${propertyInfo.img1}" alt="Property Image" style="height: 100px; border-radius: 0.5rem;" />
+        </div>
+
         </div>
 
         <div class="image-upload">
           <label>Additional Image 1</label>
           <input type="file" name="images" accept="image/*" />
-          <div class="current-image" th:if="${propertyInfo.img2}">
+          <div class="current-image" th:if="${propertyInfo.img1}">
             <i data-lucide="image"></i>
-            <span th:text="${propertyInfo.img2}"></span>
+            <img th:src="${propertyInfo.img2}" alt="Property Image" style="height: 100px; border-radius: 0.5rem;" />
           </div>
         </div>
 
         <div class="image-upload">
           <label>Additional Image 2</label>
           <input type="file" name="images" accept="image/*" />
-          <div class="current-image" th:if="${propertyInfo.img3}">
+          <div class="current-image" th:if="${propertyInfo.img1}">
             <i data-lucide="image"></i>
-            <span th:text="${propertyInfo.img3}"></span>
+            <img th:src="${propertyInfo.img3}" alt="Property Image" style="height: 100px; border-radius: 0.5rem;" />
           </div>
         </div>
 
         <div class="image-upload">
           <label>Additional Image 3</label>
           <input type="file" name="images" accept="image/*" />
-          <div class="current-image" th:if="${propertyInfo.img4}">
+          <div class="current-image" th:if="${propertyInfo.img1}">
             <i data-lucide="image"></i>
-            <span th:text="${propertyInfo.img4}"></span>
+            <img th:src="${propertyInfo.img4}" alt="Property Image" style="height: 100px; border-radius: 0.5rem;" />
           </div>
         </div>
 
         <div class="image-upload">
           <label>Additional Image 4</label>
           <input type="file" name="images" accept="image/*" />
-          <div class="current-image" th:if="${propertyInfo.img5}">
+          <div class="current-image" th:if="${propertyInfo.img1}">
             <i data-lucide="image"></i>
-            <span th:text="${propertyInfo.img5}"></span>
+            <img th:src="${propertyInfo.img5}" alt="Property Image" style="height: 100px; border-radius: 0.5rem;" />
           </div>
         </div>
       </div>

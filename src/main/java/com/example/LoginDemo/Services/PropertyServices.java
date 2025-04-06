@@ -48,43 +48,7 @@ public class PropertyServices {
     private UserRepository userRepository;
 
 
-    public PropertyEntity listProperty(PropertyEntity property, MultipartFile[] images) throws IOException {
 
-        if (property.getStatus() == null) {
-            property.setStatus("AVAILABLE");
-        }
-
-        String uploadDir = "src/main/resources/static/uploads/";
-        File uploadDirectory = new File(uploadDir);
-        if (!uploadDirectory.exists()) {
-            boolean created = uploadDirectory.mkdirs();
-            if (!created) {
-                throw new IOException("Failed to create upload directory: " + uploadDir);
-            }
-        }
-
-        for (int i = 0; i < images.length && i < 5; i++) {
-            if (!images[i].isEmpty()) {
-                String fileName = System.currentTimeMillis() + "-" + images[i].getOriginalFilename();
-                File dest = new File(uploadDirectory.getAbsolutePath() + File.separator + fileName);
-                images[i].transferTo(dest);
-                switch (i) {
-                    case 0:
-                        property.setImage1("/uploads/" + fileName);
-                        break;
-                    case 1:
-                        property.setImage2("/uploads/" + fileName);
-                        break;
-                    case 2:
-                        property.setImage3("/uploads/" + fileName);
-                        break;
-
-                }
-            }
-        }
-
-        return propertyRepository.save(property);
-    }
 
 public PropertyInfo getPropertyInfoById(Long id) {
     return propertyInfoRepository.findById(id)
@@ -109,6 +73,7 @@ public PropertyInfo getPropertyInfoById(Long id) {
     if (updatedProperty.getArea() != null) existingProperty.setArea(updatedProperty.getArea());
     if (updatedProperty.getFacing() != null) existingProperty.setFacing(updatedProperty.getFacing());
     if (updatedProperty.getPrice() != null) existingProperty.setPrice(updatedProperty.getPrice());
+    if (updatedProperty.getStatus() != null) existingProperty.setStatus(updatedProperty.getStatus());
 
     // Handle image uploads safely
     if (images != null) {
@@ -143,15 +108,13 @@ public PropertyInfo getPropertyInfoById(Long id) {
 
 
 
-
-
-    public List<PropertyEntity> getAllProperty() {
-        return propertyRepository.findAll();
+    public List<PropertyInfo> getInquiredPropertiesByUserId(Long userId) {
+        return propertyInfoRepository.findInquiredPropertiesByUserId(userId);
     }
 
-    public PropertyEntity getPropertyById(Long id) {
-        return propertyRepository.findById(id).orElseThrow(
-                () -> new RuntimeException("Property Not Found"));
+
+    public List<PropertyInfo> getAllProperty() {
+        return propertyInfoRepository.findAll();
     }
 
     public void deleteById(Long id) {

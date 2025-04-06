@@ -82,7 +82,7 @@
                 </div>
                 <div class="summary-item">
                     <span class="label">Price:</span>
-                    <span class="value" id="propPrice" th:text="${property.price}"> ₹</span>
+                    <span class="value" id="propPrice" th:text="${#numbers.formatDecimal(property.price, 0, 'COMMA', 0, 'POINT')}"> ₹</span>
                 </div>
             </div>
 
@@ -265,11 +265,72 @@
                             </label>
                         </div>
                     </div>
+                <div th:case="*">
+                    <h2>Provide Details According to Your Property Type</h2>
+                    <div class="form-group">
+                        <label for="bhk">
+                            <i data-lucide="home"></i>
+                            BHK
+                        </label>
+                        <input type="number" id="bhk" name="bhk" min="0" placeholder="Number of BHK">
+                    </div>
+                    <div class="form-group">
+                        <label for="floors">
+                            <i data-lucide="layers"></i>
+                            Floors
+                        </label>
+                        <input type="number" id="floors" name="floors" min="0" placeholder="Number of floors">
+                    </div>
+                    <div class="form-group">
+                        <label for="floor">
+                            <i data-lucide="stairs"></i>
+                            Floor
+                        </label>
+                        <input type="number" id="floor" name="floor" min="0" placeholder="Floor number (if applicable)">
+                    </div>
+                    <div class="form-group">
+                        <label for="washroom">
+                            <i data-lucide="bath"></i>
+                            Washrooms
+                        </label>
+                        <input type="number" id="washroom" name="washroom" min="0" placeholder="Number of washrooms">
+                    </div>
+                    <div class="form-group">
+                        <label for="schemeName">
+                            <i data-lucide="building"></i>
+                            Scheme Name
+                        </label>
+                        <input type="text" id="schemeName" name="schemeName" placeholder="Enter scheme name">
+                    </div>
+                    <div class="amenities-grid">
+                        <label class="toggle-label">
+                            <input type="checkbox" name="furnished">
+                            <span class="toggle-button"></span>
+                            <span class="toggle-text">Furnished</span>
+                        </label>
+                        <label class="toggle-label">
+                            <input type="checkbox" name="parking">
+                            <span class="toggle-button"></span>
+                            <span class="toggle-text">Parking</span>
+                        </label>
+                        <label class="toggle-label">
+                            <input type="checkbox" name="corner">
+                            <span class="toggle-button"></span>
+                            <span class="toggle-text">Corner</span>
+                        </label>
+                    </div>
                 </div>
-
+                </div>
                 <!-- Common Fields -->
                 <div class="form-section">
                     <h2>Additional Information</h2>
+                    <div class="form-group">
+                        <label for="age">
+                            <i data-lucide="layers"></i>
+                            Age
+                        </label>
+                        <input type="number" id="age" name="age" min="0" placeholder="Age of the property(in years)">
+                    </div>
                     <div class="form-group">
                         <label for="propDetails">
                             <i data-lucide="file-text"></i>

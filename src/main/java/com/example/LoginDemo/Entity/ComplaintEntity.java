@@ -16,8 +16,8 @@ public class ComplaintEntity {
     @Column(name = "username", nullable = false)
     private String username;
 
-    @Column(name = "property_id")
-    private Long propertyId;
+    @Column(name = "propId")
+    private Long propId;
 
     @Column(name = "subject", nullable = false)
     private String subject;
@@ -43,9 +43,9 @@ public class ComplaintEntity {
         this.status = "Pending";
     }
 
-    public ComplaintEntity(String username, Long propertyId, String subject, String description) {
+    public ComplaintEntity(String username, Long propId, String subject, String description) {
         this.username = username;
-        this.propertyId = propertyId;
+        this.propId = propId;
         this.subject = subject;
         this.description = description;
         this.submittedAt = LocalDateTime.now();

@@ -1,81 +1,296 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Edit Property Details</title>
-    <script>
-        function toggleFieldsByCategory(category) {
-            const allFields = document.querySelectorAll(".dynamic-field");
-            allFields.forEach(field => field.style.display = "none");
-
-            const visibleFields = document.querySelectorAll(`.show-${category}`);
-            visibleFields.forEach(field => field.style.display = "block");
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Property Details - PropertyNest</title>
+    <link rel="stylesheet" th:href="@{/css_main/style.css}">
+    <link rel="stylesheet" th:href="@{/css_main/auth.css}">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .property-form-container {
+          max-width: 800px;
+          margin: 7rem auto 2rem;
+          padding: 2rem;
+          background: white;
+          border-radius: 1rem;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
 
-        document.addEventListener("DOMContentLoaded", function () {
-            const category = document.getElementById("property-category").value;
-            toggleFieldsByCategory(category);
-        });
-    </script>
+        .form-header {
+          text-align: center;
+          margin-bottom: 2rem;
+        }
+
+        .form-header h1 {
+          font-size: 2rem;
+          color: #1a1a1a;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.75rem;
+        }
+
+        .form-header h1 i {
+          color: #eab308;
+        }
+
+        .form-section {
+          margin-bottom: 2rem;
+          padding: 1.5rem;
+          border: 1px solid #e5e7eb;
+          border-radius: 0.5rem;
+        }
+
+        .form-section h2 {
+          font-size: 1.25rem;
+          color: #4b5563;
+          margin-bottom: 1.5rem;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        .form-section h2 i {
+          color: #eab308;
+        }
+
+        .form-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+          gap: 1rem;
+        }
+
+        .form-group {
+          margin-bottom: 1rem;
+        }
+
+        .form-group label {
+          display: block;
+          font-size: 0.875rem;
+          color: #4b5563;
+          margin-bottom: 0.5rem;
+          font-weight: 500;
+        }
+
+        .form-group input[type="number"],
+        .form-group input[type="text"],
+        .form-group textarea {
+          width: 100%;
+          padding: 0.75rem;
+          border: 1px solid #e5e7eb;
+          border-radius: 0.5rem;
+          font-size: 1rem;
+          transition: all 0.2s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+          outline: none;
+          border-color: #eab308;
+          box-shadow: 0 0 0 3px rgba(234, 179, 8, 0.1);
+        }
+
+        .form-group textarea {
+          min-height: 120px;
+          resize: vertical;
+        }
+
+        .checkbox-group {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+          width: 1.25rem;
+          height: 1.25rem;
+          border: 2px solid #e5e7eb;
+          border-radius: 0.25rem;
+          cursor: pointer;
+        }
+
+        .checkbox-group input[type="checkbox"]:checked {
+          background-color: #eab308;
+          border-color: #eab308;
+        }
+
+        .form-actions {
+          display: flex;
+          gap: 1rem;
+          margin-top: 2rem;
+        }
+
+        .btn {
+          flex: 1;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+          padding: 0.75rem;
+          border-radius: 0.5rem;
+          font-size: 1rem;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          border: none;
+        }
+
+        .btn-primary {
+          background: #eab308;
+          color: white;
+        }
+
+        .btn-primary:hover {
+          background: #ca8a04;
+        }
+
+        .btn-secondary {
+          background: #f3f4f6;
+          color: #4b5563;
+        }
+
+        .btn-secondary:hover {
+          background: #e5e7eb;
+        }
+
+        @media (max-width: 640px) {
+          .property-form-container {
+            margin: 5rem 1rem 2rem;
+            padding: 1rem;
+          }
+
+          .form-actions {
+            flex-direction: column;
+          }
+        }
+    </style>
 </head>
 <body>
-<h2>Edit Property Details</h2>
+<!-- Header -->
+<header th:replace="fragments :: header" />
 
-<!-- Hidden input to hold category name -->
-<input type="hidden" id="property-category" th:value="${category}" />
 
-<form th:action="@{/edit-property-details}" method="post" th:object="${propertyDetails}">
-    <input type="hidden" th:field="*{propDetailsId}" />
-    <input type="hidden" name="propId" th:value="${propertyId}" />
-
-    <!-- Dynamic Fields -->
-    <div class="dynamic-field show-Villa show-Tenement show-Apartment">
-        <label>BHK:</label>
-        <input type="number" th:field="*{bhk}" /><br/>
+<div class="property-form-container">
+    <div class="form-header">
+        <h1>
+            <i data-lucide="edit-3"></i>
+            Edit Property Details
+        </h1>
     </div>
 
-    <div class="dynamic-field show-Villa show-Tenement">
-        <label>Floors:</label>
-        <input type="number" th:field="*{floors}" /><br/>
-    </div>
+    <form th:action="@{/edit-property-details}" method="post" th:object="${propertyDetails}">
+        <input type="hidden" th:field="*{propDetailsId}" />
+        <input type="hidden" name="propId" th:value="${propertyId}" />
+        <input type="hidden" id="property-category" th:value="${category}" />
 
-    <div class="dynamic-field show-Apartment show-Shop">
-        <label>Floor:</label>
-        <input type="number" th:field="*{floor}" /><br/>
-    </div>
+        <!-- Property Specifications -->
+        <div class="form-section">
+            <h2>
+                <i data-lucide="layout"></i>
+                Property Specifications
+            </h2>
+            <div class="form-grid">
+                <div class="form-group dynamic-field show-Villa show-Tenement show-Apartment">
+                    <label for="bhk">BHK</label>
+                    <input type="number" th:field="*{bhk}" id="bhk" min="0" />
+                </div>
 
-    <div class="dynamic-field show-Villa show-Tenement show-Apartment">
-        <label>Furnished:</label>
-        <input type="checkbox" th:field="*{furnished}" /><br/>
-    </div>
+                <div class="form-group dynamic-field show-Villa show-Tenement">
+                    <label for="floors">Number of Floors</label>
+                    <input type="number" th:field="*{floors}" id="floors" min="0" />
+                </div>
 
-    <div class="dynamic-field show-Villa show-Tenement show-Apartment show-Shop">
-        <label>Parking:</label>
-        <input type="checkbox" th:field="*{parking}" /><br/>
-    </div>
+                <div class="form-group dynamic-field show-Apartment show-Shop">
+                    <label for="floor">Floor Number</label>
+                    <input type="number" th:field="*{floor}" id="floor" min="0" />
+                </div>
 
-    <div class="dynamic-field show-Tenement show-Plot show-Shop show-Apartment">
-        <label>Scheme Name:</label>
-        <input type="text" th:field="*{schemeName}" /><br/>
-    </div>
+                <div class="form-group dynamic-field show-Shop">
+                    <label for="washroom">Number of Washrooms</label>
+                    <input type="number" th:field="*{washroom}" id="washroom" min="0" />
+                </div>
 
-    <div class="dynamic-field show-Tenement show-Plot show-Shop">
-        <label>Corner:</label>
-        <input type="checkbox" th:field="*{corner}" /><br/>
-    </div>
+                <div class="form-group">
+                    <label for="age">Age of Property (years)</label>
+                    <input type="number" th:field="*{age}" id="age" min="0" />
+                </div>
+            </div>
+        </div>
 
-    <div class="dynamic-field show-Shop">
-        <label>Washroom:</label>
-        <input type="number" th:field="*{washroom}" /><br/>
-    </div>
+        <!-- Amenities -->
+        <div class="form-section">
+            <h2>
+                <i data-lucide="check-square"></i>
+                Amenities
+            </h2>
+            <div class="form-grid">
+                <div class="form-group dynamic-field show-Villa show-Tenement show-Apartment">
+                    <div class="checkbox-group">
+                        <input type="checkbox" th:field="*{furnished}" id="furnished" />
+                        <label for="furnished">Furnished</label>
+                    </div>
+                </div>
 
-    <!-- Common Field -->
-    <div>
-        <label>Property Details:</label>
-        <textarea th:field="*{propDetails}"></textarea><br/>
-    </div>
+                <div class="form-group dynamic-field show-Villa show-Tenement show-Apartment show-Shop">
+                    <div class="checkbox-group">
+                        <input type="checkbox" th:field="*{parking}" id="parking" />
+                        <label for="parking">Parking Available</label>
+                    </div>
+                </div>
 
-    <button type="submit">Update</button>
-</form>
+                <div class="form-group dynamic-field show-Tenement show-Plot show-Shop">
+                    <div class="checkbox-group">
+                        <input type="checkbox" th:field="*{corner}" id="corner" />
+                        <label for="corner">Corner Property</label>
+                    </div>
+                </div>
+            </div>
+        </div>
 
+        <!-- Additional Information -->
+        <div class="form-section">
+            <h2>
+                <i data-lucide="file-text"></i>
+                Additional Information
+            </h2>
+            <div class="form-group dynamic-field show-Tenement show-Plot show-Shop show-Apartment">
+                <label for="schemeName">Scheme Name</label>
+                <input type="text" th:field="*{schemeName}" id="schemeName" />
+            </div>
+
+            <div class="form-group">
+                <label for="propDetails">Property Details</label>
+                <textarea th:field="*{propDetails}" id="propDetails" rows="4"></textarea>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+                <i data-lucide="save"></i>
+                Update Details
+            </button>
+
+        </div>
+    </form>
+</div>
+
+<script>
+    lucide.createIcons();
+
+    function toggleFieldsByCategory(category) {
+      const allFields = document.querySelectorAll(".dynamic-field");
+      allFields.forEach(field => field.style.display = "none");
+
+      const visibleFields = document.querySelectorAll(`.show-${category}`);
+      visibleFields.forEach(field => field.style.display = "block");
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+      const category = document.getElementById("property-category").value;
+      toggleFieldsByCategory(category);
+    });
+</script>
 </body>
 </html>

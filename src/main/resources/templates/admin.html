@@ -1,171 +1,3 @@
-<!--<!DOCTYPE html>-->
-<!--<html xmlns:th="http://www.thymeleaf.org"-->
-<!--      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">-->
-<!--<head>-->
-<!--    <title>Admin Dashboard</title>-->
-<!--    <link rel="stylesheet" href="/css/admin_style.css">-->
-<!--    <style>-->
-<!--        .dashboard-box {-->
-<!--            display: inline-block;-->
-<!--            width: 200px;-->
-<!--            padding: 20px;-->
-<!--            margin: 10px;-->
-<!--            border: 1px solid #ccc;-->
-<!--            text-align: center;-->
-<!--            cursor: pointer;-->
-<!--        }-->
-<!--        .hidden {-->
-<!--            display: none;-->
-<!--        }-->
-<!--    </style>-->
-<!--</head>-->
-<!--<body>-->
-<!--<h1>Welcome to the Admin Dashboard</h1>-->
-<!--<p>You are logged in as: <span sec:authentication="name"></span></p>-->
-<!--<p>Your role is: <span sec:authentication="principal.authorities"></span></p>-->
-
-<!--&lt;!&ndash; Dashboard Summary Boxes &ndash;&gt;-->
-<!--<div class="dashboard-box" onclick="toggleSection('userList')">-->
-<!--    <h3>Total Users</h3>-->
-<!--    <p th:text="${#lists.size(users)}">0</p>-->
-<!--</div>-->
-<!--<div class="dashboard-box" onclick="toggleSection('propertyList')">-->
-<!--    <h3>Total Properties</h3>-->
-<!--    <p th:text="${#lists.size(properties)}">0</p>-->
-<!--</div>-->
-
-<!--<div class="dashboard-box" onclick="window.location.href='/admin/complaints'">-->
-<!--    <h3>Total Complaints</h3>-->
-<!--    <p th:text="${#lists.size(complaints)}">0</p>-->
-<!--</div>-->
-
-
-
-<!--&lt;!&ndash; Display a list of users (if applicable) &ndash;&gt;-->
-<!--<div id="userList" class="hidden">-->
-<!--    <h2>User List</h2>-->
-<!--    <table>-->
-<!--        <thead>-->
-<!--        <tr>-->
-<!--            <th>Username</th>-->
-<!--            <th>Email</th>-->
-<!--            <th>Gender</th>-->
-<!--            <th>Phone</th>-->
-<!--            <th>Role</th>-->
-<!--            <th>Action</th>-->
-<!--        </tr>-->
-<!--        </thead>-->
-<!--        <tbody>-->
-<!--        <tr th:each="user : ${users}">-->
-<!--            <td th:text="${user.username}"></td>-->
-<!--            <td th:text="${user.email}"></td>-->
-<!--            <td th:text="${user.gender}"></td>-->
-<!--            <td th:text="${user.phone}"></td>-->
-<!--            <td th:text="${user.role}"></td>-->
-<!--            <td>-->
-<!--                <form th:action="@{/admin/delete-user/{id}(id=${user.id})}" method="post">-->
-<!--                    <button type="submit">Delete</button>-->
-<!--                </form>-->
-<!--            </td>-->
-<!--        </tr>-->
-<!--        </tbody>-->
-<!--    </table>-->
-<!--</div>-->
-
-<!--&lt;!&ndash; Properties List &ndash;&gt;-->
-<!--<div id="propertyList" class="hidden">-->
-<!--    <h2>Properties</h2>-->
-<!--    <table>-->
-<!--        <thead>-->
-<!--        <tr>-->
-<!--            <th>Title</th>-->
-<!--            <th>Price</th>-->
-<!--            <th>Location</th>-->
-<!--            <th>Owner</th>-->
-<!--            <th>Status</th>-->
-<!--            <th>Action</th>-->
-<!--            <th>Info</th>-->
-<!--        </tr>-->
-<!--        </thead>-->
-<!--        <tbody>-->
-<!--        <tr th:each="property : ${properties}">-->
-<!--            <td th:text="${property.title}"></td>-->
-<!--            <td th:text="${property.price}"></td>-->
-<!--            <td th:text="${property.location}"></td>-->
-<!--            <td th:text="${property.user.username}"></td>-->
-<!--            <td th:text="${property.status}"></td>-->
-<!--            <td>-->
-<!--                <form th:action="@{/admin/delete-property/{id}(id=${property.id})}" method="post">-->
-<!--                    <button type="submit">Delete</button>-->
-<!--                </form>-->
-<!--            </td>-->
-<!--            <td>-->
-<!--                <a th:href="@{/properties/{id}(id=${property.id})}" class="btn btn-warning text-dark fw-semibold w-100">View Details</a>-->
-<!--            </td>-->
-<!--        </tr>-->
-<!--        </tbody>-->
-<!--    </table>-->
-<!--</div>-->
-<!--&lt;!&ndash; Add this inside your admin dashboard &ndash;&gt;-->
-<!--<div class="dashboard-box" onclick="toggleSection('categoryList')">-->
-<!--    <h3>Property Categories</h3>-->
-<!--    <p th:text="${#lists.size(categories)}">0</p>-->
-<!--</div>-->
-
-<!--&lt;!&ndash; Category Management Section &ndash;&gt;-->
-<!--<div id="categoryList" class="hidden">-->
-<!--    <h2>Manage Property Categories</h2>-->
-
-<!--    &lt;!&ndash; Add New Category Form &ndash;&gt;-->
-<!--    <form th:action="@{/admin/add-category}" method="post">-->
-<!--        <input type="text" name="name" placeholder="Enter Category Name" required>-->
-<!--        <button type="submit">Add Category</button>-->
-<!--    </form>-->
-
-<!--    &lt;!&ndash; Categories List &ndash;&gt;-->
-<!--    <table>-->
-<!--        <thead>-->
-<!--        <tr>-->
-<!--            <th>Category Name</th>-->
-<!--            <th>Action</th>-->
-<!--        </tr>-->
-<!--        </thead>-->
-<!--        <tbody>-->
-<!--        <tr th:each="category : ${categories}">-->
-<!--            <td th:text="${category.name}"></td>-->
-<!--            <td>-->
-<!--                <form th:action="@{/admin/delete-category/{id}(id=${category.id})}" method="post">-->
-<!--                    <button type="submit">Delete</button>-->
-<!--                </form>-->
-<!--            </td>-->
-<!--        </tr>-->
-<!--        </tbody>-->
-<!--    </table>-->
-<!--</div>-->
-
-
-<!--<a th:href="@{/properties}">Back to Listings</a>-->
-
-<!--&lt;!&ndash; Logout Button &ndash;&gt;-->
-<!--<form th:action="@{/logout}" method="post">-->
-<!--    <button type="submit">Logout</button>-->
-<!--</form>-->
-
-<!--<script>-->
-<!--    function toggleSection(sectionId) {-->
-<!--        const section = document.getElementById(sectionId);-->
-<!--        if (section.classList.contains('hidden')) {-->
-<!--            section.classList.remove('hidden');-->
-<!--        } else {-->
-<!--            section.classList.add('hidden');-->
-<!--        }-->
-<!--    }-->
-<!--</script>-->
-<!--</body>-->
-<!--</html>-->
-
-
-
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
@@ -231,7 +63,8 @@
     <a href="#" onclick="showSection('users')"><i class="fa-solid fa-users"></i> Users</a>
     <a href="#" onclick="showSection('properties')"><i class="fa-solid fa-building"></i> Properties</a>
     <a href="#" onclick="showSection('categories')"><i class="fa-solid fa-list"></i> Categories</a>
-    <a href="/admin/complaints"><i class="fa-solid fa-comments"></i> Complaints</a>
+    <a href="#" onclick="showSection('complaints')"><i class="fa-solid fa-list"></i> Complains</a>
+<!--    <a href="/admin/complaints"><i class="fa-solid fa-comments"></i> Complaints</a>-->
     <a href="#" onclick="showSection('report')"><i class="fa-solid fa-file-alt"></i> Report</a>
     <a th:href="@{/properties}"><i class="fa-solid fa-home"></i>HomePage</a>
     <a href="/logout" th:action="@{/logout}" onclick="event.preventDefault(); document.getElementById('logoutForm').submit();">
@@ -443,6 +276,124 @@
 </div>
 
 
+<!-- Complaints Section -->
+<div id="complaintsSection" class="d-none">
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white">
+            <h2 class="mb-0">Manage Complaints</h2>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive" style="max-height: 70vh; overflow-y: auto;">
+                <table class="table table-hover table-bordered">
+                    <thead class="table-light sticky-top">
+                    <tr>
+                        <th style="width: 15%">User</th>
+                        <th style="width: 15%">Property</th>
+                        <th style="width: 30%">Subject</th>
+                        <th style="width: 15%">Status</th>
+                        <th style="width: 25%">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="complaint : ${complaints}"
+                        th:classappend="${complaint.status == 'Resolved'} ? 'table-success' : 'table-warning'">
+                        <td th:text="${complaint.username}"></td>
+                        <td th:text="${complaint.propId != null ? complaint.propId : 'N/A'}"></td>
+                        <td class="text-truncate" style="max-width: 200px;" th:text="${complaint.subject}"></td>
+                        <td>
+                                <span th:classappend="${complaint.status == 'Resolved'} ? 'badge bg-success' : 'badge bg-warning text-dark'"
+                                      th:text="${complaint.status}"></span>
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary me-2"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#complaintModal"
+                                    th:attr="data-bs-complaintId=${complaint.id},
+                                                 data-bs-username=${complaint.username},
+                                                 data-bs-propId=${complaint.propId},
+                                                 data-bs-subject=${complaint.subject},
+                                                 data-bs-description=${complaint.description},
+                                                 data-bs-status=${complaint.status},
+                                                 data-bs-adminResponse=${complaint.adminResponse}">
+                                <i class="fas fa-eye"></i> View
+                            </button>
+                            <button th:if="${complaint.status != 'Resolved'}"
+                                    class="btn btn-sm btn-success"
+                                    onclick="resolveComplaint([[${complaint.id}]])">
+                                <i class="fas fa-check"></i> Resolve
+                            </button>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(complaints)}">
+                        <td colspan="5" class="text-center text-muted">No complaints found</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Complaint Details Modal -->
+<div class="modal fade" id="complaintModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Complaint Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <p><strong>User:</strong> <span id="modalUsername"></span></p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Property ID:</strong> <span id="modalPropId"></span></p>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <p><strong>Subject:</strong> <span id="modalSubject"></span></p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Status:</strong> <span id="modalStatus" class="badge"></span></p>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <p><strong>Description:</strong></p>
+                    <div class="border p-3 rounded bg-light" id="modalDescription"></div>
+                </div>
+                <div class="mb-3" id="adminResponseContainer">
+                    <p><strong>Admin Response:</strong></p>
+                    <div class="border p-3 rounded bg-light" id="modalAdminResponse"></div>
+                </div>
+                <form th:action="@{/admin/complaints/resolve}" method="post" id="resolveForm">
+                    <input type="hidden" name="complaintId" id="modalComplaintId">
+                    <div class="mb-3" id="responseFormContainer">
+                        <label for="adminResponse" class="form-label">Your Response:</label>
+                        <textarea name="adminResponse" id="adminResponse" class="form-control" rows="3" required></textarea>
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-success" id="resolveBtn">
+                            <i class="fas fa-check-circle"></i> Resolve
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
 
 
 <!-- Report Section -->
@@ -544,6 +495,7 @@
         document.getElementById('usersSection').classList.add('d-none');
         document.getElementById('propertiesSection').classList.add('d-none');
         document.getElementById('categoriesSection').classList.add('d-none');
+         document.getElementById('complaintsSection').classList.add('d-none');
         document.getElementById('reportSection').classList.add('d-none');
 
         // Show selected section
@@ -553,7 +505,12 @@
             document.getElementById('propertiesSection').classList.remove('d-none');
         } else if (section === 'categories') {
             document.getElementById('categoriesSection').classList.remove('d-none');
-        }else if (section === 'report') {
+        }
+        else if (section === 'complaints') {
+            document.getElementById('complaintsSection').classList.remove('d-none');
+        }
+
+        else if (section === 'report') {
             document.getElementById('reportSection').classList.remove('d-none');
         }
 
@@ -562,6 +519,58 @@
             document.getElementById('overviewSection').classList.remove('d-none');
         }
     }
+
+
+      // Initialize modal with complaint data
+    document.getElementById('complaintModal').addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget;
+        const complaintId = button.getAttribute('data-bs-complaintId');
+        const username = button.getAttribute('data-bs-username');
+        const propId = button.getAttribute('data-bs-propId');
+        const subject = button.getAttribute('data-bs-subject');
+        const description = button.getAttribute('data-bs-description');
+        const status = button.getAttribute('data-bs-status');
+        const adminResponse = button.getAttribute('data-bs-adminResponse');
+
+        document.getElementById('modalUsername').textContent = username;
+        document.getElementById('modalPropId').textContent = propId || 'N/A';
+        document.getElementById('modalSubject').textContent = subject;
+        document.getElementById('modalDescription').textContent = description;
+        document.getElementById('modalComplaintId').value = complaintId;
+
+        const statusBadge = document.getElementById('modalStatus');
+        statusBadge.textContent = status;
+        statusBadge.className = status === 'Resolved' ? 'badge bg-success' : 'badge bg-warning text-dark';
+
+        if (adminResponse) {
+            document.getElementById('modalAdminResponse').textContent = adminResponse;
+            document.getElementById('adminResponseContainer').classList.remove('d-none');
+            document.getElementById('responseFormContainer').classList.add('d-none');
+            document.getElementById('resolveBtn').classList.add('d-none');
+        } else {
+            document.getElementById('adminResponseContainer').classList.add('d-none');
+            document.getElementById('responseFormContainer').classList.remove('d-none');
+            document.getElementById('resolveBtn').classList.remove('d-none');
+        }
+    });
+
+
+       function resolveComplaint(complaintId) {
+        if (confirm('Are you sure you want to resolve this complaint?')) {
+            fetch('/admin/complaints/resolve', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `complaintId=${complaintId}&adminResponse=Resolved by admin`
+            }).then(response => {
+                if (response.ok) {
+                    location.reload();
+                }
+            });
+        }
+    }
+
 </script>
 </body>
 </html>

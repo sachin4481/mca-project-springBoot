@@ -28,5 +28,6 @@ public class PropertyDetails {
     private Boolean parking;
     private String schemeName;
     private String propDetails;
+    private String age;
 
 }

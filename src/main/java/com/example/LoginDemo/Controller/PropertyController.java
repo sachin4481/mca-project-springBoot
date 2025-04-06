@@ -96,9 +96,12 @@ public String searchProperties(@RequestParam(required = false) Long category,//n
                                @RequestParam(required = false) Double price,
                                @RequestParam(required = false) String location,
                                RedirectAttributes redirectAttributes) {
-    // Retrieve all properties
-//    List<PropertyEntity> properties = propertyRepository.findAll();
-    List<PropertyInfo> properties = propertyInfoRepository.findAll();//new added code
+
+    // Fetch all properties that are NOT SOLD
+    List<PropertyInfo> properties = propertyInfoRepository.findAll()
+            .stream()
+            .filter(p -> !"SOLD".equalsIgnoreCase(p.getStatus()))
+            .collect(Collectors.toList());
     // Filter by Property Category
     if (category != null) {//new added code
         properties = properties.stream()//new added code
@@ -329,7 +332,7 @@ public String searchProperties(@RequestParam(required = false) Long category,//n
         property.setImg4(img4Path);
         property.setImg5(img5Path);
         property.setListingDate(new Date());
-        property.setStatus("unsold");
+        property.setStatus("AVAILABLE");
 
         // Save property
         propertyInfoRepository.save(property);
@@ -375,19 +378,11 @@ public String searchProperties(@RequestParam(required = false) Long category,//n
                                      @RequestParam(required = false) Integer washroom,
                                      @RequestParam(required = false) Boolean parking,
                                      @RequestParam(required = false) String schemeName,
+                                     @RequestParam(required = false) String age,
                                      @RequestParam(required = false) String propDetails,
                                      RedirectAttributes redirectAttributes) {
 
-        System.out.println("Received propId: " + propId);
-        System.out.println("Received BHK: " + bhk);
-        System.out.println("Received Floors: " + floors);
-        System.out.println("Received Corner: " + corner);
-        System.out.println("Received Floor: " + floor);
-        System.out.println("Received Furnished: " + furnished);
-        System.out.println("Received Washroom: " + washroom);
-        System.out.println("Received Parking: " + parking);
-        System.out.println("Received Scheme Name: " + schemeName);
-        System.out.println("Received Property Details: " + propDetails);
+
 
         Optional<PropertyInfo> propertyOptional = propertyInfoRepository.findById(propId);
         if (!propertyOptional.isPresent()) {
@@ -408,6 +403,7 @@ public String searchProperties(@RequestParam(required = false) Long category,//n
         details.setWashroom(washroom);
         details.setParking(parking);
         details.setSchemeName(schemeName);
+        details.setAge(age);
         details.setPropDetails(propDetails);
 
         propertyDetailsRepository.save(details);

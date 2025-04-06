@@ -29,7 +29,7 @@
   <h1>Manage Complaints</h1>
   <div th:each="complaint : ${complaints}" class="complaint-card">
     <p><strong>User:</strong> <span th:text="${complaint.username}"></span></p>
-    <p><strong>Property ID:</strong> <span th:text="${complaint.propertyId != null ? complaint.propertyId : 'N/A'}"></span></p>
+    <p><strong>Property ID:</strong> <span th:text="${complaint.propId != null ? complaint.propId : 'N/A'}"></span></p>
     <p><strong>Subject:</strong> <span th:text="${complaint.subject}"></span></p>
     <p><strong>Description:</strong> <span th:text="${complaint.description}"></span></p>
     <p><strong>Submitted:</strong> <span th:text="${complaint.submittedAt}"></span></p>

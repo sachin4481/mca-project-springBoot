@@ -1,5 +1,6 @@
 package com.example.LoginDemo.Controller;
 
+import com.example.LoginDemo.Repository.PropInquiryRepository;
 import com.example.LoginDemo.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.security.Principal;
 import java.util.List;
 
 @Controller
@@ -25,6 +27,9 @@ public class InquiryController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private PropInquiryRepository propInquiryRepository;
 
     @PostMapping("/properties/{id}/inquiry")
     public String sendInquiry(@PathVariable Long id,
@@ -57,5 +62,17 @@ public class InquiryController {
     public String closeInquiry(@PathVariable Long id) {
         inquiryService.closeInquiry(id);
         return "redirect:/my-inquiries";
+    }
+
+
+    @GetMapping("/my-submitted-inquiries")
+    public String showUserInquiries(Model model, Principal principal) {
+        UserEntity currentUser = userRepository.findByUsername(principal.getName())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        // adjust as needed
+        List<PropInquiry> inquiries = propInquiryRepository.findByUser(currentUser);
+
+        model.addAttribute("inquiries", inquiries);
+        return "submitted-inquiries";
     }
 }
