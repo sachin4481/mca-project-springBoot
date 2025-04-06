@@ -173,6 +173,21 @@ public class HomeController {
     }
 
 
+    @PostMapping("/auth/resend-otp")
+    public String resendOtp(@RequestParam("email") String email, RedirectAttributes redirectAttributes) {
+        boolean sent = userServices.resendOtp(email);
+        if (sent) {
+            redirectAttributes.addFlashAttribute("message", "OTP resent successfully.");
+        } else {
+            redirectAttributes.addFlashAttribute("error", "Could not resend OTP. Please try again.");
+        }
+        return "redirect:/verify-otp-email?email=" + email;
+    }
+
+
+
+
+
     //new property list form logic
 //    @PostMapping("/properties/list")
 //    public String listProperty(@ModelAttribute PropertyEntity property,

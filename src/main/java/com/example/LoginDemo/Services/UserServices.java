@@ -81,27 +81,7 @@ public class UserServices {
         logger.info("OTP sent to {}", email);
     }
 
-    // Verify OTP and activate the account
-//    @Transactional
-//    public boolean verifyOtp(String email, String otp) {
-//        UserEntity user = userRepository.findByEmail(email);
-//        if (user != null && user.getOtp() != null
-//                && user.getOtpExpiry().isAfter(LocalDateTime.now())
-//                && user.getOtp().equals(otp)) {
-//
-//
-//            user.setVerified(true);
-//
-//            user.setOtp(null);
-//            user.setOtpExpiry(null);
-//
-//            userRepository.save(user);
-//
-//            return true;
-//        }
-//        logger.warn("Invalid OTP for {}", email);
-//        return false;
-//    }
+
     @Transactional
     public boolean verifyOtp(String email, String otp) {
         Optional<UserEntity> userOptional = userRepository.findByEmail(email);
@@ -120,6 +100,24 @@ public class UserServices {
             }
         }
         logger.warn("Invalid OTP for {}", email);
+        return false;
+    }
+
+
+    public boolean resendOtp(String email) {
+        Optional<UserEntity> userOpt = userRepository.findByEmail(email);
+        if (userOpt.isPresent()) {
+            String otp = generateOtp(); // Your existing OTP generator
+            UserEntity user = userOpt.get();
+            user.setOtp(otp);
+            //user.setOtpGeneratedTime(LocalDateTime.now());
+            userRepository.save(user);
+
+            // Send the OTP again via email
+            sendOtpEmail(email,otp);
+
+            return true;
+        }
         return false;
     }
 

@@ -75,6 +75,16 @@ public String processForgotPassword(@RequestParam("email") String email, Model m
         return "reset-password";
     }
 
+
+
+
+
+
+
+
+
+
+
     //reset password logic
     @PostMapping("/reset-password")
     public String resetPassword(@RequestParam("otp") String otp,
