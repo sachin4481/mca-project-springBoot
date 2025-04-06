@@ -7,6 +7,8 @@ import com.example.LoginDemo.Repository.PropInquiryRepository;
 import com.example.LoginDemo.Repository.PropertyInfoRepository;
 import com.example.LoginDemo.Repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,6 +28,8 @@ public class PropertyInfoService {
     private PropInquiryRepository propInquiryRepository;
     @Autowired
     private UserRepository userRepository;
+
+    private static final Logger logger = LoggerFactory.getLogger(PropertyServices.class);
 
     public PropertyInfo getPropertyById(Long id) {
         return propertyInfoRepository.findById(id)
@@ -89,5 +93,9 @@ public class PropertyInfoService {
 
 
 
+    public List<PropertyInfo> getPropertiesByMonthAndYear(int month, int year) {
+        logger.debug("Fetching properties for month: {} and year: {}", month, year);
+        return propertyInfoRepository.findByMonthAndYear(month, year);
+    }
 
 }
