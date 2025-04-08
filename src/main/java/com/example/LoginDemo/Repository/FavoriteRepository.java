@@ -18,20 +18,7 @@ public interface FavoriteRepository extends JpaRepository<Favorite, Long> {
     List<Favorite> findByUser(UserEntity user);
     Optional<Favorite> findByUserAndProperty(UserEntity user, PropertyInfo property);
     void deleteByUserAndProperty(UserEntity user, PropertyInfo property);
-//    List<Favorite> findByUserId(Long userId);
-//    Favorite findByUserIdAndPropertyId(Long userId, Long propId);
-//    void deleteByUserIdAndPropertyId(Long userId, Long propId);
 
-
-//    @Modifying
-//    @Query("DELETE FROM Favorite f WHERE f.user.id = :userId AND f.property.propId = :propId")
-//    void deleteByUserIdAndPropertyId(@Param("userId") Long userId, @Param("propId") Long propId);
-//
-//    @Query("SELECT f FROM Favorite f WHERE f.user.id = :userId AND f.property.propId = :propId")
-//    Favorite findByUserIdAndPropertyId(@Param("userId") Long userId, @Param("propId") Long propId);
-//
-
-//    ---------------------------------------------------------------
 @Query("SELECT f FROM Favorite f JOIN FETCH f.property WHERE f.user.id = :userId")
 List<Favorite> findByUserId(@Param("userId") Long userId);
 

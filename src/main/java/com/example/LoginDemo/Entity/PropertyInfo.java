@@ -5,6 +5,7 @@ import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.util.Date;
+import java.util.Objects;
 
 @Entity
 @Table(name = "property_info")
@@ -56,5 +57,16 @@ public class PropertyInfo {
             this.status = "AVAILABLE";
         }
     }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PropertyInfo that = (PropertyInfo) o;
+        return Objects.equals(propId, that.propId);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(propId);
+    }
 }

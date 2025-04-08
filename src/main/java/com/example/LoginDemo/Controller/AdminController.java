@@ -2,11 +2,8 @@ package com.example.LoginDemo.Controller;
 
 
 import com.example.LoginDemo.Entity.*;
-import com.example.LoginDemo.Repository.PropertyCatRepository;
+import com.example.LoginDemo.Repository.*;
 //import com.example.LoginDemo.Repository.VerificationTokenRepository;
-import com.example.LoginDemo.Repository.PropertyInfoRepository;
-import com.example.LoginDemo.Repository.PropertyRepository;
-import com.example.LoginDemo.Repository.UserRepository;
 import com.example.LoginDemo.Services.ComplaintServices;
 import com.example.LoginDemo.Services.PropertyInfoService;
 import com.example.LoginDemo.Services.PropertyServices;
@@ -48,8 +45,8 @@ public class AdminController {
     @Autowired
     private UserServices userServices;
 
-//    @Autowired
-//    VerificationTokenRepository verificationTokenRepository;
+    @Autowired
+    FeedbackRepository feedbackRepository;
 
     @Autowired
     private PropertyCatRepository propertyCatRepository;

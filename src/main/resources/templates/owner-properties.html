@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Properties by <span th:text="${user.username}"></span></title>
+  <link rel="stylesheet" th:href="@{/css_main/style.css}">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    :root {
+        --primary: #eab308;
+        --primary-dark: #ca8a04;
+        --text-primary: #1e293b;
+        --text-secondary: #64748b;
+        --bg-light: #f8fafc;
+    }
+
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: var(--bg-light);
+        color: var(--text-primary);
+        margin: 0;
+        padding-top: 64px;
+    }
+
+    .page-container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+
+    .user-header {
+        background: white;
+        border-radius: 1rem;
+        padding: 2rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+
+    .user-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-bottom: 1rem;
+        background-color: #f1f5f9;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+        color: var(--primary);
+        font-size: 2rem;
+    }
+
+    .properties-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .property-card {
+        background: white;
+        border-radius: 1rem;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+    }
+
+    .property-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .property-image {
+        height: 200px;
+        width: 100%;
+        object-fit: cover;
+    }
+
+    .property-details {
+        padding: 1.5rem;
+    }
+
+    .property-title {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        font-size: 1.1rem;
+    }
+
+    .property-price {
+        color: var(--primary-dark);
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .property-location {
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        margin-bottom: 1rem;
+    }
+
+    .property-meta {
+        display: flex;
+        gap: 1rem;
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+    }
+
+    .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        background: white;
+        border-radius: 1rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    @media (max-width: 768px) {
+        .properties-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+  </style>
+</head>
+<body>
+<!-- Header -->
+<header th:replace="~{fragments :: header}" />
+
+<div class="page-container">
+  <div class="user-header">
+    <div class="user-avatar">
+      <i data-lucide="user"></i>
+    </div>
+    <h1>Properties Listed by <span th:text="${user.username}"></span></h1>
+    <p th:text="${user.email}"></p>
+  </div>
+
+  <div th:if="${properties != null and !properties.isEmpty()}">
+    <div class="properties-grid">
+      <div class="property-card" th:each="property : ${properties}">
+        <a th:href="@{/properties/{id}(id=${property.propId})}" style="text-decoration: none; color: inherit;">
+          <img th:src="@{${property.img1}}" alt="Property Image" class="property-image" th:if="${property.img1 != null}">
+          <div th:unless="${property.img1 != null}" class="property-image" style="background: #f1f5f9; display: flex; align-items: center; justify-content: center;">
+            <i data-lucide="home" style="color: #94a3b8;"></i>
+          </div>
+          <div class="property-details">
+            <h3 class="property-title" th:text="${property.propTitle}"></h3>
+            <div class="property-price" th:text="'₹' + ${#numbers.formatDecimal(property.price, 0, 'COMMA', 0, 'POINT')}"></div>
+            <div class="property-location">
+              <i data-lucide="map-pin" width="16"></i>
+              <span th:text="${property.location}"></span>
+            </div>
+            <div class="property-meta">
+              <div class="meta-item">
+                <i data-lucide="square" width="16"></i>
+                <span th:text="${property.area + ' sq ft'}"></span>
+              </div>
+              <div class="meta-item">
+                <i data-lucide="layers" width="16"></i>
+                <span th:text="${property.propertyCategory.name}"></span>
+              </div>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div th:if="${properties == null or properties.isEmpty()}" class="empty-state">
+    <i data-lucide="folder-x" width="48" height="48" style="color: #94a3b8; margin-bottom: 1rem;"></i>
+    <h3>No Properties Listed Yet</h3>
+    <p>This user hasn't listed any properties yet.</p>
+  </div>
+</div>
+
+<script>
+  lucide.createIcons();
+</script>
+</body>
+</html>

@@ -4,6 +4,7 @@ import com.example.LoginDemo.Entity.PropertyDetails;
 import com.example.LoginDemo.Entity.PropertyEntity;
 import com.example.LoginDemo.Entity.PropertyInfo;
 import com.example.LoginDemo.Entity.UserEntity;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -16,7 +17,7 @@ import java.util.List;
 public interface PropertyInfoRepository extends JpaRepository<PropertyInfo, Long> {
 
     List<PropertyInfo> findByUser(UserEntity user);
-
+    Page<PropertyInfo> findByUser(UserEntity user, Pageable pageable);
     @Query("SELECT p FROM PropertyInfo p WHERE p.status <> 'SOLD' ORDER BY p.propId DESC")
     List<PropertyInfo> findTop4RecentProperties(Pageable pageable);
 

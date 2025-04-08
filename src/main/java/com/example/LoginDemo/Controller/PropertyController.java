@@ -6,8 +6,10 @@ import com.example.LoginDemo.Repository.*;
 import com.example.LoginDemo.Services.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -162,24 +164,18 @@ public String searchProperties(@RequestParam(required = false) Long category,//n
         }
 
         // Always initialize favorites to avoid null pointer exceptions
+        // In your controller
         List<PropertyInfo> favorites = Collections.emptyList();
-
-        // Get favorites if user is logged in
         if (userDetails != null) {
-            try {
-                UserEntity user = userRepository.findByUsername(userDetails.getUsername())
-                        .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-                favorites = favoriteRepository.findByUserId(user.getId())
-                        .stream()
-                        .map(Favorite::getProperty)
-                        .filter(Objects::nonNull) // Safety against null properties
-                        .collect(Collectors.toList());
-            } catch (UsernameNotFoundException e) {
-                // Log the error, but don't fail the whole page load
-//                log.warn("User not found for username: {}", userDetails.getUsername());
-                System.out.println("error");
-            }
+            UserEntity user = userRepository.findByUsername(userDetails.getUsername())
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+            favorites = favoriteRepository.findByUserId(user.getId())
+                    .stream()
+                    .map(Favorite::getProperty)
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
         }
+        model.addAttribute("favorites", favorites);
 
         // Fetch property details
         PropertyDetails propertyDetails = propertyDetailsRepository
@@ -196,6 +192,24 @@ public String searchProperties(@RequestParam(required = false) Long category,//n
         }
 
         return "property-details"; // Your HTML file name
+    }
+    @GetMapping("/user/properties/{username}")
+    public String getUserProperties(@PathVariable String username,
+                                    @RequestParam(defaultValue = "0") int page,
+                                    @RequestParam(defaultValue = "10") int size,
+                                    Model model) {
+        UserEntity user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("listingDate").descending());
+        Page<PropertyInfo> propertiesPage = propertyInfoRepository.findByUser(user, pageable);
+
+        model.addAttribute("user", user);
+        model.addAttribute("properties", propertiesPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", propertiesPage.getTotalPages());
+
+        return "owner-properties";
     }
     // Edit Property Form
     @GetMapping("/properties/edit/{id}")

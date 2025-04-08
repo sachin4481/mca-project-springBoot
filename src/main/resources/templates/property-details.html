@@ -7,29 +7,304 @@
   <link rel="stylesheet" th:href="@{/css_main/style.css}">
   <link rel="stylesheet" th:href="@{/css_main/property-details.css}">
   <link rel="stylesheet" th:href="@{/css_main/auth.css}">
-<!--  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">-->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/lucide@latest"></script>
-<style>
-  .alert {
-  padding: 15px;
-  border-radius: 4px;
-  margin-bottom: 20px;
-  font-weight: bold;
-}
+  <style>
+    :root {
+      --primary: #eab308;
+      --primary-dark: #ca8a04;
+      --secondary: #3b82f6;
+      --text-primary: #1e293b;
+      --text-secondary: #64748b;
+      --bg-light: #f8fafc;
+      --success: #059669;
+      --danger: #dc2626;
+    }
 
-.alert-warning {
-  background-color: #fff3cd;
-  color: #856404;
-  border: 1px solid #ffeeba;
-}
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-light);
+      color: var(--text-primary);
+      margin: 0;
+      padding-top: 64px;
+    }
 
-.alert-danger {
-  background-color: #f8d7da;
-  color: #721c24;
-  border: 1px solid #f5c6cb;
-}
-</style>
+    .page-container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    .property-header {
+      background: white;
+      border-radius: 1rem;
+      padding: 2rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      margin-bottom: 2rem;
+    }
+
+    .property-title {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .property-title i {
+      color: var(--primary);
+    }
+
+    .property-meta {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 1rem;
+      background: var(--bg-light);
+      border-radius: 0.75rem;
+    }
+
+    .meta-item i {
+      color: var(--primary);
+    }
+
+    .meta-item.price {
+      background: #fef3c7;
+      color: var(--primary-dark);
+      font-weight: 600;
+    }
+
+    .content-section {
+      background: white;
+      border-radius: 1rem;
+      padding: 2rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      margin-bottom: 2rem;
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .section-title i {
+      color: var(--primary);
+    }
+
+    .property-details-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .detail-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .detail-label {
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+    }
+
+    .detail-value {
+      font-weight: 500;
+    }
+
+    .property-description {
+      line-height: 1.7;
+      color: var(--text-secondary);
+    }
+
+    .image-gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .gallery-image {
+      aspect-ratio: 16/9;
+      border-radius: 0.75rem;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .gallery-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    .gallery-image:hover img {
+      transform: scale(1.05);
+    }
+
+    .owner-info {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .contact-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 1rem;
+      background: var(--bg-light);
+      border-radius: 0.75rem;
+    }
+
+    .contact-item i {
+      color: var(--primary);
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.75rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: none;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+    }
+
+    .btn-secondary {
+      background: var(--secondary);
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background: #2563eb;
+    }
+
+    .btn-back {
+      background: var(--text-secondary);
+      color: white;
+    }
+
+    .btn-back:hover {
+      background: var(--text-primary);
+    }
+
+    .alert {
+      padding: 1rem 1.5rem;
+      border-radius: 0.75rem;
+      margin-bottom: 1.5rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .alert-warning {
+      background: #fef3c7;
+      color: #92400e;
+      border: 1px solid #fde68a;
+    }
+
+    .alert-danger {
+      background: #fee2e2;
+      color: #991b1b;
+      border: 1px solid #fecaca;
+    }
+
+    .favorite-actions {
+      margin-bottom: 1.5rem;
+    }
+
+    .btn-outline-primary {
+      background: transparent;
+      border: 2px solid var(--primary);
+      color: var(--primary);
+    }
+
+    .btn-outline-primary:hover {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-outline-danger {
+      background: transparent;
+      border: 2px solid var(--danger);
+      color: var(--danger);
+    }
+
+    .btn-outline-danger:hover {
+      background: var(--danger);
+      color: white;
+    }
+
+    .success-message {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: #dcfce7;
+      color: var(--success);
+      padding: 1rem 1.5rem;
+      border-radius: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      z-index: 50;
+      opacity: 0;
+      transform: translateY(1rem);
+      transition: all 0.3s ease;
+    }
+
+    .success-message.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 768px) {
+      .property-meta {
+        grid-template-columns: 1fr;
+      }
+
+      .action-buttons {
+        flex-direction: column;
+      }
+
+      .btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
 </head>
 <body>
 <!-- Header -->
@@ -37,11 +312,15 @@
 
 <div class="page-container">
   <div th:if="${successMessage}" class="alert alert-warning" role="alert">
+    <i data-lucide="check-circle"></i>
     <span th:text="${successMessage}"></span>
   </div>
+
   <div th:if="${errorMessage}" class="alert alert-danger" role="alert">
+    <i data-lucide="alert-circle"></i>
     <span th:text="${errorMessage}"></span>
   </div>
+
   <div class="property-header">
     <h1 class="property-title">
       <i data-lucide="home"></i>
@@ -67,8 +346,6 @@
     </div>
   </div>
 
-
-
   <div class="content-section">
     <h2 class="section-title">
       <i data-lucide="clipboard-list"></i>
@@ -80,72 +357,67 @@
         <span class="detail-value" th:text="${propertyInfo.propertyCategory.name}"></span>
       </div>
       <th:block th:if="${propertyDetails != null}">
-      <div class="detail-item" th:if="${propertyDetails.bhk}">
-        <span class="detail-label">BHK</span>
-        <span class="detail-value" th:text="${propertyDetails.bhk}"></span>
-      </div>
-      <div class="detail-item" th:if="${propertyDetails.floors}">
-        <span class="detail-label">Floors</span>
-        <span class="detail-value" th:text="${propertyDetails.floors}"></span>
-      </div>
-      <div class="detail-item" th:if="${propertyDetails.floor}">
-        <span class="detail-label">Floor</span>
-        <span class="detail-value" th:text="${propertyDetails.floor}"></span>
-      </div>
-      <div class="detail-item">
-        <span class="detail-label">Furnished</span>
-        <span class="detail-value" th:text="${propertyDetails.furnished != null and propertyDetails.furnished ? 'Yes' : 'No'}"></span>
-      </div>
-      <div class="detail-item" th:if="${propertyDetails.washroom}">
-        <span class="detail-label">Washrooms</span>
-        <span class="detail-value" th:text="${propertyDetails.washroom}"></span>
-      </div>
-      <div class="detail-item">
-        <span class="detail-label">Corner Property</span>
-        <span class="detail-value" th:text="${propertyDetails.corner != null and propertyDetails.corner ? 'Yes' : 'No'}"></span>
-      </div>
-      <div class="detail-item">
-        <span class="detail-label">Parking Available</span>
-        <span class="detail-value" th:text="${propertyDetails.parking != null and propertyDetails.parking ? 'Yes' : 'No'}"></span>
-      </div>
-      <div class="detail-item" th:if="${propertyDetails.schemeName}">
-        <span class="detail-label">Scheme Name</span>
-        <span class="detail-value" th:text="${propertyDetails.schemeName}"></span>
-      </div>
-      <div class="detail-item">
-        <span class="detail-label">Status</span>
-        <span class="detail-value" th:text="${propertyInfo.status}"></span>
-      </div>
-      <div class="detail-item">
-        <div th:if="${propertyDetails != null}">
-          <span class="detail-label">Property's age</span><br/>
+        <div class="detail-item" th:if="${propertyDetails.bhk}">
+          <span class="detail-label">BHK</span>
+          <span class="detail-value" th:text="${propertyDetails.bhk}"></span>
+        </div>
+        <div class="detail-item" th:if="${propertyDetails.floors}">
+          <span class="detail-label">Floors</span>
+          <span class="detail-value" th:text="${propertyDetails.floors}"></span>
+        </div>
+        <div class="detail-item" th:if="${propertyDetails.floor}">
+          <span class="detail-label">Floor</span>
+          <span class="detail-value" th:text="${propertyDetails.floor}"></span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Furnished</span>
+          <span class="detail-value" th:text="${propertyDetails.furnished != null and propertyDetails.furnished ? 'Yes' : 'No'}"></span>
+        </div>
+        <div class="detail-item" th:if="${propertyDetails.washroom}">
+          <span class="detail-label">Washrooms</span>
+          <span class="detail-value" th:text="${propertyDetails.washroom}"></span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Corner Property</span>
+          <span class="detail-value" th:text="${propertyDetails.corner != null and propertyDetails.corner ? 'Yes' : 'No'}"></span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Parking Available</span>
+          <span class="detail-value" th:text="${propertyDetails.parking != null and propertyDetails.parking ? 'Yes' : 'No'}"></span>
+        </div>
+        <div class="detail-item" th:if="${propertyDetails.schemeName}">
+          <span class="detail-label">Scheme Name</span>
+          <span class="detail-value" th:text="${propertyDetails.schemeName}"></span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Status</span>
+          <span class="detail-value" th:text="${propertyInfo.status}"></span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Property's age</span>
           <span class="detail-value" th:text="${propertyDetails.age}"></span>
         </div>
-        <div th:unless="${propertyDetails != null}">
-          <span class="detail-label">Property's age</span><br/>
-          <span class="detail-value">N/A</span>
+        <div class="detail-item">
+          <span class="detail-label">Posted on</span>
+          <span class="detail-value" th:text="${propertyInfo.listingDate != null ? #dates.format(propertyInfo.listingDate, 'dd MMM yyyy') : 'N/A'}"></span>
         </div>
-      </div>
-      <div class="detail-item">
-        <span class="detail-label">Posted on</span>
-        <span class="detail-value" th:text="${propertyInfo.listingDate != null ? #dates.format(propertyInfo.listingDate, 'dd MMM yyyy') : 'N/A'}"></span>
-      </div>
+      </th:block>
     </div>
   </div>
 
-  <!-- If propertyDetails is missing, show a message -->
   <th:block th:if="${propertyDetails == null}">
-    <p style="color: red; font-weight: bold;">Sorry! The owner did not provide more details about the property.</p>
+    <div class="alert alert-warning">
+      <i data-lucide="alert-triangle"></i>
+      <span>Sorry! The owner has not provided additional details about this property.</span>
+    </div>
   </th:block>
 
-  <div class="content-section">
+  <div class="content-section" th:if="${propertyDetails != null}">
     <h2 class="section-title">
       <i data-lucide="file-text"></i>
       Description
     </h2>
-    <th:block th:if="${propertyDetails != null}">
     <p class="property-description" th:text="${propertyDetails.propDetails}"></p>
-    </th:block>
   </div>
 
   <div class="content-section">
@@ -180,7 +452,10 @@
     <div class="owner-info">
       <div class="contact-item">
         <i data-lucide="user"></i>
-        <span th:text="${propertyInfo.user.username}"></span>
+        <a th:href="@{/user/properties/{username}(username=${propertyInfo.user.username})}"
+           style="text-decoration: none; color: inherit;">
+          <span th:text="${propertyInfo.user.username}"></span>
+        </a>
       </div>
       <div class="contact-item">
         <i data-lucide="mail"></i>
@@ -193,34 +468,20 @@
     </div>
   </div>
 
-
-
-
-
-
-
-
-
-  <!-- Favorite Section -->
   <div class="favorite-actions" sec:authorize="isAuthenticated()">
-    <!-- Debug info -->
-    <div style="display: none;">
-      Property ID: <span th:text="${propertyInfo?.propId}"></span><br>
-      Favorites Count: <span th:text="${favorites?.size()}"></span>
-    </div>
 
-    <!-- Add to Favorites -->
+    <!-- Add to Favorites Form -->
     <form th:action="@{/properties/favorite/add}" method="post"
-          th:if="${propertyInfo != null and !favorites.contains(propertyInfo)}">
+          th:unless="${#lists.contains(favorites, propertyInfo)}">
       <input type="hidden" name="propId" th:value="${propertyInfo.propId}">
       <button type="submit" class="btn btn-outline-primary">
         <i data-lucide="heart"></i> Add to Favorites
       </button>
     </form>
 
-    <!-- Remove from Favorites -->
+    <!-- Remove from Favorites Form -->
     <form th:action="@{/properties/favorite/remove}" method="post"
-          th:if="${propertyInfo != null and favorites.contains(propertyInfo)}">
+          th:if="${#lists.contains(favorites, propertyInfo)}">
       <input type="hidden" name="propId" th:value="${propertyInfo.propId}">
       <button type="submit" class="btn btn-outline-danger">
         <i data-lucide="heart-off"></i> Remove from Favorites
@@ -228,12 +489,7 @@
     </form>
   </div>
 
-
-
-
   <div class="action-buttons">
-
-    <!-- If current user is the property owner, show Edit button -->
     <th:block th:if="${propertyInfo.user != null and #authentication.principal.username == propertyInfo.user.username}">
       <a th:href="@{/properties/edit/{id}(id=${propertyInfo.propId})}" class="btn btn-secondary">
         <i data-lucide="edit"></i>
@@ -241,28 +497,25 @@
       </a>
     </th:block>
 
-    <!-- If current user is NOT the property owner, show Send Inquiry button -->
     <th:block th:if="${propertyInfo.user != null and #authentication.principal.username != propertyInfo.user.username}">
       <form th:action="@{/properties/{id}/inquiry(id=${propertyInfo.propId})}" method="post">
-
-        <button type="submit" class="btn btn-primary"><i data-lucide="send"></i>Send Inquiry</button>
+        <button type="submit" class="btn btn-primary">
+          <i data-lucide="send"></i>
+          Send Inquiry
+        </button>
       </form>
     </th:block>
 
-
-
-  <a th:href="@{/properties}" class="btn btn-back">
+    <a th:href="@{/properties}" class="btn btn-back">
       <i data-lucide="arrow-left"></i>
       Back to Listings
     </a>
   </div>
 </div>
 
-
 <script>
   lucide.createIcons();
 
-  // Handle success message
   const successMessage = document.querySelector('.success-message');
   const urlParams = new URLSearchParams(window.location.search);
 
@@ -272,18 +525,6 @@
       successMessage.classList.remove('show');
     }, 3000);
   }
-
-  function addFavorite(propertyId) {
-       fetch('/favorites/add?userId=' + USER_ID + '&propertyId=' + propertyId, {
-           method: 'POST'
-       }).then(response => response.text()).then(data => alert(data));
-   }
-
-   function removeFavorite(propertyId) {
-       fetch('/favorites/remove?userId=' + USER_ID + '&propertyId=' + propertyId, {
-           method: 'DELETE'
-       }).then(response => response.text()).then(data => alert(data));
-   }
 </script>
 </body>
 </html>
