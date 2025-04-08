@@ -35,4 +35,18 @@ public interface PropertyInfoRepository extends JpaRepository<PropertyInfo, Long
     List<PropertyInfo> findInquiredPropertiesByUserId(@Param("userId") Long userId);
 
 
+
+
+    @Query("SELECT p FROM PropertyInfo p WHERE MONTH(p.listingDate) = :month AND YEAR(p.listingDate) = :year AND p.propertyCategory.id = :categoryId")
+    List<PropertyInfo> findByMonthAndYearAndCategory(@Param("month") int month, @Param("year") int year, @Param("categoryId") Long categoryId);
+
+    @Query("SELECT p FROM PropertyInfo p WHERE MONTH(p.listingDate) = :month AND YEAR(p.listingDate) = :year AND p.status = :status")
+    List<PropertyInfo> findByMonthAndYearAndStatus(@Param("month") int month, @Param("year") int year, @Param("status") String status);
+
+    @Query("SELECT p FROM PropertyInfo p WHERE MONTH(p.listingDate) = :month AND YEAR(p.listingDate) = :year AND p.propertyCategory.id = :categoryId AND p.status = :status")
+    List<PropertyInfo> findByMonthAndYearAndCategoryAndStatus(@Param("month") int month, @Param("year") int year,
+                                                              @Param("categoryId") Long categoryId, @Param("status") String status);
 }
+
+
+
