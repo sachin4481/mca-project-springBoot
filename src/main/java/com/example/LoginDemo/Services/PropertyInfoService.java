@@ -98,4 +98,19 @@ public class PropertyInfoService {
         return propertyInfoRepository.findByMonthAndYear(month, year);
     }
 
+    public List<PropertyInfo> getFilteredProperties(int month, int year, Long categoryId, boolean soldOnly) {
+        logger.debug("Fetching properties for month: {}, year: {}, category: {}, soldOnly: {}",
+                month, year, categoryId, soldOnly);
+
+        if (categoryId != null && soldOnly) {
+            return propertyInfoRepository.findByMonthAndYearAndCategoryAndStatus(month, year, categoryId, "SOLD");
+        } else if (categoryId != null) {
+            return propertyInfoRepository.findByMonthAndYearAndCategory(month, year, categoryId);
+        } else if (soldOnly) {
+            return propertyInfoRepository.findByMonthAndYearAndStatus(month, year, "SOLD");
+        } else {
+            return propertyInfoRepository.findByMonthAndYear(month, year);
+        }
+    }
+
 }
