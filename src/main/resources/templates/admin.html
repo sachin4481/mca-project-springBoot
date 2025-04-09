@@ -306,7 +306,7 @@
                     <th>Gender</th>
                     <th>Phone</th>
                     <th>Role</th>
-                    <th>Action</th>
+<!--                    <th>Action</th>-->
                     <th>Edit</th>
                 </tr>
                 </thead>
@@ -317,12 +317,12 @@
                     <td th:text="${user.gender}"></td>
                     <td th:text="${user.phone}"></td>
                     <td th:text="${user.role}"></td>
-                    <td>
-                        <form th:action="@{/admin/delete-user/{id}(id=${user.id})}" method="post">
-                            <input type="hidden" name="section" value="users">
-                            <button class="btn btn-danger btn-sm" type="submit">Delete</button>
-                        </form>
-                    </td>
+<!--                    <td>-->
+<!--                        <form th:action="@{/admin/delete-user/{id}(id=${user.id})}" method="post">-->
+<!--                            <input type="hidden" name="section" value="users">-->
+<!--                            <button class="btn btn-danger btn-sm" type="submit">Delete</button>-->
+<!--                        </form>-->
+<!--                    </td>-->
                     <td>
                         <form method="post" action="/admin/change-role" th:if="${user.role != 'ADMIN'}"
                               onsubmit="return confirm('Are you sure you want to make ' + '${user.username}' + ' an admin?');">
@@ -367,7 +367,7 @@
                     <th>Location</th>
                     <th>Owner</th>
                     <th>Status</th>
-                    <th>Action</th>
+<!--                    <th>Action</th>-->
                     <th>Info</th>
                 </tr>
                 </thead>
@@ -378,12 +378,12 @@
                     <td th:text="${property.location}"></td>
                     <td th:text="${property.user.username}"></td>
                     <td th:text="${property.status}"></td>
-                    <td>
-                        <form th:action="@{/admin/delete-property/{id}(id=${property.propId})}" method="post">
-                            <input type="hidden" name="section" value="properties">
-                            <button class="btn btn-danger btn-sm" type="submit">Delete</button>
-                        </form>
-                    </td>
+<!--                    <td>-->
+<!--                        <form th:action="@{/admin/delete-property/{id}(id=${property.propId})}" method="post">-->
+<!--                            <input type="hidden" name="section" value="properties">-->
+<!--                            <button class="btn btn-danger btn-sm" type="submit">Delete</button>-->
+<!--                        </form>-->
+<!--                    </td>-->
                     <td>
                         <a th:href="@{/properties/{id}(id=${property.propId})}" class="btn btn-primary btn-sm">View Details</a>
                     </td>
