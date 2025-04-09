@@ -80,6 +80,7 @@ public class AdminController {
     @Autowired
     private PropertyRepository propertyRepository;
 
+
     //admin home page
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/dashboard")
@@ -89,12 +90,14 @@ public class AdminController {
         List<PropertyInfo> properties = propertyInfoService.getAllProperties();
         List<ComplaintEntity> complaints = complaintServices.getAllComplaints();
         List<PropertyCat> categories = propertyCatRepository.findAll();
+        List<Feedback> feedback=feedbackRepository.findAll();
         Page<UserEntity> usersPage = userRepository.findAll(PageRequest.of(page, 10));
         Page<PropertyInfo> propertyPage = propertyInfoRepository.findAll(PageRequest.of(page, 10));
         model.addAttribute("categories", categories);
         model.addAttribute("users", usersPage);
         model.addAttribute("properties", propertyPage);
         model.addAttribute("complaints", complaints);
+        model.addAttribute("feedbacks",feedback);
         model.addAttribute("reportGenerated", false);
         return "admin";
 

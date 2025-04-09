@@ -5,6 +5,7 @@ import com.example.LoginDemo.Entity.UserEntity;
 import com.example.LoginDemo.Repository.FeedbackRepository;
 import com.example.LoginDemo.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -67,5 +68,12 @@ public class FeedbackController {
             return feedbackRepository.findByUserId(userId);
         }
         return feedbackRepository.findAll();
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/delete-feedback/{id}")
+    public String deleteFeedback(@PathVariable Long id, @RequestParam String section) {
+        feedbackRepository.deleteById(id);
+        return "redirect:/admin/dashboard?section=" + section;
     }
 }
