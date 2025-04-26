@@ -146,7 +146,9 @@ public class HomeController {
 
             if ("ADMIN".equalsIgnoreCase(role)) {
                 return "redirect:/admin/dashboard";
-            } else if ("USER".equalsIgnoreCase(role)) {
+            }
+
+            else if ("USER".equalsIgnoreCase(role)) {
                 return "redirect:/properties";
             }else {
                 logger.warn("Unknown role {} for user {}, redirecting to login", role, username);

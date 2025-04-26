@@ -326,13 +326,25 @@
 <!--                        </form>-->
 <!--                    </td>-->
                     <td>
-                        <form method="post" action="/admin/change-role" th:if="${user.role != 'ADMIN'}"
+                        <form method="post" action="/admin/change-role" th:if="${user.role != 'ADMIN' }"
                               onsubmit="return confirm('Are you sure you want to make ' + '${user.username}' + ' an admin?');">
                             <input type="hidden" name="userId" th:value="${user.id}" />
                             <input type="hidden" name="page" th:value="${users.number}" />
                             <input type="hidden" name="section" value="users">
                             <input type="submit" value="Make Admin" class="btn btn-primary btn-sm" />
                         </form>
+                        <!-- change role to user  -->
+                        <form th:if="${user.role == 'ADMIN'}"
+                              method="post" th:action="@{/admin/change-role-to-user}"
+                              onsubmit="return confirm('Are you sure you want to demote ' + '${user.username}' + ' to user?');"
+                              style="display:inline;">
+                            <input type="hidden" name="userId" th:value="${user.id}" />
+                            <input type="hidden" name="page" th:value="${users.number}" />
+                            <input type="hidden" name="section" value="users" />
+                            <input type="submit" value="Make User" class="btn btn-warning btn-sm" />
+                        </form>
+
+
                         <span th:if="${user.role == 'ADMIN'}">Already Admin</span>
                     </td>
                 </tr>

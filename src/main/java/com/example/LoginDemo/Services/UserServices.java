@@ -199,6 +199,8 @@ public class UserServices {
     public void changeUserRole(Long userId, String newRole) {
         logger.debug("Changing role for user ID: {} to {}", userId, newRole);
         UserEntity user = userRepository.findById(userId).orElse(null);
+        // Prevent changing the role of a SUPER_ADMIN
+
         if (user != null) {
             user.setRole(newRole);
             userRepository.save(user);

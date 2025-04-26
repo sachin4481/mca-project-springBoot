@@ -166,6 +166,40 @@ public class AdminController {
     }
 
 
+    //change role to the user
+    @PostMapping("/change-role-to-user")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String changeToUserRole(@RequestParam("userId") Long userId,
+                                   @RequestParam(defaultValue = "0") int page,
+                                   Model model) {
+        try {
+            userServices.changeUserRole(userId, "USER");
+            model.addAttribute("message", "User role changed to USER!");
+        } catch (RuntimeException e) {
+            model.addAttribute("error", e.getMessage());
+        }
+
+        Page<UserEntity> usersPage = userRepository.findAll(PageRequest.of(page, 10));
+        Page<PropertyInfo> propertyPage = propertyInfoRepository.findAll(PageRequest.of(page, 10));
+        model.addAttribute("categories", propertyCatRepository.findAll());
+        model.addAttribute("users", usersPage);
+        model.addAttribute("properties", propertyPage);
+        model.addAttribute("complaints", complaintServices.getAllComplaints());
+        model.addAttribute("reportGenerated", false);
+        model.addAttribute("section", "users");
+        return "admin";
+    }
+
+
+
+
+
+
+
+
+
+
+
     @GetMapping("/report")
     public String showReportForm(Model model) {
         model.addAttribute("reportGenerated", false);
