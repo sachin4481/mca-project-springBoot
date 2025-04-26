@@ -8,6 +8,7 @@ import com.example.LoginDemo.Services.ComplaintServices;
 import com.example.LoginDemo.Services.PropertyInfoService;
 import com.example.LoginDemo.Services.PropertyServices;
 import com.example.LoginDemo.Services.UserServices;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.springframework.http.ContentDisposition;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -30,12 +31,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Month;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -360,87 +360,196 @@ public class AdminController {
 //    }
 
 
-    private byte[] generatePdfReport(List<PropertyInfo> properties, int month, int year, Long categoryId, boolean soldOnly) throws IOException {
-        try (PDDocument document = new PDDocument()) {
-            float margin = 50;
-            float rowHeight = 20;
-            float yStart = 650;
-            float nextY = yStart;
-            int propertyIndex = 0;
+//    private byte[] generatePdfReport(List<PropertyInfo> properties, int month, int year, Long categoryId, boolean soldOnly) throws IOException {
+//        try (PDDocument document = new PDDocument()) {
+//            float margin = 50;
+//            float rowHeight = 20;
+//            float yStart = 650;
+//            float nextY = yStart;
+//            int propertyIndex = 0;
+//
+//            PDPage currentPage = new PDPage();
+//            document.addPage(currentPage);
+//            PDPageContentStream contentStream = new PDPageContentStream(document, currentPage);
+//
+//            PDType1Font titleFont = PDType1Font.HELVETICA_BOLD;
+//            PDType1Font headerFont = PDType1Font.HELVETICA_BOLD;
+//            PDType1Font bodyFont = PDType1Font.HELVETICA;
+//
+//            contentStream.beginText();
+//            contentStream.setFont(titleFont, 16);
+//            contentStream.newLineAtOffset(100, 750);
+//            String title = "Property Management System - Monthly Report";
+//            if (categoryId != null || soldOnly) {
+//                title += " (Filtered)";
+//            }
+//            contentStream.showText(title);
+//            contentStream.endText();
+//
+//            contentStream.beginText();
+//            contentStream.setFont(titleFont, 14);
+//            contentStream.newLineAtOffset(100, 720);
+//            String subtitle = "Report for " + Month.of(month).name() + " " + year;
+//            if (categoryId != null) {
+//                PropertyCat category = propertyCatRepository.findById(categoryId).orElse(null);
+//                subtitle += " - Category: " + (category != null ? category.getName() : "Unknown");
+//            }
+//            if (soldOnly) {
+//                subtitle += " - Sold Properties Only";
+//            }
+//            contentStream.showText(subtitle);
+//            contentStream.endText();
+//
+//            addHeaderContent(contentStream, titleFont, bodyFont, month, year);
+//
+//            float tableWidth = currentPage.getMediaBox().getWidth() - 2 * margin;
+//            float colWidth = tableWidth / 6; // 6 columns including status
+//
+//            while (propertyIndex < properties.size()) {
+//                if (nextY < 50) {
+//                    contentStream.close();
+//                    currentPage = new PDPage();
+//                    document.addPage(currentPage);
+//                    contentStream = new PDPageContentStream(document, currentPage);
+//                    nextY = 750;
+//                }
+//
+//                if (nextY == yStart || nextY == 750) {
+//                    contentStream.setLineWidth(1f);
+//                    drawTableHeader(contentStream, margin, nextY, colWidth, headerFont, 12);
+//                    nextY -= rowHeight;
+//                    contentStream.moveTo(margin, nextY);
+//                    contentStream.lineTo(margin + tableWidth, nextY);
+//                    contentStream.stroke();
+//                }
+//
+//                PropertyInfo property = properties.get(propertyIndex);
+//                drawTableRow(contentStream, margin, nextY, colWidth, tableWidth, rowHeight, bodyFont, property);
+//
+//                nextY -= rowHeight;
+//                contentStream.moveTo(margin, nextY);
+//                contentStream.lineTo(margin + tableWidth, nextY);
+//                contentStream.stroke();
+//
+//                propertyIndex++;
+//            }
+//
+//            contentStream.close();
+//
+//            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+//            document.save(byteArrayOutputStream);
+//            return byteArrayOutputStream.toByteArray();
+//        }
+//    }
+private byte[] generatePdfReport(List<PropertyInfo> properties, int month, int year, Long categoryId, boolean soldOnly) throws IOException {
+    try (PDDocument document = new PDDocument()) {
+        float margin = 50;
+        float rowHeight = 25; // Increased row height
+        float yStart = 700; // Adjusted starting position
+        float nextY = yStart;
+        int propertyIndex = 0;
 
-            PDPage currentPage = new PDPage();
-            document.addPage(currentPage);
-            PDPageContentStream contentStream = new PDPageContentStream(document, currentPage);
+        PDPage currentPage = new PDPage(PDRectangle.A4);
+        document.addPage(currentPage);
+        PDPageContentStream contentStream = new PDPageContentStream(document, currentPage);
 
-            PDType1Font titleFont = PDType1Font.HELVETICA_BOLD;
-            PDType1Font headerFont = PDType1Font.HELVETICA_BOLD;
-            PDType1Font bodyFont = PDType1Font.HELVETICA;
+        // Use better fonts (if available)
+        PDType1Font titleFont = PDType1Font.HELVETICA_BOLD;
+        PDType1Font headerFont = PDType1Font.HELVETICA_BOLD;
+        PDType1Font bodyFont = PDType1Font.HELVETICA;
 
-            contentStream.beginText();
-            contentStream.setFont(titleFont, 16);
-            contentStream.newLineAtOffset(100, 750);
-            String title = "Property Management System - Monthly Report";
-            if (categoryId != null || soldOnly) {
-                title += " (Filtered)";
+        // Add report title
+        contentStream.beginText();
+        contentStream.setFont(titleFont, 16);
+        contentStream.newLineAtOffset(margin, nextY);
+        String title = "Property Management System - Monthly Report";
+        if (categoryId != null || soldOnly) {
+            title += " (Filtered)";
+        }
+        contentStream.showText(title);
+        contentStream.endText();
+        nextY -= 30;
+
+        // Add subtitle
+        contentStream.beginText();
+        contentStream.setFont(titleFont, 14);
+        contentStream.newLineAtOffset(margin, nextY);
+        String subtitle = "Report for " + Month.of(month).name() + " " + year;
+        if (categoryId != null) {
+            PropertyCat category = propertyCatRepository.findById(categoryId).orElse(null);
+            subtitle += " - Category: " + (category != null ? category.getName() : "Unknown");
+        }
+        if (soldOnly) {
+            subtitle += " - Sold Properties Only";
+        }
+        contentStream.showText(subtitle);
+        contentStream.endText();
+        nextY -= 25;
+
+        // Add generation date
+        contentStream.beginText();
+        contentStream.setFont(bodyFont, 10);
+        contentStream.newLineAtOffset(margin, nextY);
+        contentStream.showText("Generated on: " + LocalDate.now().toString());
+        contentStream.endText();
+        nextY -= 30;
+
+        float tableWidth = currentPage.getMediaBox().getWidth() - 2 * margin;
+        float[] colWidths = {
+                tableWidth * 0.25f, // Title (25%)
+                tableWidth * 0.15f, // Price (15%)
+                tableWidth * 0.20f, // Location (20%)
+                tableWidth * 0.15f, // Owner (15%)
+                tableWidth * 0.15f, // Date (15%)
+                tableWidth * 0.10f  // Status (10%)
+        };
+
+        while (propertyIndex < properties.size()) {
+            if (nextY < 100) { // Increased bottom margin
+                contentStream.close();
+                currentPage = new PDPage(PDRectangle.A4);
+                document.addPage(currentPage);
+                contentStream = new PDPageContentStream(document, currentPage);
+                nextY = 750;
+
+                // Add header on new page
+                contentStream.beginText();
+                contentStream.setFont(titleFont, 16);
+                contentStream.newLineAtOffset(margin, nextY);
+                contentStream.showText(title + " (continued)");
+                contentStream.endText();
+                nextY -= 30;
             }
-            contentStream.showText(title);
-            contentStream.endText();
 
-            contentStream.beginText();
-            contentStream.setFont(titleFont, 14);
-            contentStream.newLineAtOffset(100, 720);
-            String subtitle = "Report for " + Month.of(month).name() + " " + year;
-            if (categoryId != null) {
-                PropertyCat category = propertyCatRepository.findById(categoryId).orElse(null);
-                subtitle += " - Category: " + (category != null ? category.getName() : "Unknown");
-            }
-            if (soldOnly) {
-                subtitle += " - Sold Properties Only";
-            }
-            contentStream.showText(subtitle);
-            contentStream.endText();
-
-            addHeaderContent(contentStream, titleFont, bodyFont, month, year);
-
-            float tableWidth = currentPage.getMediaBox().getWidth() - 2 * margin;
-            float colWidth = tableWidth / 6; // 6 columns including status
-
-            while (propertyIndex < properties.size()) {
-                if (nextY < 50) {
-                    contentStream.close();
-                    currentPage = new PDPage();
-                    document.addPage(currentPage);
-                    contentStream = new PDPageContentStream(document, currentPage);
-                    nextY = 750;
-                }
-
-                if (nextY == yStart || nextY == 750) {
-                    contentStream.setLineWidth(1f);
-                    drawTableHeader(contentStream, margin, nextY, colWidth, headerFont, 12);
-                    nextY -= rowHeight;
-                    contentStream.moveTo(margin, nextY);
-                    contentStream.lineTo(margin + tableWidth, nextY);
-                    contentStream.stroke();
-                }
-
-                PropertyInfo property = properties.get(propertyIndex);
-                drawTableRow(contentStream, margin, nextY, colWidth, tableWidth, rowHeight, bodyFont, property);
-
+            if (propertyIndex == 0 || nextY == 750) {
+                // Draw table header
+                drawTableHeader(contentStream, margin, nextY, colWidths, headerFont, 12);
                 nextY -= rowHeight;
+                contentStream.setLineWidth(1f);
                 contentStream.moveTo(margin, nextY);
                 contentStream.lineTo(margin + tableWidth, nextY);
                 contentStream.stroke();
-
-                propertyIndex++;
             }
 
-            contentStream.close();
+            PropertyInfo property = properties.get(propertyIndex);
+            drawTableRow(contentStream, margin, nextY, colWidths, rowHeight, bodyFont, property);
 
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            document.save(byteArrayOutputStream);
-            return byteArrayOutputStream.toByteArray();
+            nextY -= rowHeight;
+            contentStream.setLineWidth(0.5f);
+            contentStream.moveTo(margin, nextY);
+            contentStream.lineTo(margin + tableWidth, nextY);
+            contentStream.stroke();
+
+            propertyIndex++;
         }
+
+        contentStream.close();
+
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        document.save(byteArrayOutputStream);
+        return byteArrayOutputStream.toByteArray();
     }
+}
 
     private void addHeaderContent(PDPageContentStream contentStream, PDType1Font titleFont,
                                   PDType1Font bodyFont, int month, int year) throws IOException {
@@ -451,99 +560,174 @@ public class AdminController {
         contentStream.endText();
     }
 
-    private void drawTableHeader(PDPageContentStream contentStream, float margin, float y,
-                                 float colWidth, PDType1Font font, int fontSize) throws IOException {
+//    private void drawTableHeader(PDPageContentStream contentStream, float margin, float y,
+//                                 float colWidth, PDType1Font font, int fontSize) throws IOException {
+//        contentStream.beginText();
+//        contentStream.setFont(font, fontSize);
+//        contentStream.newLineAtOffset(margin + 5, y + 5);
+//        contentStream.showText("Title");
+//        contentStream.endText();
+//
+//        contentStream.beginText();
+//        contentStream.setFont(font, fontSize);
+//        contentStream.newLineAtOffset(margin + colWidth + 5, y + 5);
+//        contentStream.showText("Price");
+//        contentStream.endText();
+//
+//        contentStream.beginText();
+//        contentStream.setFont(font, fontSize);
+//        contentStream.newLineAtOffset(margin + 2 * colWidth + 5, y + 5);
+//        contentStream.showText("Location");
+//        contentStream.endText();
+//
+//        contentStream.beginText();
+//        contentStream.setFont(font, fontSize);
+//        contentStream.newLineAtOffset(margin + 3 * colWidth + 5, y + 5);
+//        contentStream.showText("Owner");
+//        contentStream.endText();
+//
+//        contentStream.beginText();
+//        contentStream.setFont(font, fontSize);
+//        contentStream.newLineAtOffset(margin + 4 * colWidth + 5, y + 5);
+//        contentStream.showText("Date");
+//        contentStream.endText();
+//
+//        contentStream.beginText();
+//        contentStream.setFont(font, fontSize);
+//        contentStream.newLineAtOffset(margin + 5 * colWidth + 5, y + 5);
+//        contentStream.showText("Status");
+//        contentStream.endText();
+//    }
+private void drawTableHeader(PDPageContentStream contentStream, float margin, float y,
+                             float[] colWidths, PDType1Font font, int fontSize) throws IOException {
+    // Draw header background
+    contentStream.setNonStrokingColor(200, 200, 200); // Light gray
+    contentStream.addRect(margin, y - 20,
+            colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + colWidths[5],
+            20);
+    contentStream.fill();
+    contentStream.setNonStrokingColor(0, 0, 0); // Reset to black
+
+    // Draw column headers
+    float currentX = margin;
+
+    String[] headers = {"Title", "Price", "Location", "Owner", "Date", "Status"};
+    for (int i = 0; i < headers.length; i++) {
         contentStream.beginText();
         contentStream.setFont(font, fontSize);
-        contentStream.newLineAtOffset(margin + 5, y + 5);
-        contentStream.showText("Title");
+        contentStream.newLineAtOffset(currentX + 5, y - 15);
+        contentStream.showText(headers[i]);
         contentStream.endText();
 
-        contentStream.beginText();
-        contentStream.setFont(font, fontSize);
-        contentStream.newLineAtOffset(margin + colWidth + 5, y + 5);
-        contentStream.showText("Price");
-        contentStream.endText();
-
-        contentStream.beginText();
-        contentStream.setFont(font, fontSize);
-        contentStream.newLineAtOffset(margin + 2 * colWidth + 5, y + 5);
-        contentStream.showText("Location");
-        contentStream.endText();
-
-        contentStream.beginText();
-        contentStream.setFont(font, fontSize);
-        contentStream.newLineAtOffset(margin + 3 * colWidth + 5, y + 5);
-        contentStream.showText("Owner");
-        contentStream.endText();
-
-        contentStream.beginText();
-        contentStream.setFont(font, fontSize);
-        contentStream.newLineAtOffset(margin + 4 * colWidth + 5, y + 5);
-        contentStream.showText("Date");
-        contentStream.endText();
-
-        contentStream.beginText();
-        contentStream.setFont(font, fontSize);
-        contentStream.newLineAtOffset(margin + 5 * colWidth + 5, y + 5);
-        contentStream.showText("Status");
-        contentStream.endText();
-    }
-
-    private void drawTableRow(PDPageContentStream contentStream, float margin, float y,
-                              float colWidth, float tableWidth, float rowHeight,
-                              PDType1Font bodyFont, PropertyInfo property) throws IOException {
-        contentStream.moveTo(margin, y);
-        contentStream.lineTo(margin, y + rowHeight);
-        contentStream.moveTo(margin + colWidth, y);
-        contentStream.lineTo(margin + colWidth, y + rowHeight);
-        contentStream.moveTo(margin + 2 * colWidth, y);
-        contentStream.lineTo(margin + 2 * colWidth, y + rowHeight);
-        contentStream.moveTo(margin + 3 * colWidth, y);
-        contentStream.lineTo(margin + 3 * colWidth, y + rowHeight);
-        contentStream.moveTo(margin + 4 * colWidth, y);
-        contentStream.lineTo(margin + 4 * colWidth, y + rowHeight);
-        contentStream.moveTo(margin + 5 * colWidth, y);
-        contentStream.lineTo(margin + 5 * colWidth, y + rowHeight);
-        contentStream.moveTo(margin + tableWidth, y);
-        contentStream.lineTo(margin + tableWidth, y + rowHeight);
+        // Draw vertical line
+        contentStream.moveTo(currentX, y);
+        contentStream.lineTo(currentX, y - 20);
         contentStream.stroke();
 
-        contentStream.beginText();
-        contentStream.setFont(bodyFont, 10);
-        contentStream.newLineAtOffset(margin + 5, y + 5);
-        contentStream.showText(property.getPropTitle() != null ? property.getPropTitle() : "N/A");
-        contentStream.endText();
+        currentX += colWidths[i];
+    }
 
-        contentStream.beginText();
-        contentStream.setFont(bodyFont, 10);
-        contentStream.newLineAtOffset(margin + colWidth + 5, y + 5);
-        contentStream.showText(property.getPrice() != null ? "$" + property.getPrice().toString() : "N/A");
-        contentStream.endText();
+    // Draw right border
+    contentStream.moveTo(currentX, y);
+    contentStream.lineTo(currentX, y - 20);
+    contentStream.stroke();
+}
 
-        contentStream.beginText();
-        contentStream.setFont(bodyFont, 10);
-        contentStream.newLineAtOffset(margin + 2 * colWidth + 5, y + 5);
-        contentStream.showText(property.getLocation() != null ? property.getLocation() : "N/A");
-        contentStream.endText();
+private void drawTableRow(PDPageContentStream contentStream, float margin, float y,
+                          float[] colWidths, float rowHeight, PDType1Font bodyFont,
+                          PropertyInfo property) throws IOException {
 
-        contentStream.beginText();
-        contentStream.setFont(bodyFont, 10);
-        contentStream.newLineAtOffset(margin + 3 * colWidth + 5, y + 5);
-        contentStream.showText(property.getUser() != null ? property.getUser().getUsername() : "N/A");
-        contentStream.endText();
+    float currentX = margin;
 
-        contentStream.beginText();
-        contentStream.setFont(bodyFont, 10);
-        contentStream.newLineAtOffset(margin + 4 * colWidth + 5, y + 5);
-        contentStream.showText(property.getListingDate() != null ?
-                property.getListingDate().toString() : "N/A");
-        contentStream.endText();
+    // Reset to start position
+    currentX = margin;
 
-        contentStream.beginText();
-        contentStream.setFont(bodyFont, 10);
-        contentStream.newLineAtOffset(margin + 5 * colWidth + 5, y + 5);
-        contentStream.showText(property.getStatus() != null ? property.getStatus() : "N/A");
-        contentStream.endText();
+    // Title
+    String title = property.getPropTitle() != null ? property.getPropTitle() : "N/A";
+    drawWrappedText(contentStream, title, currentX + 5, y - (rowHeight / 2) + 3  , colWidths[0] - 10, bodyFont, 8);
+    currentX += colWidths[0];
+
+    // Price (increased width)
+    String price = property.getPrice() != null ?
+            String.format("Rs.%,.2f", property.getPrice()) : "N/A";
+    contentStream.beginText();
+    contentStream.setFont(bodyFont, 10);
+    contentStream.newLineAtOffset(currentX + 5, y - 15);
+    contentStream.showText(price);
+    contentStream.endText();
+    currentX += colWidths[2];
+
+    // Location (decreased width)
+    String location = property.getLocation() != null ? property.getLocation() : "N/A";
+    drawWrappedText(contentStream, location, currentX + 5, y - 15, colWidths[2] - 10, bodyFont, 10);
+    currentX += colWidths[1];
+
+    // Owner
+    String owner = property.getUser() != null ? property.getUser().getUsername() : "N/A";
+    contentStream.beginText();
+    contentStream.setFont(bodyFont, 10);
+    contentStream.newLineAtOffset(currentX + 5, y - 15);
+    contentStream.showText(owner);
+    contentStream.endText();
+    currentX += colWidths[3];
+
+    // Date
+    String date = formatDate(property.getListingDate());
+    contentStream.beginText();
+    contentStream.setFont(bodyFont, 10);
+    contentStream.newLineAtOffset(currentX + 5, y - 15);
+    contentStream.showText(date);
+    contentStream.endText();
+    currentX += colWidths[4];
+
+    // Status (increased width)
+    String status = property.getStatus() != null ?
+            (property.getStatus().equals("AVAILABLE") ? "AVAILABLE" : property.getStatus())
+            : "N/A";
+    contentStream.beginText();
+    contentStream.setFont(bodyFont, 10);
+    contentStream.newLineAtOffset(currentX + 5, y - 15);
+    contentStream.showText(status);
+    contentStream.endText();
+}
+
+
+    private String formatDate(Date date) {
+        if (date == null) {
+            return "N/A";
+        }
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+            return sdf.format(date);
+        } catch (Exception e) {
+            return "N/A";
+        }
+    }
+    private void drawWrappedText(PDPageContentStream contentStream, String text, float x, float y,
+                                 float maxWidth, PDType1Font font, int fontSize) throws IOException {
+        List<String> lines = new ArrayList<>();
+        String[] words = text.split(" ");
+        StringBuilder currentLine = new StringBuilder();
+
+        for (String word : words) {
+            String testLine = currentLine.length() > 0 ? currentLine + " " + word : word;
+            float width = font.getStringWidth(testLine) * fontSize / 1000f;
+
+            if (width < maxWidth) {
+                currentLine.append(currentLine.length() > 0 ? " " + word : word);
+            } else {
+                lines.add(currentLine.toString());
+                currentLine = new StringBuilder(word);
+            }
+        }
+        lines.add(currentLine.toString());
+
+        for (int i = 0; i < lines.size(); i++) {
+            contentStream.beginText();
+            contentStream.setFont(font, fontSize);
+            contentStream.newLineAtOffset(x, y - (i * (fontSize + 2)));
+            contentStream.showText(lines.get(i));
+            contentStream.endText();
+        }
     }
 }

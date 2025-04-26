@@ -31,7 +31,6 @@ public class InquiryService {
         UserEntity user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
-        // Check if inquiry already exists to prevent duplicates
         if (!propInquiryRepository.existsActiveInquiryByPropertyAndUser(property, user)) {
             PropInquiry inquiry = new PropInquiry();
             inquiry.setProperty(property);
