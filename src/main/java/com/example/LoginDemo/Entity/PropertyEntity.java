@@ -16,22 +16,26 @@ public class PropertyEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-
     private Long id;
+
     @Column(length = 20)
     private String title;
 
 
     private String description;
+
     @Column(length = 20)
     private String location;
+
     @Column(length = 10)
     private double price;
 
     @Column(name = "pincode" ,length = 6)
     private String pincode;
+
     @Column(length = 15)
     private Double area;
+
     @Column(length = 15)
     private String status;
 
