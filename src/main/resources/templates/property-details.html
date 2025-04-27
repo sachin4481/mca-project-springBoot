@@ -142,6 +142,7 @@
       border-radius: 0.75rem;
       overflow: hidden;
       position: relative;
+      cursor: pointer;
     }
 
     .gallery-image img {
@@ -290,6 +291,124 @@
       transform: translateY(0);
     }
 
+    /* Image Slider Styles */
+    .image-slider-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.9);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .image-slider-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .image-slider-container {
+      position: relative;
+      width: 90%;
+      max-width: 1200px;
+      height: 90%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .slider-close-btn {
+      position: absolute;
+      top: -40px;
+      right: 0;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 2rem;
+      cursor: pointer;
+      z-index: 1001;
+    }
+
+    .slider-close-btn i {
+      color: white;
+    }
+
+    .slider-main-image {
+      flex-grow: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .slider-main-image img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    .slider-thumbnails {
+      display: flex;
+      gap: 10px;
+      padding: 10px 0;
+      overflow-x: auto;
+    }
+
+    .slider-thumbnail {
+      width: 80px;
+      height: 60px;
+      cursor: pointer;
+      opacity: 0.6;
+      transition: opacity 0.3s ease;
+    }
+
+    .slider-thumbnail:hover, .slider-thumbnail.active {
+      opacity: 1;
+    }
+
+    .slider-thumbnail img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .slider-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 20px;
+      box-sizing: border-box;
+    }
+
+    .slider-nav-btn {
+      background: rgba(255, 255, 255, 0.5);
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .slider-nav-btn:hover {
+      background: rgba(255, 255, 255, 0.8);
+    }
+
+    .slider-nav-btn i {
+      color: var(--text-primary);
+    }
+
     @media (max-width: 768px) {
       .property-meta {
         grid-template-columns: 1fr;
@@ -302,6 +421,16 @@
       .btn {
         width: 100%;
         justify-content: center;
+      }
+
+      .image-slider-container {
+        width: 95%;
+        height: 80%;
+      }
+
+      .slider-close-btn {
+        top: -30px;
+        right: -10px;
       }
     }
   </style>
@@ -345,8 +474,6 @@
       </div>
     </div>
   </div>
-
-
 
   <div class="content-section">
     <h2 class="section-title">
@@ -428,20 +555,43 @@
       Property Images
     </h2>
     <div class="image-gallery">
-      <div class="gallery-image" th:if="${propertyInfo.img1}">
+      <div class="gallery-image" th:if="${propertyInfo.img1}" onclick="openImageSlider(0)">
         <img th:src="@{${propertyInfo.img1}}" alt="Property Image 1">
       </div>
-      <div class="gallery-image" th:if="${propertyInfo.img2}">
+      <div class="gallery-image" th:if="${propertyInfo.img2}" onclick="openImageSlider(1)">
         <img th:src="@{${propertyInfo.img2}}" alt="Property Image 2">
       </div>
-      <div class="gallery-image" th:if="${propertyInfo.img3}">
+      <div class="gallery-image" th:if="${propertyInfo.img3}" onclick="openImageSlider(2)">
         <img th:src="@{${propertyInfo.img3}}" alt="Property Image 3">
       </div>
-      <div class="gallery-image" th:if="${propertyInfo.img4}">
+      <div class="gallery-image" th:if="${propertyInfo.img4}" onclick="openImageSlider(3)">
         <img th:src="@{${propertyInfo.img4}}" alt="Property Image 4">
       </div>
-      <div class="gallery-image" th:if="${propertyInfo.img5}">
+      <div class="gallery-image" th:if="${propertyInfo.img5}" onclick="openImageSlider(4)">
         <img th:src="@{${propertyInfo.img5}}" alt="Property Image 5">
+      </div>
+    </div>
+  </div>
+
+  <!-- Image Slider Overlay -->
+  <div class="image-slider-overlay" id="imageSliderOverlay">
+    <div class="image-slider-container">
+      <button class="slider-close-btn" onclick="closeImageSlider()">
+        <i data-lucide="x"></i>
+      </button>
+      <div class="slider-main-image">
+        <img id="sliderMainImage" src="" alt="Property Image">
+      </div>
+      <div class="slider-nav">
+        <button class="slider-nav-btn" onclick="navigateSlider(-1)">
+          <i data-lucide="chevron-left"></i>
+        </button>
+        <button class="slider-nav-btn" onclick="navigateSlider(1)">
+          <i data-lucide="chevron-right"></i>
+        </button>
+      </div>
+      <div class="slider-thumbnails" id="sliderThumbnails">
+        <!-- Thumbnails will be added dynamically -->
       </div>
     </div>
   </div>
@@ -471,8 +621,6 @@
   </div>
 
   <div class="favorite-actions" sec:authorize="isAuthenticated()">
-
-    <!-- Add to Favorites Form -->
     <form th:action="@{/properties/favorite/add}" method="post"
           th:unless="${#lists.contains(favorites, propertyInfo)}">
       <input type="hidden" name="propId" th:value="${propertyInfo.propId}">
@@ -481,7 +629,6 @@
       </button>
     </form>
 
-    <!-- Remove from Favorites Form -->
     <form th:action="@{/properties/favorite/remove}" method="post"
           th:if="${#lists.contains(favorites, propertyInfo)}">
       <input type="hidden" name="propId" th:value="${propertyInfo.propId}">
@@ -527,6 +674,93 @@
       successMessage.classList.remove('show');
     }, 3000);
   }
+
+  // Image Slider Functionality
+  let currentImageIndex = 0;
+  const propertyImages = [];
+
+  // Collect all available property images
+  document.querySelectorAll('.gallery-image img').forEach(img => {
+    propertyImages.push(img.src);
+  });
+
+  function openImageSlider(index) {
+    currentImageIndex = index;
+    const sliderOverlay = document.getElementById('imageSliderOverlay');
+    const mainImage = document.getElementById('sliderMainImage');
+    const thumbnailsContainer = document.getElementById('sliderThumbnails');
+
+    // Set main image
+    mainImage.src = propertyImages[currentImageIndex];
+
+    // Create thumbnails
+    thumbnailsContainer.innerHTML = '';
+    propertyImages.forEach((imgSrc, idx) => {
+      const thumbnail = document.createElement('div');
+      thumbnail.className = `slider-thumbnail ${idx === currentImageIndex ? 'active' : ''}`;
+      thumbnail.innerHTML = `<img src="${imgSrc}" alt="Thumbnail ${idx + 1}" onclick="goToImage(${idx})">`;
+      thumbnailsContainer.appendChild(thumbnail);
+    });
+
+    sliderOverlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeImageSlider() {
+    const sliderOverlay = document.getElementById('imageSliderOverlay');
+    sliderOverlay.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  function navigateSlider(direction) {
+    currentImageIndex += direction;
+
+    // Wrap around if at beginning or end
+    if (currentImageIndex < 0) {
+      currentImageIndex = propertyImages.length - 1;
+    } else if (currentImageIndex >= propertyImages.length) {
+      currentImageIndex = 0;
+    }
+
+    // Update main image
+    document.getElementById('sliderMainImage').src = propertyImages[currentImageIndex];
+
+    // Update active thumbnail
+    document.querySelectorAll('.slider-thumbnail').forEach((thumb, idx) => {
+      thumb.classList.toggle('active', idx === currentImageIndex);
+    });
+  }
+
+  function goToImage(index) {
+    currentImageIndex = index;
+    document.getElementById('sliderMainImage').src = propertyImages[currentImageIndex];
+
+    // Update active thumbnail
+    document.querySelectorAll('.slider-thumbnail').forEach((thumb, idx) => {
+      thumb.classList.toggle('active', idx === currentImageIndex);
+    });
+  }
+
+  // Close slider when clicking outside the image
+  document.getElementById('imageSliderOverlay').addEventListener('click', function(e) {
+    if (e.target === this) {
+      closeImageSlider();
+    }
+  });
+
+  // Keyboard navigation
+  document.addEventListener('keydown', function(e) {
+    const sliderOverlay = document.getElementById('imageSliderOverlay');
+    if (!sliderOverlay.classList.contains('active')) return;
+
+    if (e.key === 'Escape') {
+      closeImageSlider();
+    } else if (e.key === 'ArrowLeft') {
+      navigateSlider(-1);
+    } else if (e.key === 'ArrowRight') {
+      navigateSlider(1);
+    }
+  });
 </script>
 </body>
 </html>
