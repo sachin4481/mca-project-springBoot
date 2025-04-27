@@ -81,28 +81,37 @@ public class AdminController {
     private PropertyRepository propertyRepository;
 
 
-    //admin home page
+
+
+
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/dashboard")
-    public String adminDashboard(Model model, @RequestParam(defaultValue = "0") int page) {
-
-        List<UserEntity> users = userServices.getAllUser();
-        List<PropertyInfo> properties = propertyInfoService.getAllProperties();
-        List<ComplaintEntity> complaints = complaintServices.getAllComplaints();
-        List<PropertyCat> categories = propertyCatRepository.findAll();
-        List<Feedback> feedback=feedbackRepository.findAll();
+    public String adminDashboard(Model model,
+                                 @RequestParam(defaultValue = "0") int page,
+                                 @RequestParam(defaultValue = "overview") String section) {
+        // Populate model attributes
         Page<UserEntity> usersPage = userRepository.findAll(PageRequest.of(page, 10));
         Page<PropertyInfo> propertyPage = propertyInfoRepository.findAll(PageRequest.of(page, 10));
-        model.addAttribute("categories", categories);
+        List<ComplaintEntity> complaints = complaintServices.getAllComplaints();
+        List<PropertyCat> categories = propertyCatRepository.findAll();
+        List<Feedback> feedbacks = feedbackRepository.findAll();
+
         model.addAttribute("users", usersPage);
         model.addAttribute("properties", propertyPage);
         model.addAttribute("complaints", complaints);
-        model.addAttribute("feedbacks",feedback);
+        model.addAttribute("categories", categories);
+        model.addAttribute("feedbacks", feedbacks);
         model.addAttribute("reportGenerated", false);
+        model.addAttribute("section", section);
+
         return "admin";
-
-
     }
+
+
+
+
+
+
 
     //category management
     @PostMapping("/add-category")
@@ -142,6 +151,7 @@ public class AdminController {
                                    @RequestParam("adminResponse") String adminResponse) {
         complaintServices.resolveComplaint(complaintId, adminResponse);
         return "redirect:/admin/complaints";
+
     }
 
 
@@ -243,11 +253,46 @@ public class AdminController {
     }
 
 
+//    @ExceptionHandler(Exception.class)
+//    public String handleErrors(Exception e, Model model) {
+//        model.addAttribute("error", "An error occurred: " + e.getMessage());
+//        return "admin";
+//    }
+
     @ExceptionHandler(Exception.class)
-    public String handleErrors(Exception e, Model model) {
+    public String handleErrors(Exception e, Model model, @RequestParam(defaultValue = "0") int page) {
+//        logger.error("Unexpected error occurred", e);
         model.addAttribute("error", "An error occurred: " + e.getMessage());
+
+        // Populate model attributes to prevent null errors
+        Page<UserEntity> usersPage = userRepository.findAll(PageRequest.of(page, 10));
+        Page<PropertyInfo> propertyPage = propertyInfoRepository.findAll(PageRequest.of(page, 10));
+        List<ComplaintEntity> complaints = complaintServices.getAllComplaints();
+        List<PropertyCat> categories = propertyCatRepository.findAll();
+        List<Feedback> feedbacks = feedbackRepository.findAll();
+
+        model.addAttribute("users", usersPage);
+        model.addAttribute("properties", propertyPage);
+        model.addAttribute("complaints", complaints);
+        model.addAttribute("categories", categories);
+        model.addAttribute("feedbacks", feedbacks);
+        model.addAttribute("reportGenerated", false);
+        model.addAttribute("section", "overview");
+
         return "admin";
     }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     @PostMapping("/report/download-pdf")

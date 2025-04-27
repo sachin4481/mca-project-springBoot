@@ -278,10 +278,11 @@ public String showComplaintForm(Model model, @AuthenticationPrincipal UserDetail
 
     UserEntity loggedInUser = userServices.findByUsername(userDetails.getUsername());
 
-    List<PropertyInfo> inquiredProperties = propertyServices.getInquiredPropertiesByUserId(loggedInUser.getId());
+//    List<PropertyInfo> inquiredProperties = propertyServices.getInquiredPropertiesByUserId(loggedInUser.getId());
+    List<PropertyInfo> allProperties = propertyServices.getAllProperty();
 
     model.addAttribute("complaint", new ComplaintEntity());
-    model.addAttribute("properties", inquiredProperties); // Only show properties inquired by this user
+    model.addAttribute("properties", allProperties); // Only show properties inquired by this user
 
     return "complaint";
 }
