@@ -9,6 +9,7 @@
   <link rel="stylesheet" th:href="@{/css_main/auth.css}">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
   <style>
     :root {
       --primary: #eab308;
@@ -27,6 +28,7 @@
       color: var(--text-primary);
       margin: 0;
       padding-top: 64px;
+      scroll-behavior: smooth;
     }
 
     .page-container {
@@ -35,12 +37,19 @@
       padding: 0 1rem;
     }
 
+    /* Enhanced styling for property-header */
     .property-header {
       background: white;
       border-radius: 1rem;
       padding: 2rem;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
       margin-bottom: 2rem;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .property-header:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
     }
 
     .property-title {
@@ -70,6 +79,12 @@
       padding: 1rem;
       background: var(--bg-light);
       border-radius: 0.75rem;
+      transition: transform 0.2s ease, background-color 0.2s ease;
+    }
+
+    .meta-item:hover {
+      transform: translateY(-3px);
+      background-color: #f1f5f9;
     }
 
     .meta-item i {
@@ -82,12 +97,25 @@
       font-weight: 600;
     }
 
+    .meta-item.price:hover {
+      background: #fde68a;
+    }
+
+    /* Enhanced content sections */
     .content-section {
       background: white;
       border-radius: 1rem;
       padding: 2rem;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
       margin-bottom: 2rem;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      opacity: 0;
+      animation: fadeInUp 0.5s ease forwards;
+    }
+
+    .content-section:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
     }
 
     .section-title {
@@ -98,6 +126,23 @@
       display: flex;
       align-items: center;
       gap: 0.75rem;
+      position: relative;
+      padding-bottom: 0.75rem;
+    }
+
+    .section-title::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 50px;
+      height: 3px;
+      background-color: var(--primary);
+      transition: width 0.3s ease;
+    }
+
+    .content-section:hover .section-title::after {
+      width: 100px;
     }
 
     .section-title i {
@@ -114,6 +159,15 @@
       display: flex;
       flex-direction: column;
       gap: 0.5rem;
+      padding: 1rem;
+      border-radius: 0.75rem;
+      background: var(--bg-light);
+      transition: transform 0.2s ease, background-color 0.2s ease;
+    }
+
+    .detail-item:hover {
+      transform: translateY(-3px);
+      background-color: #f1f5f9;
     }
 
     .detail-label {
@@ -126,10 +180,15 @@
     }
 
     .property-description {
-      line-height: 1.7;
+      line-height: 1.8;
       color: var(--text-secondary);
+      padding: 1rem;
+      border-radius: 0.75rem;
+      background: var(--bg-light);
+      font-size: 1.05rem;
     }
 
+    /* Enhanced image gallery */
     .image-gallery {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -143,19 +202,43 @@
       overflow: hidden;
       position: relative;
       cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .gallery-image::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,0.3));
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .gallery-image:hover {
+      transform: scale(1.03);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .gallery-image:hover::after {
+      opacity: 1;
     }
 
     .gallery-image img {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      transition: transform 0.3s ease;
+      transition: transform 0.5s ease;
     }
 
     .gallery-image:hover img {
-      transform: scale(1.05);
+      transform: scale(1.08);
     }
 
+    /* Enhanced owner info */
     .owner-info {
       display: grid;
       gap: 1rem;
@@ -168,12 +251,19 @@
       padding: 1rem;
       background: var(--bg-light);
       border-radius: 0.75rem;
+      transition: transform 0.2s ease, background-color 0.2s ease;
+    }
+
+    .contact-item:hover {
+      transform: translateY(-3px);
+      background-color: #f1f5f9;
     }
 
     .contact-item i {
       color: var(--primary);
     }
 
+    /* Enhanced buttons */
     .action-buttons {
       display: flex;
       gap: 1rem;
@@ -188,38 +278,79 @@
       border-radius: 0.75rem;
       font-weight: 500;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.3s ease;
       border: none;
       text-decoration: none;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 5px;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.5);
+      opacity: 0;
+      border-radius: 100%;
+      transform: scale(1, 1) translate(-50%);
+      transform-origin: 50% 50%;
+    }
+
+    .btn:hover::after {
+      animation: ripple 1s ease-out;
+    }
+
+    @keyframes ripple {
+      0% {
+        transform: scale(0, 0);
+        opacity: 0.5;
+      }
+      100% {
+        transform: scale(20, 20);
+        opacity: 0;
+      }
     }
 
     .btn-primary {
       background: var(--primary);
       color: white;
+      box-shadow: 0 4px 10px rgba(234, 179, 8, 0.3);
     }
 
     .btn-primary:hover {
       background: var(--primary-dark);
+      box-shadow: 0 6px 15px rgba(234, 179, 8, 0.4);
+      transform: translateY(-3px);
     }
 
     .btn-secondary {
       background: var(--secondary);
       color: white;
+      box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
     }
 
     .btn-secondary:hover {
       background: #2563eb;
+      box-shadow: 0 6px 15px rgba(59, 130, 246, 0.4);
+      transform: translateY(-3px);
     }
 
     .btn-back {
       background: var(--text-secondary);
       color: white;
+      box-shadow: 0 4px 10px rgba(100, 116, 139, 0.3);
     }
 
     .btn-back:hover {
       background: var(--text-primary);
+      box-shadow: 0 6px 15px rgba(100, 116, 139, 0.4);
+      transform: translateY(-3px);
     }
 
+    /* Enhanced alerts */
     .alert {
       padding: 1rem 1.5rem;
       border-radius: 0.75rem;
@@ -228,6 +359,8 @@
       display: flex;
       align-items: center;
       gap: 0.75rem;
+      animation: slideInDown 0.5s ease;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
     }
 
     .alert-warning {
@@ -242,6 +375,7 @@
       border: 1px solid #fecaca;
     }
 
+    /* Enhanced favorite actions */
     .favorite-actions {
       margin-bottom: 1.5rem;
     }
@@ -250,24 +384,31 @@
       background: transparent;
       border: 2px solid var(--primary);
       color: var(--primary);
+      box-shadow: 0 4px 10px rgba(234, 179, 8, 0.1);
     }
 
     .btn-outline-primary:hover {
       background: var(--primary);
       color: white;
+      box-shadow: 0 6px 15px rgba(234, 179, 8, 0.2);
+      transform: translateY(-3px);
     }
 
     .btn-outline-danger {
       background: transparent;
       border: 2px solid var(--danger);
       color: var(--danger);
+      box-shadow: 0 4px 10px rgba(220, 38, 38, 0.1);
     }
 
     .btn-outline-danger:hover {
       background: var(--danger);
       color: white;
+      box-shadow: 0 6px 15px rgba(220, 38, 38, 0.2);
+      transform: translateY(-3px);
     }
 
+    /* Enhanced success message */
     .success-message {
       position: fixed;
       bottom: 2rem;
@@ -279,11 +420,11 @@
       display: flex;
       align-items: center;
       gap: 0.75rem;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
       z-index: 50;
       opacity: 0;
       transform: translateY(1rem);
-      transition: all 0.3s ease;
+      transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
     }
 
     .success-message.show {
@@ -291,21 +432,21 @@
       transform: translateY(0);
     }
 
-    /* Image Slider Styles */
+    /* Enhanced Image Slider Styles */
     .image-slider-overlay {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background-color: rgba(0, 0, 0, 0.9);
+      background-color: rgba(0, 0, 0, 0.92);
       display: flex;
       justify-content: center;
       align-items: center;
       z-index: 1000;
       opacity: 0;
       visibility: hidden;
-      transition: all 0.3s ease;
+      transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
     }
 
     .image-slider-overlay.active {
@@ -320,11 +461,19 @@
       height: 90%;
       display: flex;
       flex-direction: column;
+      opacity: 0;
+      transform: scale(0.9);
+      transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1) 0.1s;
+    }
+
+    .image-slider-overlay.active .image-slider-container {
+      opacity: 1;
+      transform: scale(1);
     }
 
     .slider-close-btn {
       position: absolute;
-      top: -40px;
+      top: -50px;
       right: 0;
       background: none;
       border: none;
@@ -332,6 +481,11 @@
       font-size: 2rem;
       cursor: pointer;
       z-index: 1001;
+      transition: transform 0.3s ease;
+    }
+
+    .slider-close-btn:hover {
+      transform: rotate(90deg);
     }
 
     .slider-close-btn i {
@@ -350,25 +504,52 @@
       max-width: 100%;
       max-height: 100%;
       object-fit: contain;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+      transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1);
     }
 
     .slider-thumbnails {
       display: flex;
       gap: 10px;
-      padding: 10px 0;
+      padding: 15px 0;
       overflow-x: auto;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+    }
+
+    .slider-thumbnails::-webkit-scrollbar {
+      height: 5px;
+    }
+
+    .slider-thumbnails::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .slider-thumbnails::-webkit-scrollbar-thumb {
+      background-color: rgba(255, 255, 255, 0.3);
+      border-radius: 10px;
     }
 
     .slider-thumbnail {
-      width: 80px;
-      height: 60px;
+      width: 90px;
+      height: 65px;
       cursor: pointer;
+      border-radius: 5px;
+      overflow: hidden;
       opacity: 0.6;
-      transition: opacity 0.3s ease;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
     }
 
-    .slider-thumbnail:hover, .slider-thumbnail.active {
+    .slider-thumbnail:hover {
+      opacity: 0.9;
+      transform: translateY(-2px);
+    }
+
+    .slider-thumbnail.active {
       opacity: 1;
+      border-color: var(--primary);
+      transform: translateY(-3px);
     }
 
     .slider-thumbnail img {
@@ -386,29 +567,75 @@
       justify-content: space-between;
       padding: 0 20px;
       box-sizing: border-box;
+      pointer-events: none;
     }
 
     .slider-nav-btn {
-      background: rgba(255, 255, 255, 0.5);
+      pointer-events: auto;
+      background: rgba(255, 255, 255, 0.15);
       border: none;
-      width: 40px;
-      height: 40px;
+      width: 50px;
+      height: 50px;
       border-radius: 50%;
       display: flex;
       justify-content: center;
       align-items: center;
       cursor: pointer;
-      transition: background 0.3s ease;
+      transition: all 0.3s ease;
+      opacity: 0.7;
     }
 
     .slider-nav-btn:hover {
-      background: rgba(255, 255, 255, 0.8);
+      background: rgba(255, 255, 255, 0.3);
+      opacity: 1;
+      transform: scale(1.1);
     }
 
     .slider-nav-btn i {
-      color: var(--text-primary);
+      color: white;
     }
 
+    /* Animation keyframes */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes slideInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Animation delays for content sections */
+    .content-section:nth-child(1) {
+      animation-delay: 0.1s;
+    }
+    .content-section:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+    .content-section:nth-child(3) {
+      animation-delay: 0.3s;
+    }
+    .content-section:nth-child(4) {
+      animation-delay: 0.4s;
+    }
+    .content-section:nth-child(5) {
+      animation-delay: 0.5s;
+    }
+
+    /* Responsive tweaks */
     @media (max-width: 768px) {
       .property-meta {
         grid-template-columns: 1fr;
@@ -429,28 +656,106 @@
       }
 
       .slider-close-btn {
-        top: -30px;
+        top: -40px;
         right: -10px;
       }
+
+      .slider-nav-btn {
+        width: 40px;
+        height: 40px;
+      }
+    }
+
+    /* Scroll to top button */
+    .scroll-top {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: var(--primary);
+      color: white;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(234, 179, 8, 0.3);
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+      z-index: 40;
+    }
+
+    .scroll-top.visible {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .scroll-top:hover {
+      background: var(--primary-dark);
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(234, 179, 8, 0.4);
     }
   </style>
 </head>
 <body>
 <!-- Header -->
-<header th:replace="~{fragments :: header}" />
+<header class="fixed-header">
+  <div class="container">
+    <div class="logo">
+      <a href="/properties" style="all: unset; cursor: pointer; display: flex;">
+        Property<span class="logo-nest">Nest
+            <i data-lucide="home" class="logo-icon"></i>
+          </span>
+      </a>
+    </div>
+    <nav class="nav-menu">
+      <a th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}"class="nav-link" href="/admin/dashboard">Admin Panel</a>
+      <a href="/properties" class="nav-link">Home</a>
+      <!--        <a href="/properties/list" class="nav-link">List Property</a>-->
+      <a href="/user/add" class="nav-link">Add Property</a>
+      <a href="/user/properties" class="nav-link">My Properties</a>
+      <a href="/my-submitted-inquiries" class="nav-link">Inquiries</a>
+
+      <a href="/user/favorites" class="nav-link">Favorites</a>
+
+
+      <a href="/user/complaint" class="nav-link">Submit Complaint</a>
+
+
+
+      <!-- Show Username & Logout Button if Logged In -->
+      <span th:if="${session.username}" style="display: contents">
+
+            <a th:href="@{/user/profile}" th:text="${session.username}" class="nav-link username-link" style="color: gold; font-weight: bold;"></a>
+            <span>
+                <form th:action="@{/logout}" method="post" style="display: inline;">
+                  <button type="submit" class="logout-btn">Logout</button>
+                </form>
+              </span>
+          </span>
+
+      <!-- Show Login/Register if Not Logged In -->
+      <span th:if="${session.username == null}">
+            <a href="/login"><button class="btn-primary">Login</button></a>
+          </span>
+    </nav>
+  </div>
+</header>
 
 <div class="page-container">
-  <div th:if="${successMessage}" class="alert alert-warning" role="alert">
+  <div th:if="${successMessage}" class="alert alert-warning animate__animated animate__fadeInDown" role="alert">
     <i data-lucide="check-circle"></i>
     <span th:text="${successMessage}"></span>
   </div>
 
-  <div th:if="${errorMessage}" class="alert alert-danger" role="alert">
+  <div th:if="${errorMessage}" class="alert alert-danger animate__animated animate__fadeInDown" role="alert">
     <i data-lucide="alert-circle"></i>
     <span th:text="${errorMessage}"></span>
   </div>
 
-  <div class="property-header">
+  <div class="property-header animate__animated animate__fadeInDown">
     <h1 class="property-title">
       <i data-lucide="home"></i>
       <span th:text="${propertyInfo.propTitle}"></span>
@@ -535,7 +840,7 @@
   </div>
 
   <th:block th:if="${propertyDetails == null}">
-    <div class="alert alert-warning">
+    <div class="alert alert-warning animate__animated animate__fadeIn">
       <i data-lucide="alert-triangle"></i>
       <span>Sorry! The owner has not provided additional details about this property.</span>
     </div>
@@ -763,6 +1068,50 @@
     }
   });
 </script>
-<footer th:replace="fragments :: footer" />
+<footer class="footer">
+  <div class="container">
+    <div class="footer-content">
+      <div class="footer-section">
+        <h3>Quick Links</h3>
+        <ul class="footer-links">
+          <li><a href="/properties">Home</a></li>
+          <li><a href="/user/add">Add Property</a></li>
+          <li><a href="/my-submitted-inquiries">Inquiries</a></li>
+          <li><a th:href="@{/user/profile}" th:text="${session.username}" style="color: gold; font-weight: bold;"></a></li>
+        </ul>
+      </div>
+
+      <div class="footer-section">
+        <h3>Properties</h3>
+        <ul class="footer-links">
+          <li><a href="/properties">!!! Search now !!!</a></li>
+          <li><a href="/user/properties">My properties</a></li>
+          <li><a href="/user/complaint">Submit Complaint</a></li>
+          <li><a href="/feedback">Feedback</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-section">
+        <div class="footer-contact">
+          <div class="logo">
+            <a href="/properties" style="all: unset; cursor: pointer; display: flex;">
+              Property<span style="color: #fff;" class="logo-nest">Nest
+                            <i data-lucide="home" class="logo-icon"></i>
+                                    </span>
+            </a>
+          </div>
+          <br/>
+          <p><i data-lucide="map-pin"></i> 123 Property Street, Real Estate City, 380015</p>
+          <p><i data-lucide="phone"></i> +91 98765 43210</p>
+          <p><i data-lucide="mail"></i> contact@propertynest.com</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; 2025 PropertyNest. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
 </body>
 </html>
