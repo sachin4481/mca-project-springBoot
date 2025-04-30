@@ -144,7 +144,7 @@ public class AdminController {
     public String resolveComplaint(@RequestParam("complaintId") Long complaintId,
                                    @RequestParam("adminResponse") String adminResponse) {
         complaintServices.resolveComplaint(complaintId, adminResponse);
-        return "redirect:/admin/complaints";
+        return "redirect:/admin/dashboard";
     }
 
 
@@ -207,7 +207,12 @@ public class AdminController {
     public String showReportForm(Model model) {
         model.addAttribute("reportGenerated", false);
         model.addAttribute("categories", propertyCatRepository.findAll());
-        return "report"; // Return to the report template
+        model.addAttribute("selectedCategoryId", null);
+        model.addAttribute("reportProperties", Collections.emptyList());
+        model.addAttribute("reportMonth", null);
+        model.addAttribute("reportYear", null);
+        model.addAttribute("soldOnly", false);
+        return "report";
     }
 
     // Generate report
@@ -226,9 +231,19 @@ public class AdminController {
         model.addAttribute("selectedCategoryId", categoryId);
         model.addAttribute("soldOnly", soldOnly);
         model.addAttribute("reportGenerated", true);
-        model.addAttribute("categories", propertyCatRepository.findAll());
 
-        return "report"; // Return to the report template with generated data
+        List<PropertyCat> categories = propertyCatRepository.findAll();
+        model.addAttribute("categories", categories);
+
+        // ✅ Add selected category name
+        if (categoryId != null) {
+            categories.stream()
+                    .filter(cat -> cat.getId().equals(categoryId))
+                    .findFirst()
+                    .ifPresent(cat -> model.addAttribute("selectedCategoryName", cat.getName()));
+        }
+
+        return "report"; // Return to the report template
     }
 
     // Download PDF report

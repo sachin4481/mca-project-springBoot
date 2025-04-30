@@ -557,6 +557,7 @@
     <div class="image-gallery">
       <div class="gallery-image" th:if="${propertyInfo.img1}" onclick="openImageSlider(0)">
         <img th:src="@{${propertyInfo.img1}}" alt="Property Image 1">
+
       </div>
       <div class="gallery-image" th:if="${propertyInfo.img2}" onclick="openImageSlider(1)">
         <img th:src="@{${propertyInfo.img2}}" alt="Property Image 2">
@@ -762,5 +763,6 @@
     }
   });
 </script>
+<footer th:replace="fragments :: footer" />
 </body>
 </html>

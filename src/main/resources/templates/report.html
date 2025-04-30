@@ -196,7 +196,7 @@
           <span th:text="${#temporals.format(#temporals.create(reportYear, reportMonth, 1), 'MMMM')}"></span>
           <span th:text="${reportYear}"></span>
           <span th:if="${selectedCategoryId != null}">
-                        - Category: <span th:text="${categories.?[id == selectedCategoryId][0]?.name}"></span>
+    - Category: <span th:text="${selectedCategoryName}"></span>
                     </span>
           <span th:if="${soldOnly}"> - Sold Only</span>
         </h3>
@@ -216,7 +216,7 @@
           <thead class="table-dark">
           <tr>
             <th>Title</th>
-            <th>Price</th>
+            <th>Price (INR)</th>
             <th>Location</th>
             <th>Owner</th>
             <th>Created Date</th>
@@ -226,7 +226,7 @@
           <tbody>
           <tr th:each="property : ${reportProperties}">
             <td th:text="${property.propTitle} ?: 'N/A'"></td>
-            <td th:text="${property.price} ?: 'N/A'"></td>
+            <td th:text="${#numbers.formatDecimal(property.price, 0, 'COMMA', 0, 'POINT')} ?: 'N/A'"></td>
             <td th:text="${property.location} ?: 'N/A'"></td>
             <td th:text="${property.user?.username} ?: 'N/A'"></td>
             <td th:text="${property.listingDate != null ? #dates.format(property.listingDate, 'yyyy-MM-dd') : 'N/A'}"></td>

@@ -85,12 +85,10 @@ public class PropertyController {
         Pageable pageable = PageRequest.of(0, 4);
         List<PropertyInfo> recentListings = propertyInfoRepository.findTop4RecentProperties(pageable);
 
-        // Debugging: Print properties
-        System.out.println("Fetched Recent Listings: " + recentListings);
-
         model.addAttribute("recentListings", recentListings);
         return "properties";
     }
+
 
 @PostMapping("/search")
 public String searchProperties(@RequestParam(required = false) Long category,//new added code
@@ -105,19 +103,18 @@ public String searchProperties(@RequestParam(required = false) Long category,//n
             .filter(p -> !"SOLD".equalsIgnoreCase(p.getStatus()))
             .collect(Collectors.toList());
     // Filter by Property Category
-    if (category != null) {//new added code
-        properties = properties.stream()//new added code
-                .filter(p -> p.getPropertyCategory().getId().equals(category))//new added code
-                .collect(Collectors.toList());//new added code
-    }//new added code
+    if (category != null) {
+        properties = properties.stream()//
+                .filter(p -> p.getPropertyCategory().getId().equals(category))
+                .collect(Collectors.toList());
+    }
 
-    //  Filter by Area (Fix Applied)
+    //  Filter by Area
     if (area != null && !area.trim().isEmpty()) {
         try {
             int areaValue = Integer.parseInt(area);
             properties = properties.stream()
-//                    .filter(p -> p.getArea() != null && p.getArea() <= areaValue)
-                    .filter(p -> p.getArea() != null && Integer.parseInt(p.getArea()) <= areaValue)//new added code
+                    .filter(p -> p.getArea() != null && Integer.parseInt(p.getArea()) <= areaValue)
                     .collect(Collectors.toList());
         } catch (NumberFormatException e) {
             redirectAttributes.addFlashAttribute("error", "Invalid area value");
@@ -132,6 +129,7 @@ public String searchProperties(@RequestParam(required = false) Long category,//n
                 .collect(Collectors.toList());
     }
 
+
     // Filter by Location
     if (location != null && !location.trim().isEmpty()) {
         properties = properties.stream()
@@ -139,7 +137,7 @@ public String searchProperties(@RequestParam(required = false) Long category,//n
                 .collect(Collectors.toList());
     }
 
-    // Add attributes for redirection
+
     redirectAttributes.addFlashAttribute("properties", properties);
     redirectAttributes.addFlashAttribute("searchArea", area);
     redirectAttributes.addFlashAttribute("searchPrice", price);
@@ -163,7 +161,6 @@ public String searchProperties(@RequestParam(required = false) Long category,//n
             return "error-page"; // Your error page template
         }
 
-        // Always initialize favorites to avoid null pointer exceptions
         // In your controller
         List<PropertyInfo> favorites = Collections.emptyList();
         if (userDetails != null) {
@@ -191,7 +188,7 @@ public String searchProperties(@RequestParam(required = false) Long category,//n
             model.addAttribute("noDetailsMessage", "Owner did not provide other details.");
         }
 
-        return "property-details"; // Your HTML file name
+        return "property-details";
     }
     @GetMapping("/user/properties/{username}")
     public String getUserProperties(@PathVariable String username,

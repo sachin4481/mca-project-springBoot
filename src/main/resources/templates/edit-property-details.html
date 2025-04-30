@@ -262,7 +262,7 @@
 
             <div class="form-group">
                 <label for="propDetails">Property Details</label>
-                <textarea th:field="*{propDetails}" id="propDetails" rows="4"></textarea>
+                <textarea th:field="*{propDetails}" id="propDetails"maxlength="255" rows="4"></textarea>
             </div>
         </div>
 
@@ -292,5 +292,6 @@
       toggleFieldsByCategory(category);
     });
 </script>
+<footer th:replace="fragments :: footer" />
 </body>
 </html>
