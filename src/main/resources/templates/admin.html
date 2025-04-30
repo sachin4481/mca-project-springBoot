@@ -225,7 +225,8 @@
     <a href="#" onclick="showSection('complaints', this)"><i class="fa-solid fa-comments"></i> Complaints</a>
     <a href="#" onclick="showSection('inquiries', this)"><i class="fa-solid fa-question-circle"></i> Inquiries</a>
     <a href="#" onclick="showSection('feedback', this)"><i class="fa-solid fa-comment-dots"></i> Feedback</a>
-    <a href="/admin/report" class="nav-link"><i class="fa-solid fa-file-alt"></i> Report</a>
+    <a href="/admin/inquiry-report" class="active"><i class="fa-solid fa-file-alt"></i>Inquiry Report</a>
+    <a href="/admin/report" class="active"><i class="fa-solid fa-file-alt"></i>Property Report</a>
     <a th:href="@{/properties}"><i class="fa-solid fa-home"></i> HomePage</a>
     <a href="/logout" th:action="@{/logout}" onclick="event.preventDefault(); document.getElementById('logoutForm').submit();">
         <i class="fa-solid fa-right-from-bracket"></i> Logout</a>
@@ -458,49 +459,59 @@
     <!-- Complaints Section -->
     <div id="complaintsSection" class="content-section d-none fade-in">
         <div class="card shadow-sm mb-4">
-            <div class="card-header bg-white">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
                 <h2 class="mb-0">Manage Complaints</h2>
             </div>
             <div class="card-body">
                 <div class="table-responsive" style="max-height: 70vh; overflow-y: auto;">
-                    <table class="table table-hover table-bordered">
-                        <thead class="table-light sticky-top">
-                        <tr>
-                            <th style="width: 15%">User</th>
-                            <th style="width: 15%">Property</th>
-                            <th style="width: 30%">Subject</th>
-                            <th style="width: 15%">Status</th>
-                            <th style="width: 25%">Actions</th>
+                    <table class="table" style="border-collapse: separate; border-spacing: 0; border-radius: 6px; overflow: hidden;">
+                        <thead style="position: sticky; top: 0; z-index: 100;">
+                        <tr style="background-color: #f5f5f5;">
+                            <th style="width: 15%; padding: 12px 15px; font-weight: 600; font-size: 0.9rem; color: #333; border-bottom: 1px solid #e0e0e0;">User</th>
+                            <th style="width: 15%; padding: 12px 15px; font-weight: 600; font-size: 0.9rem; color: #333; border-bottom: 1px solid #e0e0e0;">Property</th>
+                            <th style="width: 30%; padding: 12px 15px; font-weight: 600; font-size: 0.9rem; color: #333; border-bottom: 1px solid #e0e0e0;">Subject</th>
+                            <th style="width: 15%; padding: 12px 15px; font-weight: 600; font-size: 0.9rem; color: #333; border-bottom: 1px solid #e0e0e0;">Status</th>
+                            <th style="width: 25%; padding: 12px 15px; font-weight: 600; font-size: 0.9rem; color: #333; border-bottom: 1px solid #e0e0e0;">Actions</th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr th:each="complaint : ${complaints}"
-                            th:classappend="${complaint.status == 'Resolved'} ? 'table-success' : 'table-warning'">
-                            <td th:text="${complaint.username}"></td>
-                            <td th:text="${complaint.propId != null ? complaint.propId : 'N/A'}"></td>
-                            <td class="text-truncate" style="max-width: 200px;" th:text="${complaint.subject}"></td>
-                            <td>
-                                <span class="status-badge"
-                                      th:classappend="${complaint.status == 'Resolved'} ? 'bg-success' : 'bg-warning text-dark'"
-                                      th:text="${complaint.status}"></span>
+                            style="transition: all 0.2s ease; border-bottom: 1px solid #f0f0f0; background-color: white;"
+                            th:styleappend="${complaint.status == 'Resolved'} ? 'border-left: 3px solid #8bc34a;' : 'border-left: 3px solid #ffd54f;'">
+                            <td style="padding: 12px 15px; vertical-align: middle;" th:text="${complaint.username}"></td>
+                            <td style="padding: 12px 15px; vertical-align: middle;" th:text="${complaint.propId != null ? complaint.propId : 'N/A'}"></td>
+                            <td class="text-truncate" style="max-width: 200px; padding: 12px 15px; vertical-align: middle;" th:text="${complaint.subject}"></td>
+                            <td style="padding: 12px 15px; vertical-align: middle;">
+                            <span class="status-badge d-inline-flex align-items-center"
+                                  th:styleappend="${complaint.status == 'Resolved'} ?
+                                  'background-color: #e8f5e9; color: #2e7d32;' :
+                                  'background-color: #fff8e1; color: #ff8f00;'"
+                                  style="padding: 5px 10px; border-radius: 4px; font-weight: 500; font-size: 0.85rem;">
+                                <span th:text="${complaint.status}"></span>
+                            </span>
                             </td>
-                            <td class="complaint-actions">
-                                <button class="btn btn-sm btn-outline-primary me-2"
+                            <td class="complaint-actions" style="padding: 12px 15px; vertical-align: middle;">
+                                <button class="btn btn-sm me-2"
+                                        style="border-radius: 4px; font-weight: 500; padding: 5px 10px;
+                                           background-color: #f5f5f5; color: #333; border: 1px solid #e0e0e0;"
                                         data-bs-toggle="modal"
                                         data-bs-target="#complaintModal"
                                         th:attr="data-bs-complaintId=${complaint.id},
-                                                 data-bs-username=${complaint.username},
-                                                 data-bs-propId=${complaint.propId},
-                                                 data-bs-subject=${complaint.subject},
-                                                 data-bs-description=${complaint.description},
-                                                 data-bs-status=${complaint.status},
-                                                 data-bs-adminResponse=${complaint.adminResponse}">
+                                             data-bs-username=${complaint.username},
+                                             data-bs-propId=${complaint.propId},
+                                             data-bs-subject=${complaint.subject},
+                                             data-bs-description=${complaint.description},
+                                             data-bs-status=${complaint.status},
+                                             data-bs-adminResponse=${complaint.adminResponse}">
                                     <i class="fas fa-eye"></i> View
                                 </button>
                             </td>
                         </tr>
                         <tr th:if="${complaints == null or #lists.isEmpty(complaints)}">
-                            <td colspan="5" class="text-center text-muted">No complaints found</td>
+                            <td colspan="5" class="text-center py-4" style="padding: 30px; background-color: #fafafa;">
+                                <i class="fas fa-inbox fa-2x mb-2" style="color: #bdbdbd;"></i><br>
+                                <span style="font-size: 1rem; color: #757575;">No complaints found</span>
+                            </td>
                         </tr>
                         </tbody>
                     </table>
@@ -509,51 +520,107 @@
         </div>
     </div>
 
+    <style>
+        /* Complaints Section Specific Styling */
+        #complaintsSection .table {
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            border: none;
+        }
+
+        #complaintsSection .table-hover tbody tr:hover {
+            background-color: #fafafa !important;
+        }
+
+        #complaintsSection thead th {
+            border-top: none;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.8rem;
+        }
+
+        /* Status badges */
+        #complaintsSection .status-badge {
+            font-size: 0.85rem;
+        }
+
+        /* Action buttons */
+        #complaintsSection .complaint-actions .btn:hover {
+            background-color: #e0e0e0 !important;
+            border-color: #bdbdbd;
+        }
+
+        /* Responsive adjustments for text truncation */
+        #complaintsSection .text-truncate {
+            max-width: 200px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Consistent with inquiries section */
+        #complaintsSection .card {
+            border: none;
+            border-radius: 6px;
+        }
+
+        #complaintsSection .card-header {
+            border-bottom: 1px solid #e0e0e0;
+            background-color: white;
+        }
+    </style>
+
     <!-- Inquiries Section -->
     <div id="inquiriesSection" class="content-section d-none fade-in">
         <div class="card shadow-sm mb-4">
             <div class="card-header bg-white d-flex justify-content-between align-items-center">
                 <h2 class="mb-0">Manage Inquiries</h2>
-                <a href="/admin/inquiry-report" class="btn btn-primary btn-sm">
+                <a href="/admin/inquiry-report" class="btn btn-sm" style="background-color: #4caf50; color: white;">
                     <i class="fas fa-file-pdf me-1"></i> Generate Inquiry Report
                 </a>
             </div>
             <div class="card-body">
                 <div class="table-responsive" style="max-height: 70vh; overflow-y: auto;">
-                    <table class="table table-hover table-bordered">
-                        <thead class="table-light sticky-top">
-                        <tr>
-                            <th style="width: 25%">Property</th>
-                            <th style="width: 20%">User</th>
-                            <th style="width: 20%">Date</th>
-                            <th style="width: 15%">Status</th>
-                            <th style="width: 20%">Actions</th>
+                    <table class="table" style="border-collapse: separate; border-spacing: 0; border-radius: 6px; overflow: hidden;">
+                        <thead style="position: sticky; top: 0; z-index: 100;">
+                        <tr style="background-color: #f5f5f5;">
+                            <th style="width: 25%; padding: 12px 15px; font-weight: 600; font-size: 0.9rem; color: #333; border-bottom: 1px solid #e0e0e0;">Property</th>
+                            <th style="width: 20%; padding: 12px 15px; font-weight: 600; font-size: 0.9rem; color: #333; border-bottom: 1px solid #e0e0e0;">User</th>
+                            <th style="width: 20%; padding: 12px 15px; font-weight: 600; font-size: 0.9rem; color: #333; border-bottom: 1px solid #e0e0e0;">Date</th>
+                            <th style="width: 15%; padding: 12px 15px; font-weight: 600; font-size: 0.9rem; color: #333; border-bottom: 1px solid #e0e0e0;">Status</th>
+                            <th style="width: 20%; padding: 12px 15px; font-weight: 600; font-size: 0.9rem; color: #333; border-bottom: 1px solid #e0e0e0;">Actions</th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr th:each="inquiry : ${inquiries}"
-                            th:classappend="${inquiry.status == 'ACTIVE'} ? 'table-primary' : 'table-secondary'">
-                            <td>
-                                <span class="fw-semibold" th:text="${inquiry.property.propTitle}"></span>
-                                <small class="d-block text-muted" th:text="${inquiry.property.location}"></small>
+                            style="transition: all 0.2s ease; border-bottom: 1px solid #f0f0f0; background-color: white;"
+                            th:styleappend="${inquiry.status == 'ACTIVE'} ? 'border-left: 3px solid #8bc34a;' : 'border-left: 3px solid #ffd54f;'">
+                            <td style="padding: 12px 15px; vertical-align: middle;">
+                                <span class="fw-semibold" th:text="${inquiry.property.propTitle}" style="color: #333; font-size: 0.95rem;"></span>
+                                <small class="d-block" th:text="${inquiry.property.location}" style="font-size: 0.85rem; margin-top: 3px; color: #757575;"></small>
                             </td>
-                            <td>
-                                <span th:text="${inquiry.user.username}"></span>
-                                <small class="d-block text-muted" th:text="${inquiry.user.email}"></small>
+                            <td style="padding: 12px 15px; vertical-align: middle;">
+                                <span th:text="${inquiry.user.username}" style="color: #333;"></span>
+                                <small class="d-block" th:text="${inquiry.user.email}" style="font-size: 0.85rem; margin-top: 3px; color: #757575;"></small>
                             </td>
-                            <td th:text="${#temporals.format(inquiry.inqDate, 'yyyy-MM-dd HH:mm')}"></td>
-                            <td>
-                            <span class="status-badge d-inline-flex align-items-center"
-                                  th:classappend="${inquiry.status == 'ACTIVE'} ? 'bg-primary' : 'bg-secondary'">
-                                <i th:classappend="${inquiry.status == 'ACTIVE'} ?
-                                  'fas fa-circle-check me-1' : 'fas fa-circle-xmark me-1'"></i>
-                                <span th:text="${inquiry.status}"></span>
-                            </span>
+                            <td th:text="${#temporals.format(inquiry.inqDate, 'yyyy-MM-dd HH:mm')}" style="padding: 12px 15px; vertical-align: middle; color: #333;"></td>
+                            <td style="padding: 12px 15px; vertical-align: middle;">
+                        <span class="status-badge d-inline-flex align-items-center"
+                              th:styleappend="${inquiry.status == 'ACTIVE'} ?
+                              'background-color: #e8f5e9; color: #2e7d32;' :
+                              'background-color: #fff8e1; color: #ff8f00;'"
+                              style="padding: 5px 10px; border-radius: 4px; font-weight: 500; font-size: 0.85rem;">
+                            <i th:classappend="${inquiry.status == 'ACTIVE'} ?
+                              'fas fa-circle-check me-1' : 'fas fa-circle-xmark me-1'"
+                               style="font-size: 0.8rem; margin-right: 5px;"></i>
+                            <span th:text="${inquiry.status}"></span>
+                        </span>
                             </td>
-                            <td class="complaint-actions">
+                            <td class="complaint-actions" style="padding: 12px 15px; vertical-align: middle;">
                                 <a th:href="@{/properties/{id}(id=${inquiry.property.propId})}"
-                                   class="btn btn-sm btn-outline-primary me-1"
-                                   data-bs-toggle="tooltip" data-bs-title="View Property">
+                                   class="btn btn-sm me-1"
+                                   style="border-radius: 4px; font-weight: 500; padding: 5px 10px;
+                                      background-color: #f5f5f5; color: #333; border: 1px solid #e0e0e0;">
                                     <i class="fas fa-eye"></i> View
                                 </a>
                                 <form th:action="@{/admin/close-inquiry}" method="post"
@@ -562,17 +629,13 @@
                                       onsubmit="return confirm('Are you sure you want to close this inquiry?');">
                                     <input type="hidden" name="inquiryId" th:value="${inquiry.inqId}" />
                                     <input type="hidden" name="section" value="inquiries" />
-<!--                                    <button type="submit" class="btn btn-sm btn-outline-danger"-->
-<!--                                            data-bs-toggle="tooltip" data-bs-title="Close Inquiry">-->
-<!--                                        <i class="fas fa-times"></i>-->
-<!--                                    </button>-->
                                 </form>
                             </td>
                         </tr>
                         <tr th:if="${inquiries == null or #lists.isEmpty(inquiries)}">
-                            <td colspan="5" class="text-center text-muted py-4">
-                                <i class="fas fa-inbox fa-2x mb-2 text-muted"></i><br>
-                                No inquiries found
+                            <td colspan="5" class="text-center py-4" style="padding: 30px; background-color: #fafafa;">
+                                <i class="fas fa-inbox fa-2x mb-2" style="color: #bdbdbd;"></i><br>
+                                <span style="font-size: 1rem; color: #757575;">No inquiries found</span>
                             </td>
                         </tr>
                         </tbody>
@@ -582,7 +645,75 @@
         </div>
     </div>
 
+    <style>
+        /* Table styling */
+        #inquiriesSection .table {
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            border: none;
+        }
 
+        #inquiriesSection .table-hover tbody tr:hover {
+            background-color: #fafafa !important;
+        }
+
+        #inquiriesSection thead th {
+            border-top: none;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.8rem;
+        }
+
+        /* Status badges */
+        #inquiriesSection .status-badge i {
+            font-size: 0.7rem;
+        }
+
+        /* Action buttons */
+        #inquiriesSection .complaint-actions .btn:hover {
+            background-color: #e0e0e0 !important;
+            border-color: #bdbdbd;
+        }
+
+        /* Scrollbar styling */
+        #inquiriesSection .table-responsive {
+            scrollbar-width: thin;
+            scrollbar-color: #e0e0e0 #f5f5f5;
+        }
+
+        #inquiriesSection .table-responsive::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        #inquiriesSection .table-responsive::-webkit-scrollbar-track {
+            background: #f5f5f5;
+        }
+
+        #inquiriesSection .table-responsive::-webkit-scrollbar-thumb {
+            background-color: #e0e0e0;
+            border-radius: 3px;
+        }
+
+        /* Card styling */
+        #inquiriesSection .card {
+            border: none;
+            border-radius: 6px;
+        }
+
+        #inquiriesSection .card-header {
+            border-bottom: 1px solid #e0e0e0;
+            background-color: white;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            #inquiriesSection .table-responsive {
+                border: 1px solid #e0e0e0;
+                border-radius: 4px;
+            }
+        }
+    </style>
 
     <!-- Feedback Section -->
     <div id="feedbackSection" class="content-section d-none fade-in">

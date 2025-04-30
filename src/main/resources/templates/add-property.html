@@ -17,7 +17,48 @@
 <body>
 <div class="min-h-screen bg-white">
   <!-- Header -->
-  <header th:replace="fragments :: header" />
+  <header class="fixed-header">
+    <div class="container">
+      <div class="logo">
+        <a href="/properties" style="all: unset; cursor: pointer; display: flex;">
+          Property<span class="logo-nest">Nest
+            <i data-lucide="home" class="logo-icon"></i>
+          </span>
+        </a>
+      </div>
+      <nav class="nav-menu">
+        <a th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}"class="nav-link" href="/admin/dashboard">Admin Panel</a>
+        <a href="/properties" class="nav-link">Home</a>
+        <!--        <a href="/properties/list" class="nav-link">List Property</a>-->
+        <a href="/user/add" class="nav-link">Add Property</a>
+        <a href="/user/properties" class="nav-link">My Properties</a>
+        <a href="/my-submitted-inquiries" class="nav-link">Inquiries</a>
+
+        <a href="/user/favorites" class="nav-link">Favorites</a>
+
+
+        <a href="/user/complaint" class="nav-link">Submit Complaint</a>
+
+
+
+        <!-- Show Username & Logout Button if Logged In -->
+        <span th:if="${session.username}" style="display: contents">
+
+            <a th:href="@{/user/profile}" th:text="${session.username}" class="nav-link username-link" style="color: gold; font-weight: bold;"></a>
+            <span>
+                <form th:action="@{/logout}" method="post" style="display: inline;">
+                  <button type="submit" class="logout-btn">Logout</button>
+                </form>
+              </span>
+          </span>
+
+        <!-- Show Login/Register if Not Logged In -->
+        <span th:if="${session.username == null}">
+            <a href="/login"><button class="btn-primary">Login</button></a>
+          </span>
+      </nav>
+    </div>
+  </header>
 
   <!-- Add Property Form -->
   <div class="auth-container">
@@ -305,7 +346,50 @@
       });
   });
 </script>
+<footer  class="footer">
+  <div class="container">
+    <div class="footer-content">
+      <div class="footer-section">
+        <h3>Quick Links</h3>
+        <ul class="footer-links">
+          <li><a href="/properties">Home</a></li>
+          <li><a href="/user/add">Add Property</a></li>
+          <li><a href="/my-submitted-inquiries">Inquiries</a></li>
+          <li><a th:href="@{/user/profile}" th:text="${session.username}" style="color: gold; font-weight: bold;"></a></li>
+        </ul>
+      </div>
 
-<footer th:replace="fragments :: footer" />
+      <div class="footer-section">
+        <h3>Properties</h3>
+        <ul class="footer-links">
+          <li><a href="/properties">!!! Search now !!!</a></li>
+          <li><a href="/user/properties">My properties</a></li>
+          <li><a href="/user/complaint">Submit Complaint</a></li>
+          <li><a href="/feedback">Feedback</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-section">
+        <div class="footer-contact">
+          <div class="logo">
+            <a href="/properties" style="all: unset; cursor: pointer; display: flex;">
+              Property<span style="color: #fff;" class="logo-nest">Nest
+                            <i data-lucide="home" class="logo-icon"></i>
+                                    </span>
+            </a>
+          </div>
+          <br/>
+          <p><i data-lucide="map-pin"></i> 123 Property Street, Real Estate City, 380015</p>
+          <p><i data-lucide="phone"></i> +91 98765 43210</p>
+          <p><i data-lucide="mail"></i> contact@propertynest.com</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; 2025 PropertyNest. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
 </body>
 </html>
