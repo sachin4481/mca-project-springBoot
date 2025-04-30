@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>My Complaints</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- CSS Links -->
+  <link rel="stylesheet" th:href="@{/css_main/style.css}">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+
+  <style>
+    /* Complaint Cards Styling */
+    .complaint-card {
+      margin-bottom: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      border: none;
+      overflow: hidden;
+      cursor: pointer;
+    }
+    .complaint-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+    .status-border {
+      border-left: 6px solid;
+    }
+    .pending-card {
+      border-left-color: #ffc107;
+      background-color: rgba(255, 193, 7, 0.03);
+    }
+    .resolved-card {
+      border-left-color: #198754;
+      background-color: rgba(25, 135, 84, 0.03);
+    }
+    .rejected-card {
+      border-left-color: #dc3545;
+      background-color: rgba(220, 53, 69, 0.03);
+    }
+    .complaint-description {
+      white-space: pre-wrap;
+    }
+
+    /* Modal Styling */
+    .complaint-modal .modal-dialog {
+      max-width: 700px;
+    }
+    .complaint-modal .modal-header {
+      border-bottom: 2px solid #eab308;
+      background-color: #f8f9fa;
+    }
+    .complaint-modal .modal-title {
+      font-weight: 600;
+      color: #2d3748;
+    }
+    .complaint-modal .modal-body {
+      padding: 1.5rem;
+    }
+    .complaint-detail {
+      margin-bottom: 1.25rem;
+    }
+    .complaint-detail-label {
+      font-weight: 600;
+      color: #2d3748;
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .complaint-detail-value {
+      background-color: #f8f9fa;
+      padding: 1rem;
+      border-radius: 8px;
+      white-space: pre-wrap;
+      border-left: 3px solid #eab308;
+    }
+    .resolution-highlight {
+      background-color: rgba(25, 135, 84, 0.08);
+      border-left: 4px solid #198754;
+      padding: 1.25rem;
+      border-radius: 8px;
+      margin-top: 1.5rem;
+    }
+    .modal-status-badge {
+      font-size: 0.9rem;
+      padding: 0.5em 1em;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+<header class="fixed-header">
+  <div class="container">
+    <div class="logo">
+      <a href="/properties" style="all: unset; cursor: pointer; display: flex;">
+        Property<span class="logo-nest">Nest
+          <i data-lucide="home" class="logo-icon"></i>
+        </span>
+      </a>
+    </div>
+    <nav class="nav-menu">
+      <a th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}" class="nav-link" href="/admin/dashboard">Admin Panel</a>
+      <a href="/properties" class="nav-link">Home</a>
+      <a href="/user/add" class="nav-link">Add Property</a>
+      <a href="/user/properties" class="nav-link">My Properties</a>
+      <a href="/my-submitted-inquiries" class="nav-link">Inquiries</a>
+      <a href="/user/favorites" class="nav-link">Favorites</a>
+      <a href="/user/complaint" class="nav-link">Submit Complaint</a>
+
+      <span th:if="${session.username}" style="display: contents">
+        <a th:href="@{/user/profile}" th:text="${session.username}" class="nav-link username-link" style="color: gold; font-weight: bold;"></a>
+        <span>
+          <form th:action="@{/logout}" method="post" style="display: inline;">
+            <button type="submit" class="logout-btn">Logout</button>
+          </form>
+        </span>
+      </span>
+
+      <span th:if="${session.username == null}">
+        <a href="/login"><button class="btn-primary">Login</button></a>
+      </span>
+    </nav>
+  </div>
+</header>
+
+<div class="container" style="padding-top: 80px; padding-bottom: 40px;">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>My Submitted Complaints</h2>
+    <a href="/user/complaint" class="btn btn-warning">
+      <i class="bi bi-plus-circle"></i> Submit New Complaint
+    </a>
+  </div>
+
+  <div th:if="${complaints.empty}" class="alert alert-info">
+    You haven't submitted any complaints yet.
+  </div>
+
+  <div class="row">
+    <div th:each="complaintWrapper : ${complaints}" class="col-md-6 col-lg-4 mb-4">
+      <div th:with="complaint=${complaintWrapper.complaint}"
+           class="card complaint-card status-border h-100"
+           th:classappend="${complaint.status == 'Resolved' ? 'resolved-card' :
+                          (complaint.status == 'Pending' ? 'pending-card' :
+                          (complaint.status == 'Rejected' ? 'rejected-card' : ''))}"
+           data-bs-toggle="modal"
+           data-bs-target="#complaintModal"
+           th:attr="data-bs-complaint-subject=${complaint.subject},
+                   data-bs-complaint-status=${complaint.status},
+                   data-bs-complaint-prop=${complaintWrapper.propTitle ?: 'Not specified'},
+                   data-bs-complaint-description=${complaint.description},
+                   data-bs-complaint-date=${#temporals.format(complaint.submittedAt, 'MMM dd, yyyy hh:mm a')},
+                   data-bs-complaint-response=${complaint.adminResponse},
+                   data-bs-complaint-resolved-date=${complaint.resolvedAt != null ? #temporals.format(complaint.resolvedAt, 'MMM dd, yyyy') : 'Not specified'}">
+        <div class="card-body d-flex flex-column">
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <h5 class="card-title mb-0" th:text="${complaint.subject}">Complaint Subject</h5>
+            <span class="badge rounded-pill"
+                  th:classappend="${complaint.status == 'Resolved' ? 'bg-success' :
+                                  (complaint.status == 'Pending' ? 'bg-warning text-dark' :
+                                  (complaint.status == 'Rejected' ? 'bg-danger' : 'bg-secondary'))}"
+                  th:text="${complaint.status}">Status</span>
+          </div>
+
+          <div th:if="${complaint.propId != null}" class="text-muted small mb-2">
+            <i class="bi bi-house"></i> Property: <span th:text="${complaintWrapper.propTitle}">Property Title</span>
+          </div>
+
+          <p class="card-text complaint-description mt-2 mb-3 flex-grow-1 clamped-text"
+             th:text="${complaint.description}">Complaint Description</p>
+
+          <div class="text-muted small">
+            <i class="bi bi-clock"></i>
+            <span th:text="${#temporals.format(complaint.submittedAt, 'MMM dd, yyyy hh:mm a')}">Date</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Complaint Details Modal -->
+<div class="modal fade complaint-modal" id="complaintModal" tabindex="-1" aria-labelledby="complaintModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="complaintModalLabel">Complaint Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h4 id="modalComplaintSubject" class="mb-0"></h4>
+          <span id="modalComplaintStatus" class="badge modal-status-badge rounded-pill"></span>
+        </div>
+
+        <div class="complaint-detail">
+          <div class="complaint-detail-label">Property</div>
+          <div class="complaint-detail-value">
+            <i class="bi bi-house"></i> <span id="modalComplaintProperty"></span>
+          </div>
+        </div>
+
+        <div class="complaint-detail">
+          <div class="complaint-detail-label">Submitted On</div>
+          <div class="complaint-detail-value">
+            <i class="bi bi-clock"></i> <span id="modalComplaintDate"></span>
+          </div>
+        </div>
+
+        <div class="complaint-detail">
+          <div class="complaint-detail-label">Description</div>
+          <div class="complaint-detail-value" id="modalComplaintDescription"></div>
+        </div>
+
+        <div id="modalResolutionSection" class="resolution-highlight" style="display: none;">
+          <h5 class="d-flex align-items-center mb-3">
+            <i class="bi bi-check-circle-fill text-success me-2"></i>
+            Resolution Details
+          </h5>
+          <div class="complaint-detail-value" id="modalComplaintResponse"></div>
+          <div class="text-muted small mt-3">
+            <i class="bi bi-calendar-check"></i>
+            Resolved on: <span id="modalResolvedDate"></span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Pagination (same as before) -->
+<div th:if="${totalPages > 1}" class="container mt-4">
+  <nav aria-label="Complaint pagination">
+    <ul class="pagination justify-content-center">
+      <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+        <a class="page-link" th:href="@{'/complaints/my-complaints?page=' + (${currentPage} - 1)}">
+          <i class="bi bi-chevron-left"></i> Previous
+        </a>
+      </li>
+      <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+          class="page-item" th:classappend="${i == currentPage} ? 'active'">
+        <a class="page-link" th:href="@{'/complaints/my-complaints?page=' + ${i}}" th:text="${i + 1}">1</a>
+      </li>
+      <li class="page-item" th:classappend="${currentPage >= totalPages - 1} ? 'disabled'">
+        <a class="page-link" th:href="@{'/complaints/my-complaints?page=' + (${currentPage} + 1)}">
+          Next <i class="bi bi-chevron-right"></i>
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-content">
+      <div class="footer-section">
+        <h3>Quick Links</h3>
+        <ul class="footer-links">
+          <li><a href="/properties">Home</a></li>
+          <li><a href="/user/add">Add Property</a></li>
+          <li><a href="/my-submitted-inquiries">Inquiries</a></li>
+          <li><a th:href="@{/user/profile}" th:text="${session.username}" style="color: gold; font-weight: bold;"></a></li>
+        </ul>
+      </div>
+
+      <div class="footer-section">
+        <h3>Properties</h3>
+        <ul class="footer-links">
+          <li><a href="/properties">Search Properties</a></li>
+          <li><a href="/user/properties">My properties</a></li>
+          <li><a href="/user/complaint">Submit Complaint</a></li>
+          <li><a href="/feedback">Feedback</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-section">
+        <div class="footer-contact">
+          <div class="logo">
+            <a href="/properties" style="all: unset; cursor: pointer; display: flex;">
+              Property<span style="color: #fff;" class="logo-nest">Nest
+                <i class="bi bi-house"></i>
+              </span>
+            </a>
+          </div>
+          <br/>
+          <p><i class="bi bi-geo-alt"></i> 123 Property Street, Real Estate City, 380015</p>
+          <p><i class="bi bi-telephone"></i> +91 98765 43210</p>
+          <p><i class="bi bi-envelope"></i> contact@propertynest.com</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; 2025 PropertyNest. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+<!-- JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var complaintModal = document.getElementById('complaintModal');
+    if (complaintModal) {
+      complaintModal.addEventListener('show.bs.modal', function(event) {
+        var card = event.relatedTarget;
+
+        // Extract complaint data from card attributes
+        var subject = card.getAttribute('data-bs-complaint-subject');
+        var status = card.getAttribute('data-bs-complaint-status');
+        var propTitle = card.getAttribute('data-bs-complaint-prop');
+        var description = card.getAttribute('data-bs-complaint-description');
+        var date = card.getAttribute('data-bs-complaint-date');
+        var response = card.getAttribute('data-bs-complaint-response');
+        var resolvedDate = card.getAttribute('data-bs-complaint-resolved-date');
+
+        // Update modal content
+        document.getElementById('modalComplaintSubject').textContent = subject;
+        document.getElementById('modalComplaintStatus').textContent = status;
+        document.getElementById('modalComplaintProperty').textContent = propTitle;
+        document.getElementById('modalComplaintDescription').textContent = description;
+        document.getElementById('modalComplaintDate').textContent = date;
+
+        // Style status badge
+        var statusBadge = document.getElementById('modalComplaintStatus');
+        statusBadge.className = 'badge modal-status-badge rounded-pill ';
+        if (status === 'Resolved') {
+          statusBadge.classList.add('bg-success');
+        } else if (status === 'Pending') {
+          statusBadge.classList.add('bg-warning', 'text-dark');
+        } else if (status === 'Rejected') {
+          statusBadge.classList.add('bg-danger');
+        } else {
+          statusBadge.classList.add('bg-secondary');
+        }
+
+        // Show/hide resolution section
+        var resolutionSection = document.getElementById('modalResolutionSection');
+        if (status === 'Resolved' && response) {
+          resolutionSection.style.display = 'block';
+          document.getElementById('modalComplaintResponse').textContent = response;
+          document.getElementById('modalResolvedDate').textContent = resolvedDate;
+        } else {
+          resolutionSection.style.display = 'none';
+        }
+      });
+    }
+  });
+</script>
+</body>
+</html>

@@ -4,10 +4,7 @@ package com.example.LoginDemo.Controller;
 import com.example.LoginDemo.Entity.*;
 import com.example.LoginDemo.Repository.*;
 //import com.example.LoginDemo.Repository.VerificationTokenRepository;
-import com.example.LoginDemo.Services.ComplaintServices;
-import com.example.LoginDemo.Services.PropertyInfoService;
-import com.example.LoginDemo.Services.PropertyServices;
-import com.example.LoginDemo.Services.UserServices;
+import com.example.LoginDemo.Services.*;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.springframework.http.ContentDisposition;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -80,28 +77,46 @@ public class AdminController {
     @Autowired
     private PropertyRepository propertyRepository;
 
+    @Autowired
+    private InquiryService inquiryService;
+
+    @Autowired
+    private  PropInquiryRepository propInquiryRepository;
 
     //admin home page
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/dashboard")
-    public String adminDashboard(Model model, @RequestParam(defaultValue = "0") int page) {
-
-        List<UserEntity> users = userServices.getAllUser();
-        List<PropertyInfo> properties = propertyInfoService.getAllProperties();
-        List<ComplaintEntity> complaints = complaintServices.getAllComplaints();
-        List<PropertyCat> categories = propertyCatRepository.findAll();
-        List<Feedback> feedback=feedbackRepository.findAll();
+    public String adminDashboard(Model model,
+                                 @RequestParam(defaultValue = "0") int page,
+                                 @RequestParam(defaultValue = "overview") String section) {
+        // Populate model attributes
         Page<UserEntity> usersPage = userRepository.findAll(PageRequest.of(page, 10));
         Page<PropertyInfo> propertyPage = propertyInfoRepository.findAll(PageRequest.of(page, 10));
-        model.addAttribute("categories", categories);
+        List<ComplaintEntity> complaints = complaintServices.getAllComplaints();
+        List<PropertyCat> categories = propertyCatRepository.findAll();
+        List<Feedback> feedbacks = feedbackRepository.findAll();
+        List<PropInquiry> inquiries = propInquiryRepository.findAll(); // Fetch all inquiries
+
         model.addAttribute("users", usersPage);
         model.addAttribute("properties", propertyPage);
         model.addAttribute("complaints", complaints);
-        model.addAttribute("feedbacks",feedback);
+        model.addAttribute("categories", categories);
+        model.addAttribute("feedbacks", feedbacks);
+        model.addAttribute("inquiries", inquiries);
         model.addAttribute("reportGenerated", false);
+        model.addAttribute("section", section);
+
         return "admin";
 
 
+    }
+    // Close inquiry endpoint
+    @PostMapping("/close-inquiry")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String closeInquiry(@RequestParam("inquiryId") Long inquiryId,
+                               @RequestParam(defaultValue = "inquiries") String section) {
+        inquiryService.closeInquiry(inquiryId);
+        return "redirect:/admin/dashboard?section=" + section;
     }
 
     //category management
@@ -141,7 +156,7 @@ public class AdminController {
     public String resolveComplaint(@RequestParam("complaintId") Long complaintId,
                                    @RequestParam("adminResponse") String adminResponse) {
         complaintServices.resolveComplaint(complaintId, adminResponse);
-        return "redirect:/admin/complaints";
+        return "redirect:/admin/dashboard";
     }
 
 
@@ -166,13 +181,50 @@ public class AdminController {
     }
 
 
+    //change role to the user
+    @PostMapping("/change-role-to-user")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String changeToUserRole(@RequestParam("userId") Long userId,
+                                   @RequestParam(defaultValue = "0") int page,
+                                   Model model) {
+        try {
+            userServices.changeUserRole(userId, "USER");
+            model.addAttribute("message", "User role changed to USER!");
+        } catch (RuntimeException e) {
+            model.addAttribute("error", e.getMessage());
+        }
 
-    // Report generation form
+        Page<UserEntity> usersPage = userRepository.findAll(PageRequest.of(page, 10));
+        Page<PropertyInfo> propertyPage = propertyInfoRepository.findAll(PageRequest.of(page, 10));
+        model.addAttribute("categories", propertyCatRepository.findAll());
+        model.addAttribute("users", usersPage);
+        model.addAttribute("properties", propertyPage);
+        model.addAttribute("complaints", complaintServices.getAllComplaints());
+        model.addAttribute("reportGenerated", false);
+        model.addAttribute("section", "users");
+        return "admin";
+    }
+
+
+
+
+
+
+
+
+
+
+
     @GetMapping("/report")
     public String showReportForm(Model model) {
         model.addAttribute("reportGenerated", false);
         model.addAttribute("categories", propertyCatRepository.findAll());
-        return "report"; // Return to the report template
+        model.addAttribute("selectedCategoryId", null);
+        model.addAttribute("reportProperties", Collections.emptyList());
+        model.addAttribute("reportMonth", null);
+        model.addAttribute("reportYear", null);
+        model.addAttribute("soldOnly", false);
+        return "report";
     }
 
     // Generate report
@@ -191,9 +243,19 @@ public class AdminController {
         model.addAttribute("selectedCategoryId", categoryId);
         model.addAttribute("soldOnly", soldOnly);
         model.addAttribute("reportGenerated", true);
-        model.addAttribute("categories", propertyCatRepository.findAll());
 
-        return "report"; // Return to the report template with generated data
+        List<PropertyCat> categories = propertyCatRepository.findAll();
+        model.addAttribute("categories", categories);
+
+        // ✅ Add selected category name
+        if (categoryId != null) {
+            categories.stream()
+                    .filter(cat -> cat.getId().equals(categoryId))
+                    .findFirst()
+                    .ifPresent(cat -> model.addAttribute("selectedCategoryName", cat.getName()));
+        }
+
+        return "report"; // Return to the report template
     }
 
     // Download PDF report

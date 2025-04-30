@@ -116,30 +116,6 @@
       </button>
     </form>
 
-    <!-- Listings search results -->
-    <section class="listings-section py-5 bg-light">
-      <div class="container">
-        <h2 class="text-center">Properties</h2>
-        <div class="row g-4">
-          <div class="col-lg-3 col-md-4 col-sm-6" th:each="property : ${properties}">
-            <div class="card border-0 shadow-sm rounded-4">
-              <img th:src="@{${property.img1}}" class="card-img-top rounded-top-4" alt="Property Image">
-              <div class="card-body">
-                <h5 class="card-title fw-bold text-dark" th:text="${property.propTitle}">Property Title</h5>
-                <p class="card-text mb-1"><i class="bi bi-rulers"></i> <span th:text="${property.area} + ' sq ft'"></span></p>
-                <p class="card-text mb-1"><i class="bi bi-geo-alt"></i> <span th:text="${property.pinCode}"></span></p>
-                <p class="clamped-text text-muted mb-3" th:text="${property.propertyCategory.name}"></p>
-                <p class="card-text h5 text-black"><strong>₹</strong> <span th:text="${#numbers.formatDecimal(property.price, 0, 'COMMA', 0, 'POINT')}"></span></p>
-                <a th:href="@{/properties/{id}(id=${property.propId})}" class="btn btn-warning text-dark fw-semibold w-100">View Details</a>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div th:if="${#lists.isEmpty(properties)}" class="no-results text-center mt-5">
-          <p class="text-muted fs-4">No properties found.</p>
-        </div>
-      </div>
-    </section>
 <!--Recent listings top 4-->
     <section class="listings-section py-5 bg-light">
       <div class="container">
@@ -162,7 +138,30 @@
         </div>
       </div>
     </section>
-
+      <!-- Listings search results -->
+      <section class="listings-section py-5 bg-light">
+          <div class="container">
+              <h2 class="text-center">Properties</h2>
+              <div class="row g-4">
+                  <div class="col-lg-3 col-md-4 col-sm-6" th:each="property : ${properties}">
+                      <div class="card border-0 shadow-sm rounded-4">
+                          <img th:src="@{${property.img1}}" class="card-img-top rounded-top-4" alt="Property Image">
+                          <div class="card-body">
+                              <h5 class="card-title fw-bold text-dark" th:text="${property.propTitle}">Property Title</h5>
+                              <p class="card-text mb-1"><i class="bi bi-rulers"></i> <span th:text="${property.area} + ' sq ft'"></span></p>
+                              <p class="card-text mb-1"><i class="bi bi-geo-alt"></i> <span th:text="${property.pinCode}"></span></p>
+                              <p class="clamped-text text-muted mb-3" th:text="${property.propertyCategory.name}"></p>
+                              <p class="card-text h5 text-black"><strong>₹</strong> <span th:text="${#numbers.formatDecimal(property.price, 0, 'COMMA', 0, 'POINT')}"></span></p>
+                              <a th:href="@{/properties/{id}(id=${property.propId})}" class="btn btn-warning text-dark fw-semibold w-100">View Details</a>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <div th:if="${#lists.isEmpty(properties)}" class="no-results text-center mt-5">
+                  <p class="text-muted fs-4">No properties found!! Search now!!.</p>
+              </div>
+          </div>
+      </section>
     <script>
       lucide.createIcons();
     </script>

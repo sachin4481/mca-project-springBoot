@@ -126,6 +126,15 @@
       background: #e5e7eb;
     }
 
+    .btn-view-complaints {
+      background: #3b82f6;
+      color: white;
+    }
+
+    .btn-view-complaints:hover {
+      background: #2563eb;
+    }
+
     @media (max-width: 640px) {
       .complaint-container {
         margin: 5rem 1rem 2rem;
@@ -154,6 +163,10 @@
   <div th:if="${param.submitted}" class="success-message">
     <i data-lucide="check-circle"></i>
     Complaint submitted successfully!
+    <a href="/my-complaints" class="btn btn-view-complaints" style="margin-left: auto;">
+      <i data-lucide="list"></i>
+      View My Complaints
+    </a>
   </div>
 
   <form th:action="@{/user/complaint}" th:object="${complaint}" method="post">
@@ -162,7 +175,7 @@
         <i data-lucide="home"></i>
         Related Property
       </label>
-      <select th:field="*{propId}" id="propertyId" required>
+      <select th:field="*{propId}" id="propertyId">
         <option value="">-- Select Property --</option>
         <option th:each="property : ${properties}"
                 th:value="${property.propId}"
@@ -186,6 +199,7 @@
         Description
       </label>
       <textarea th:field="*{description}" id="description" required
+                maxlength="255"
                 placeholder="Provide detailed information about your complaint"></textarea>
     </div>
 
@@ -198,6 +212,10 @@
         <i data-lucide="x"></i>
         Cancel
       </a>
+      <a href="/my-complaints" class="btn btn-view-complaints">
+        <i data-lucide="list"></i>
+        My Complaints
+      </a>
     </div>
   </form>
 </div>
@@ -205,5 +223,6 @@
 <script>
   lucide.createIcons();
 </script>
+<footer th:replace="fragments :: footer" />
 </body>
 </html>
