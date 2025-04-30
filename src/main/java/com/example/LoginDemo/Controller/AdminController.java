@@ -4,10 +4,7 @@ package com.example.LoginDemo.Controller;
 import com.example.LoginDemo.Entity.*;
 import com.example.LoginDemo.Repository.*;
 //import com.example.LoginDemo.Repository.VerificationTokenRepository;
-import com.example.LoginDemo.Services.ComplaintServices;
-import com.example.LoginDemo.Services.PropertyInfoService;
-import com.example.LoginDemo.Services.PropertyServices;
-import com.example.LoginDemo.Services.UserServices;
+import com.example.LoginDemo.Services.*;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.springframework.http.ContentDisposition;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -80,6 +77,11 @@ public class AdminController {
     @Autowired
     private PropertyRepository propertyRepository;
 
+    @Autowired
+    private InquiryService inquiryService;
+
+    @Autowired
+    private  PropInquiryRepository propInquiryRepository;
 
     //admin home page
     @PreAuthorize("hasRole('ADMIN')")
@@ -93,18 +95,28 @@ public class AdminController {
         List<ComplaintEntity> complaints = complaintServices.getAllComplaints();
         List<PropertyCat> categories = propertyCatRepository.findAll();
         List<Feedback> feedbacks = feedbackRepository.findAll();
+        List<PropInquiry> inquiries = propInquiryRepository.findAll(); // Fetch all inquiries
 
         model.addAttribute("users", usersPage);
         model.addAttribute("properties", propertyPage);
         model.addAttribute("complaints", complaints);
         model.addAttribute("categories", categories);
         model.addAttribute("feedbacks", feedbacks);
+        model.addAttribute("inquiries", inquiries);
         model.addAttribute("reportGenerated", false);
         model.addAttribute("section", section);
 
         return "admin";
 
 
+    }
+    // Close inquiry endpoint
+    @PostMapping("/close-inquiry")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String closeInquiry(@RequestParam("inquiryId") Long inquiryId,
+                               @RequestParam(defaultValue = "inquiries") String section) {
+        inquiryService.closeInquiry(inquiryId);
+        return "redirect:/admin/dashboard?section=" + section;
     }
 
     //category management

@@ -221,8 +221,8 @@
     <a href="#" onclick="showSection('properties', this)"><i class="fa-solid fa-building"></i> Properties</a>
     <a href="#" onclick="showSection('categories', this)"><i class="fa-solid fa-list"></i> Categories</a>
     <a href="#" onclick="showSection('complaints', this)"><i class="fa-solid fa-comments"></i> Complaints</a>
+    <a href="#" onclick="showSection('inquiries', this)"><i class="fa-solid fa-question-circle"></i> Inquiries</a>
     <a href="#" onclick="showSection('feedback', this)"><i class="fa-solid fa-comment-dots"></i> Feedback</a>
-<!--    <a href="#" onclick="showSection('report', this)"><i class="fa-solid fa-file-alt"></i> Report</a>-->
     <a href="/admin/report" class="nav-link"><i class="fa-solid fa-file-alt"></i> Report</a>
     <a th:href="@{/properties}"><i class="fa-solid fa-home"></i> HomePage</a>
     <a href="/logout" th:action="@{/logout}" onclick="event.preventDefault(); document.getElementById('logoutForm').submit();">
@@ -507,6 +507,61 @@
         </div>
     </div>
 
+    <!-- Inquiries Section -->
+    <div id="inquiriesSection" class="content-section d-none fade-in">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white">
+                <h2 class="mb-0">Manage Inquiries</h2>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive" style="max-height: 70vh; overflow-y: auto;">
+                    <table class="table table-hover table-bordered">
+                        <thead class="table-light sticky-top">
+                        <tr>
+                            <th style="width: 25%">Property</th>
+                            <th style="width: 20%">User</th>
+                            <th style="width: 20%">Date</th>
+                            <th style="width: 15%">Status</th>
+                            <th style="width: 20%">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="inquiry : ${inquiries}"
+                            th:classappend="${inquiry.status == 'ACTIVE'} ? 'table-primary' : 'table-secondary'">
+                            <td>
+                                <a th:href="@{/properties/{id}(id=${inquiry.property.propId})}"
+                                   th:text="${inquiry.property.propTitle}"></a>
+                            </td>
+                            <td th:text="${inquiry.user.username}"></td>
+                            <td th:text="${#temporals.format(inquiry.inqDate, 'yyyy-MM-dd HH:mm')}"></td>
+                            <td>
+                                <span class="status-badge"
+                                      th:classappend="${inquiry.status == 'ACTIVE'} ? 'bg-primary' : 'bg-secondary'"
+                                      th:text="${inquiry.status}"></span>
+                            </td>
+                            <td class="complaint-actions">
+                                <form th:action="@{/admin/close-inquiry}" method="post"
+                                      th:if="${inquiry.status == 'ACTIVE'}"
+                                      onsubmit="return confirm('Are you sure you want to close this inquiry?');">
+                                    <input type="hidden" name="inquiryId" th:value="${inquiry.inqId}" />
+                                    <input type="hidden" name="section" value="inquiries" />
+                                    <button type="submit" class="btn btn-sm btn-warning">
+                                        <i class="fas fa-times-circle"></i> Close
+                                    </button>
+                                </form>
+                                <span th:if="${inquiry.status != 'ACTIVE'}" class="text-muted">Closed</span>
+                            </td>
+                        </tr>
+                        <tr th:if="${inquiries == null or #lists.isEmpty(inquiries)}">
+                            <td colspan="5 obfuscated by Grok">No inquiries found</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Feedback Section -->
     <div id="feedbackSection" class="content-section d-none fade-in">
         <h2>User Feedback</h2>
@@ -744,7 +799,7 @@
         // Only show report section if explicitly requested and data is available
         if (reportGenerated && !reportGenerated.classList.contains('d-none') && section === 'report') {
             section = 'report';
-        } else if (!['overview', 'users', 'properties', 'categories', 'complaints', 'feedback', 'report'].includes(section)) {
+        } else if (!['overview', 'users', 'properties', 'categories', 'complaints', 'inquiries', 'feedback', 'report'].includes(section)) {
             section = 'overview'; // Fallback to overview if section is invalid
         }
 
