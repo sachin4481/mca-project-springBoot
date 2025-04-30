@@ -543,4 +543,263 @@ private void drawTableRow(PDPageContentStream contentStream, float margin, float
             contentStream.endText();
         }
     }
+
+
+
+
+
+    // inquiry report generation
+
+    @GetMapping("/inquiry-report")
+    public String showInquiryReportForm(Model model) {
+        model.addAttribute("reportGenerated", false);
+        model.addAttribute("reportInquiries", Collections.emptyList());
+        model.addAttribute("reportMonth", null);
+        model.addAttribute("reportYear", null);
+        model.addAttribute("statusFilter", "ALL");
+        return "inquiry-report";
+    }
+
+    @PostMapping("/inquiry-report")
+    public String generateInquiryReport(
+            @RequestParam("month") int month,
+            @RequestParam("year") int year,
+            @RequestParam(required = false, defaultValue = "ALL") String statusFilter,
+            Model model) {
+
+        List<PropInquiry> reportInquiries = inquiryService.getFilteredInquiries(month, year, statusFilter);
+        model.addAttribute("reportInquiries", reportInquiries);
+        model.addAttribute("reportMonth", month);
+        model.addAttribute("reportYear", year);
+        model.addAttribute("statusFilter", statusFilter);
+        model.addAttribute("reportGenerated", true);
+
+        return "inquiry-report";
+    }
+
+    @PostMapping("/inquiry-report/download-pdf")
+    public ResponseEntity<byte[]> downloadInquiryReportPdf(
+            @RequestParam("month") int month,
+            @RequestParam("year") int year,
+            @RequestParam(required = false, defaultValue = "ALL") String statusFilter) throws IOException {
+
+        List<PropInquiry> reportInquiries = inquiryService.getFilteredInquiries(month, year, statusFilter);
+        byte[] pdfBytes = generateInquiryPdfReport(reportInquiries, month, year, statusFilter);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        String filename = "inquiry-report-" + month + "-" + year;
+        if (!"ALL".equals(statusFilter)) filename += "-" + statusFilter.toLowerCase();
+        filename += ".pdf";
+
+        headers.setContentDisposition(
+                ContentDisposition.builder("attachment")
+                        .filename(filename)
+                        .build());
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(pdfBytes);
+    }
+
+    private byte[] generateInquiryPdfReport(List<PropInquiry> inquiries, int month, int year, String statusFilter) throws IOException {
+        try (PDDocument document = new PDDocument()) {
+            float margin = 50;
+            float rowHeight = 25;
+            float yStart = 700;
+            float nextY = yStart;
+            int inquiryIndex = 0;
+
+            PDPage currentPage = new PDPage(PDRectangle.A4);
+            document.addPage(currentPage);
+            PDPageContentStream contentStream = new PDPageContentStream(document, currentPage);
+
+            // Fonts
+            PDType1Font titleFont = PDType1Font.HELVETICA_BOLD;
+            PDType1Font headerFont = PDType1Font.HELVETICA_BOLD;
+            PDType1Font bodyFont = PDType1Font.HELVETICA;
+
+            // Add report title
+            contentStream.beginText();
+            contentStream.setFont(titleFont, 16);
+            contentStream.newLineAtOffset(margin, nextY);
+            String title = "PropertyNest - Inquiry Report";
+            contentStream.showText(title);
+            contentStream.endText();
+            nextY -= 30;
+
+            // Add subtitle
+            contentStream.beginText();
+            contentStream.setFont(titleFont, 14);
+            contentStream.newLineAtOffset(margin, nextY);
+            String subtitle = "Report for " + Month.of(month).name() + " " + year;
+            if (!"ALL".equals(statusFilter)) {
+                subtitle += " - Status: " + statusFilter;
+            }
+            contentStream.showText(subtitle);
+            contentStream.endText();
+            nextY -= 25;
+
+            // Add generation date
+            contentStream.beginText();
+            contentStream.setFont(bodyFont, 10);
+            contentStream.newLineAtOffset(margin, nextY);
+            contentStream.showText("Generated on: " + LocalDate.now().toString());
+            contentStream.endText();
+            nextY -= 30;
+
+            float tableWidth = currentPage.getMediaBox().getWidth() - 2 * margin;
+            float[] colWidths = {
+                    tableWidth * 0.25f, // Property (25%)
+                    tableWidth * 0.20f, // User (20%)
+                    tableWidth * 0.20f, // Owner (20%)
+                    tableWidth * 0.15f, // Date (15%)
+                    tableWidth * 0.10f, // Status (10%)
+                    tableWidth * 0.10f  // Action (10%)
+            };
+
+            while (inquiryIndex < inquiries.size()) {
+                if (nextY < 100) {
+                    contentStream.close();
+                    currentPage = new PDPage(PDRectangle.A4);
+                    document.addPage(currentPage);
+                    contentStream = new PDPageContentStream(document, currentPage);
+                    nextY = 750;
+
+                    // Add header on new page
+                    contentStream.beginText();
+                    contentStream.setFont(titleFont, 16);
+                    contentStream.newLineAtOffset(margin, nextY);
+                    contentStream.showText(title + " (continued)");
+                    contentStream.endText();
+                    nextY -= 30;
+                }
+
+                if (inquiryIndex == 0 || nextY == 750) {
+                    // Draw table header
+                    drawInquiryTableHeader(contentStream, margin, nextY, colWidths, headerFont, 12);
+                    nextY -= rowHeight;
+                    contentStream.setLineWidth(1f);
+                    contentStream.moveTo(margin, nextY);
+                    contentStream.lineTo(margin + tableWidth, nextY);
+                    contentStream.stroke();
+                }
+
+                PropInquiry inquiry = inquiries.get(inquiryIndex);
+                drawInquiryTableRow(contentStream, margin, nextY, colWidths, rowHeight, bodyFont, inquiry);
+
+                nextY -= rowHeight;
+                contentStream.setLineWidth(0.5f);
+                contentStream.moveTo(margin, nextY);
+                contentStream.lineTo(margin + tableWidth, nextY);
+                contentStream.stroke();
+
+                inquiryIndex++;
+            }
+
+            contentStream.close();
+
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            document.save(byteArrayOutputStream);
+            return byteArrayOutputStream.toByteArray();
+        }
+    }
+
+    private void drawInquiryTableHeader(PDPageContentStream contentStream, float margin, float y,
+                                        float[] colWidths, PDType1Font font, int fontSize) throws IOException {
+        contentStream.setNonStrokingColor(200, 200, 200);
+        contentStream.addRect(margin, y - 20,
+                colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + colWidths[5],
+                20);
+        contentStream.fill();
+        contentStream.setNonStrokingColor(0, 0, 0);
+
+        float currentX = margin;
+        String[] headers = {"Property", "Inquirer", "Owner", "Date", "Status", "Action"};
+
+        for (int i = 0; i < headers.length; i++) {
+            contentStream.beginText();
+            contentStream.setFont(font, fontSize);
+            contentStream.newLineAtOffset(currentX + 5, y - 15);
+            contentStream.showText(headers[i]);
+            contentStream.endText();
+
+            contentStream.moveTo(currentX, y);
+            contentStream.lineTo(currentX, y - 20);
+            contentStream.stroke();
+
+            currentX += colWidths[i];
+        }
+
+        contentStream.moveTo(currentX, y);
+        contentStream.lineTo(currentX, y - 20);
+        contentStream.stroke();
+    }
+
+    private void drawInquiryTableRow(PDPageContentStream contentStream, float margin, float y,
+                                     float[] colWidths, float rowHeight, PDType1Font bodyFont,
+                                     PropInquiry inquiry) throws IOException {
+        float currentX = margin;
+
+        // Property Title
+        String propertyTitle = inquiry.getProperty().getPropTitle() != null ?
+                inquiry.getProperty().getPropTitle() : "N/A";
+        drawWrappedText(contentStream, propertyTitle, currentX + 5, y - 15, colWidths[0] - 10, bodyFont, 10);
+        currentX += colWidths[0];
+
+        // Inquirer
+        String inquirer = inquiry.getUser().getUsername() != null ?
+                inquiry.getUser().getUsername() : "N/A";
+        contentStream.beginText();
+        contentStream.setFont(bodyFont, 10);
+        contentStream.newLineAtOffset(currentX + 5, y - 15);
+        contentStream.showText(inquirer);
+        contentStream.endText();
+        currentX += colWidths[1];
+
+        // Owner
+        String owner = inquiry.getProperty().getUser().getUsername() != null ?
+                inquiry.getProperty().getUser().getUsername() : "N/A";
+        contentStream.beginText();
+        contentStream.setFont(bodyFont, 10);
+        contentStream.newLineAtOffset(currentX + 5, y - 15);
+        contentStream.showText(owner);
+        contentStream.endText();
+        currentX += colWidths[2];
+
+        // Date
+        String date = inquiry.getInqDate() != null ?
+                inquiry.getInqDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")) : "N/A";
+        contentStream.beginText();
+        contentStream.setFont(bodyFont, 10);
+        contentStream.newLineAtOffset(currentX + 5, y - 15);
+        contentStream.showText(date);
+        contentStream.endText();
+        currentX += colWidths[3];
+
+        // Status
+        String status = inquiry.getStatus() != null ? inquiry.getStatus() : "N/A";
+        contentStream.beginText();
+        contentStream.setFont(bodyFont, 10);
+        contentStream.newLineAtOffset(currentX + 5, y - 15);
+        contentStream.showText(status);
+        contentStream.endText();
+        currentX += colWidths[4];
+
+        // Action (just for display)
+        String action = inquiry.getStatus().equals("ACTIVE") ? "Pending" : "Closed";
+        contentStream.beginText();
+        contentStream.setFont(bodyFont, 10);
+        contentStream.newLineAtOffset(currentX + 5, y - 15);
+        contentStream.showText(action);
+        contentStream.endText();
+    }
+
+
+
+
+
+
+
+
 }

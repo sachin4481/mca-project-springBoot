@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -21,5 +22,7 @@ public interface PropInquiryRepository extends JpaRepository<PropInquiry, Long> 
                                                  @Param("user") UserEntity user);
 
     List<PropInquiry> findByUser(UserEntity user);
+    List<PropInquiry> findByInqDateBetween(LocalDateTime start, LocalDateTime end);
 
+    List<PropInquiry> findByStatusAndInqDateBetween(String status, LocalDateTime start, LocalDateTime end);
 }

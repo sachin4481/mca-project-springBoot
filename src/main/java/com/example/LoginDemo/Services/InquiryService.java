@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -50,4 +51,26 @@ public class InquiryService {
         inquiry.setStatus("CLOSED");
         propInquiryRepository.save(inquiry);
     }
+
+    // Add to InquiryService
+
+    public List<PropInquiry> getFilteredInquiries(int month, int year, String statusFilter) {
+        LocalDate startDate = LocalDate.of(year, month, 1);
+        LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
+
+        if ("ALL".equals(statusFilter)) {
+            return propInquiryRepository.findByInqDateBetween(
+                    startDate.atStartOfDay(),
+                    endDate.atTime(23, 59, 59)
+            );
+        } else {
+            return propInquiryRepository.findByStatusAndInqDateBetween(
+                    statusFilter,
+                    startDate.atStartOfDay(),
+                    endDate.atTime(23, 59, 59)
+            );
+        }
+    }
+
+
 }
